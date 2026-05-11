@@ -8,13 +8,20 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "db:push": "eas env:exec development 'npx drizzle-kit push'",
+    "db:pull": "eas env:exec development 'npx drizzle-kit pull'",
+    "db:generate": "eas env:exec development 'npx drizzle-kit generate'",
+    "db:migrate": "eas env:exec development 'npx drizzle-kit migrate'",
+    "db:studio": "eas env:exec development 'npx drizzle-kit studio'"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@neondatabase/serverless": "^1.1.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "drizzle-orm": "^0.45.2",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
     "expo-dev-client": "~6.0.21",
@@ -42,9 +49,10 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
-    "typescript": "~5.9.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.25.0",
-    "eslint-config-expo": "~10.0.0"
+    "eslint-config-expo": "~10.0.0",
+    "typescript": "~5.9.2"
   },
   "private": true
 }
