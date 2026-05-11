@@ -1,0 +1,10 @@
+{
+  "title": "書棚",
+  "stat": "{{threads}}本の物語 · {{unfinished}}本 読書中",
+  "tabs": {
+    "reading": "読書中",
+    "finished": "読了",
+    "saved": "保存済み",
+    "archived": "アーカイブ"
+  }
+}

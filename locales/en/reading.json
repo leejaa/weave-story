@@ -1,0 +1,5 @@
+{
+  "position": "CH. {{chapter}} · BEAT {{beat}}",
+  "chapterLabel": "Chapter {{number}}",
+  "prompt": "What does she do?"
+}

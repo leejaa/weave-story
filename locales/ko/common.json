@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "today": "오늘",
+    "library": "서재",
+    "weave": "엮기",
+    "you": "나"
+  },
+  "genres": {
+    "mystery": "미스터리",
+    "romance": "로맨스",
+    "folk": "민담",
+    "cozy": "코지",
+    "eerie": "기이한",
+    "slowBurn": "잔잔한",
+    "sharp": "예리한",
+    "tender": "따뜻한",
+    "drama": "드라마"
+  },
+  "length": {
+    "short": "3–5챕터",
+    "medium": "7–10챕터",
+    "long": "12+챕터"
+  },
+  "errors": {
+    "threadSnagged": "실이 엉켰어요. 다시 선택해볼까요?"
+  }
+}

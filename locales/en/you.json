@@ -1,0 +1,16 @@
+{
+  "sinceLine": "READING SINCE {{date}}",
+  "stats": {
+    "threads": "threads",
+    "finished": "finished",
+    "wordsRead": "words read"
+  },
+  "settings": {
+    "readingPreferences": "Reading preferences",
+    "notifications": "Notifications",
+    "aiDisclosure": "AI disclosure",
+    "subscription": "Subscription",
+    "helpFeedback": "Help & feedback",
+    "language": "Language"
+  }
+}

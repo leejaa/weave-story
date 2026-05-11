@@ -1,0 +1,10 @@
+{
+  "title": "서재",
+  "stat": "{{threads}}개의 이야기 · {{unfinished}}개 진행 중",
+  "tabs": {
+    "reading": "읽는 중",
+    "finished": "완독",
+    "saved": "저장됨",
+    "archived": "보관함"
+  }
+}

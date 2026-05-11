@@ -1,0 +1,18 @@
+{
+  "greeting": {
+    "morning": "좋은 아침이에요.",
+    "afternoon": "안녕하세요.",
+    "evening": "좋은 저녁이에요."
+  },
+  "period": {
+    "morning": "아침",
+    "afternoon": "오후",
+    "evening": "저녁"
+  },
+  "lastThread": "마지막 이야기는 닫힌 문 앞에서 멈춰 있어요.",
+  "woven": "오늘 밤을 위해 엮인 이야기",
+  "slowBurns": "천천히 읽는 이야기",
+  "seeAll": "모두 보기 →",
+  "progress": "{{percent}}%",
+  "chapter": "CH. {{chapter}} · BEAT {{beat}}"
+}

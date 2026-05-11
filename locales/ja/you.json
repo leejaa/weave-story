@@ -1,0 +1,16 @@
+{
+  "sinceLine": "{{date}}から読書を開始",
+  "stats": {
+    "threads": "物語",
+    "finished": "読了",
+    "wordsRead": "読んだ語数"
+  },
+  "settings": {
+    "readingPreferences": "読書設定",
+    "notifications": "通知",
+    "aiDisclosure": "AI開示",
+    "subscription": "サブスクリプション",
+    "helpFeedback": "ヘルプ＆フィードバック",
+    "language": "言語"
+  }
+}

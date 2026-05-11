@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "today": "今日",
+    "library": "書棚",
+    "weave": "つむぐ",
+    "you": "あなた"
+  },
+  "genres": {
+    "mystery": "ミステリー",
+    "romance": "ロマンス",
+    "folk": "民話",
+    "cozy": "ほっこり",
+    "eerie": "怪異",
+    "slowBurn": "じっくり系",
+    "sharp": "シャープ",
+    "tender": "やさしい",
+    "drama": "ドラマ"
+  },
+  "length": {
+    "short": "3〜5章",
+    "medium": "7〜10章",
+    "long": "12章以上"
+  },
+  "errors": {
+    "threadSnagged": "物語の糸が絡まりました。もう一度選んでみてください。"
+  }
+}

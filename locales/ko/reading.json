@@ -1,0 +1,5 @@
+{
+  "position": "CH. {{chapter}} · BEAT {{beat}}",
+  "chapterLabel": "{{number}}번째 챕터",
+  "prompt": "그녀는 어떻게 할까요?"
+}

@@ -1,0 +1,18 @@
+{
+  "greeting": {
+    "morning": "おはようございます。",
+    "afternoon": "こんにちは。",
+    "evening": "こんばんは。"
+  },
+  "period": {
+    "morning": "朝",
+    "afternoon": "午後",
+    "evening": "夜"
+  },
+  "lastThread": "あなたの物語は、閉じた扉の前で止まっています。",
+  "woven": "今夜のためにつむがれた",
+  "slowBurns": "じっくり読む物語",
+  "seeAll": "すべて見る →",
+  "progress": "{{percent}}%",
+  "chapter": "第{{chapter}}章 · BEAT {{beat}}"
+}

@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "today": "Today",
+    "library": "Library",
+    "weave": "Weave",
+    "you": "You"
+  },
+  "genres": {
+    "mystery": "Mystery",
+    "romance": "Romance",
+    "folk": "Folk",
+    "cozy": "Cozy",
+    "eerie": "Eerie",
+    "slowBurn": "Slow burn",
+    "sharp": "Sharp",
+    "tender": "Tender",
+    "drama": "Drama"
+  },
+  "length": {
+    "short": "3–5 ch",
+    "medium": "7–10 ch",
+    "long": "12+ ch"
+  },
+  "errors": {
+    "threadSnagged": "The thread snagged. Try that choice again?"
+  }
+}

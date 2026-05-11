@@ -1,0 +1,16 @@
+{
+  "sinceLine": "{{date}}부터 읽기 시작",
+  "stats": {
+    "threads": "이야기",
+    "finished": "완독",
+    "wordsRead": "읽은 단어"
+  },
+  "settings": {
+    "readingPreferences": "읽기 설정",
+    "notifications": "알림",
+    "aiDisclosure": "AI 고지",
+    "subscription": "구독",
+    "helpFeedback": "도움말 및 피드백",
+    "language": "언어"
+  }
+}

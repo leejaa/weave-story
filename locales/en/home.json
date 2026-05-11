@@ -1,0 +1,18 @@
+{
+  "greeting": {
+    "morning": "Good morning.",
+    "afternoon": "Good afternoon.",
+    "evening": "Good evening."
+  },
+  "period": {
+    "morning": "morning",
+    "afternoon": "afternoon",
+    "evening": "evening"
+  },
+  "lastThread": "Your last thread paused on a closed door.",
+  "woven": "Woven for tonight",
+  "slowBurns": "Slow burns",
+  "seeAll": "See all →",
+  "progress": "{{percent}}%",
+  "chapter": "CH. {{chapter}} · BEAT {{beat}}"
+}

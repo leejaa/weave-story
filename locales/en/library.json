@@ -1,0 +1,10 @@
+{
+  "title": "Library",
+  "stat": "{{threads}} threads · {{unfinished}} unfinished",
+  "tabs": {
+    "reading": "Reading",
+    "finished": "Finished",
+    "saved": "Saved",
+    "archived": "Archived"
+  }
+}

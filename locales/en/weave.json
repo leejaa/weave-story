@@ -1,0 +1,13 @@
+{
+  "eyebrow": "New thread",
+  "title": "Weave a story",
+  "subtitle": "A line, a setting, a feeling. Your seed becomes chapter one.",
+  "seed": {
+    "label": "Your seed",
+    "placeholder": "A grandmother, a coastline, a stranger…"
+  },
+  "mood": "Mood",
+  "length": "Length",
+  "disclosure": "Stories are generated based on the choices you make. Quality varies — take a breath if the writing wanders.",
+  "begin": "Begin weaving"
+}
