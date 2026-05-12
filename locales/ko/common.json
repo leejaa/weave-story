@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "오늘",
-    "library": "서재",
-    "weave": "엮기",
+    "today": "홈",
+    "threads": "이야기",
     "you": "나"
   },
   "genres": {

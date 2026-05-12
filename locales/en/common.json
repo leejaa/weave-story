@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "Today",
-    "library": "Library",
-    "weave": "Weave",
+    "today": "Home",
+    "threads": "Stories",
     "you": "You"
   },
   "genres": {

@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "今日",
-    "library": "書棚",
-    "weave": "つむぐ",
+    "today": "ホーム",
+    "threads": "物語",
     "you": "あなた"
   },
   "genres": {
