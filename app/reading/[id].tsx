@@ -8,6 +8,8 @@ import { ChoiceTile } from '@/components/choice-tile';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 
+const PAPER_SCRIM = [0, 0.05, 0.20, 0.50, 0.82, 0.95, 1];
+
 const CHOICES = [
   { marker: 'A', text: 'Step into the corridor, even though the clock has stopped.' },
   { marker: 'B', text: 'Close the door. Whatever lives there can keep counting alone.' },
@@ -56,6 +58,11 @@ export default function ReadingScreen() {
 
       {/* Choice tray */}
       <View style={[styles.choiceTray, { bottom: 0 }]}>
+        <View style={styles.gradientScrim} pointerEvents="none">
+          {PAPER_SCRIM.map((opacity, i) => (
+            <View key={i} style={{ flex: 1, backgroundColor: c.paper, opacity }} />
+          ))}
+        </View>
         <View style={[styles.trayBody, { backgroundColor: c.paper }]}>
           <Text style={[styles.prompt, { color: c.inkSoft }]}>{t('prompt')}</Text>
           <View style={styles.choices}>
@@ -90,6 +97,7 @@ const styles = StyleSheet.create({
   },
   body: { fontFamily: FONTS.serif, fontSize: 18, lineHeight: 30, marginBottom: 16 },
   choiceTray: { position: 'absolute', left: 0, right: 0 },
+  gradientScrim: { height: 56, flexDirection: 'column' },
   trayBody: { paddingHorizontal: 16, paddingTop: 8 },
   prompt: {
     fontFamily: FONTS.serifItalic,

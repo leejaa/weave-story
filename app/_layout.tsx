@@ -1,6 +1,7 @@
 import '@/global.css';
 import '@/lib/i18n';
 
+import { AuthProvider } from '@/lib/auth/client/context';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -55,7 +56,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <AuthProvider>
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: colors.paper },
@@ -64,6 +65,6 @@ export default function RootLayout() {
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-    </>
+    </AuthProvider>
   );
 }

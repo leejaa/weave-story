@@ -11,6 +11,8 @@ type Props = {
   onPress?: () => void;
 };
 
+const SCRIM_STOPS = [0, 0.02, 0.06, 0.12, 0.20, 0.30, 0.40, 0.48];
+
 export function StoryCard({ title, mood, chapters, progress, coverColor, onPress }: Props) {
   const c = usePalette();
 
@@ -23,7 +25,11 @@ export function StoryCard({ title, mood, chapters, progress, coverColor, onPress
         pressed && styles.pressed,
       ]}>
       <View style={[styles.cover, { backgroundColor: coverColor }]}>
-        <View style={styles.coverScrim} />
+        <View style={styles.coverScrim}>
+          {SCRIM_STOPS.map((opacity, i) => (
+            <View key={i} style={[styles.scrimLayer, { backgroundColor: `rgba(0,0,0,${opacity})` }]} />
+          ))}
+        </View>
         <Text style={styles.coverTitle} numberOfLines={2}>{title}</Text>
       </View>
       <View style={styles.meta}>
@@ -68,8 +74,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: '55%',
-    backgroundColor: 'rgba(0,0,0,0.45)',
   },
+  scrimLayer: { flex: 1 },
   coverTitle: {
     fontFamily: FONTS.serifSemibold,
     fontSize: SIZES.sm,
