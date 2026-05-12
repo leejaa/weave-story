@@ -15,7 +15,9 @@
         "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
-        "com.apple.developer.applesignin": ["Default"]
+        "com.apple.developer.applesignin": [
+          "Default"
+        ]
       }
     },
     "android": {
@@ -49,7 +51,13 @@
       ],
       "expo-localization",
       "expo-apple-authentication",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.857705716385-r8e3m7ctl80d3pikd0drr4mt0sd5uv2q"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

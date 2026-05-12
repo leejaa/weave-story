@@ -61,6 +61,7 @@ export default function RootLayout() {
         screenOptions={{
           contentStyle: { backgroundColor: colors.paper },
         }}>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
       </Stack>

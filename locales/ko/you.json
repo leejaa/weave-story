@@ -12,5 +12,8 @@
     "subscription": "구독",
     "helpFeedback": "도움말 및 피드백",
     "language": "언어"
-  }
+  },
+  "signOut": "로그아웃",
+  "signOutConfirm": "로그아웃 하시겠어요?",
+  "cancel": "취소"
 }

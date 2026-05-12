@@ -12,5 +12,8 @@
     "subscription": "サブスクリプション",
     "helpFeedback": "ヘルプ＆フィードバック",
     "language": "言語"
-  }
+  },
+  "signOut": "サインアウト",
+  "signOutConfirm": "サインアウトしますか？",
+  "cancel": "キャンセル"
 }

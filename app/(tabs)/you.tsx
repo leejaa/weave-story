@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { useLocale } from '@/hooks/use-locale';
+import { useAuth } from '@/lib/auth/client/context';
 import { FONTS, SIZES } from '@/constants/colors';
 
 const STAT_KEYS = [
@@ -26,6 +27,14 @@ export default function YouScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('you');
   const { locale, setLocale, supportedLocales, localeLabels } = useLocale();
+  const { signOut } = useAuth();
+
+  const handleSignOut = () => {
+    Alert.alert(t('signOut'), t('signOutConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
+      { text: t('signOut'), style: 'destructive', onPress: signOut },
+    ]);
+  };
 
   const handleLanguageTap = () => {
     Alert.alert(
@@ -76,7 +85,6 @@ export default function YouScreen() {
             style={({ pressed }) => [
               styles.settingsRow,
               { borderBottomColor: c.rule },
-              i === SETTING_KEYS.length - 1 && styles.lastRow,
               pressed && styles.pressed,
             ]}>
             <Text style={[styles.settingsLabel, { color: c.ink }]}>{t(`settings.${key}`)}</Text>
@@ -88,6 +96,11 @@ export default function YouScreen() {
             <Icon name="chevron-right" size={16} color={c.inkFaint} />
           </Pressable>
         ))}
+        <Pressable
+          onPress={handleSignOut}
+          style={({ pressed }) => [styles.settingsRow, styles.lastRow, pressed && styles.pressed]}>
+          <Text style={[styles.settingsLabel, { color: c.ember }]}>{t('signOut')}</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

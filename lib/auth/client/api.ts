@@ -1,6 +1,12 @@
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { tokenStorage } from './storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
+
+GoogleSignin.configure({
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+});
 
 let refreshPromise: Promise<string | null> | null = null;
 
@@ -79,6 +85,27 @@ export async function signInWithApple(params: {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error ?? 'Apple sign-in failed');
+  }
+
+  const { accessToken, refreshToken } = await res.json();
+  await tokenStorage.setAccessToken(accessToken);
+  await tokenStorage.setRefreshToken(refreshToken);
+}
+
+export async function signInWithGoogle(): Promise<void> {
+  await GoogleSignin.hasPlayServices();
+  const { data } = await GoogleSignin.signIn();
+  if (!data?.idToken) throw new Error('No ID token from Google');
+
+  const res = await fetch(`${BASE_URL}/api/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ idToken: data.idToken }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error ?? 'Google sign-in failed');
   }
 
   const { accessToken, refreshToken } = await res.json();

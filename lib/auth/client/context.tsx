@@ -1,6 +1,6 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { signInWithApple } from './api';
+import { signInWithApple, signInWithGoogle } from './api';
 import { tokenStorage } from './storage';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
@@ -8,6 +8,7 @@ type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 interface AuthContextValue {
   state: AuthState;
   signInWithApple: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -40,13 +41,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState('authenticated');
   }, []);
 
+  const handleGoogleSignIn = useCallback(async () => {
+    await signInWithGoogle();
+    setState('authenticated');
+  }, []);
+
   const signOut = useCallback(async () => {
     await tokenStorage.clear();
     setState('unauthenticated');
   }, []);
 
   return (
-    <AuthContext.Provider value={{ state, signInWithApple: handleAppleSignIn, signOut }}>
+    <AuthContext.Provider
+      value={{ state, signInWithApple: handleAppleSignIn, signInWithGoogle: handleGoogleSignIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
