@@ -1,18 +1,15 @@
-import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StoryCard } from '@/components/story-card';
 import { usePalette } from '@/hooks/use-palette';
+import { useStories } from '@/hooks/use-stories';
+import { useThreads } from '@/hooks/use-threads';
+import { authFetch } from '@/lib/auth/client/api';
 import { FONTS, SIZES } from '@/constants/colors';
-
-const COVERS = {
-  lemon: '#6e8aa8',
-  river: '#2f3a52',
-  bones: '#8a9270',
-  cliff: '#4a5d6c',
-  velvet: '#5b3a52',
-};
 
 type Period = 'morning' | 'afternoon' | 'evening';
 
@@ -23,14 +20,43 @@ function getDayPeriod(): { weekday: string; period: Period } {
   return { weekday, period };
 }
 
-export default function TodayScreen() {
+export default function HomeScreen() {
   const c = usePalette();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('home');
+  const { stories, loading: storiesLoading } = useStories();
+  const { threads } = useThreads();
 
   const { weekday, period } = getDayPeriod();
-  const openStory = (id: string) => router.push(`/reading/${id}`);
+  const [openingStoryId, setOpeningStoryId] = useState<string | null>(null);
+
+  const openStory = useCallback(
+    async (storyId: string) => {
+      const existing = threads.find(th => th.storyId === storyId);
+      if (existing) {
+        router.push(`/reading/${existing.threadId}`);
+        return;
+      }
+      setOpeningStoryId(storyId);
+      try {
+        const res = await authFetch('/api/threads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ storyId }),
+        });
+        const thread = await res.json();
+        router.push(`/reading/${thread.id}`);
+      } finally {
+        setOpeningStoryId(null);
+      }
+    },
+    [threads, router],
+  );
+
+  const activeThread = threads.find(th => th.status === 'active');
+  const featuredStories = stories.slice(0, 2);
+  const moreStories = stories.slice(2);
 
   return (
     <ScrollView
@@ -47,95 +73,106 @@ export default function TodayScreen() {
         <Text style={[styles.subtitle, { color: c.inkSoft }]}>{t('lastThread')}</Text>
       </View>
 
-      {/* Continue card */}
-      <View style={styles.section}>
-        <Pressable
-          onPress={() => openStory('lemon')}
-          style={({ pressed }) => [
-            styles.continueCard,
-            { backgroundColor: c.paperRaised, shadowColor: c.ink },
-            pressed && styles.pressed,
-          ]}>
-          <View style={[styles.continueCover, { backgroundColor: COVERS.lemon }]}>
-            <View style={styles.continueScrim} />
-          </View>
-          <View style={styles.continueBody}>
-            <View>
-              <Text style={[styles.mono, { color: c.inkFaint }]}>
-                {t('chapter', { chapter: '06', beat: '04' })}
-              </Text>
-              <Text style={[styles.continueTitle, { color: c.ink }]}>The Lemonpolish Door</Text>
-              <Text style={[styles.continueExcerpt, { color: c.inkSoft }]}>
-                "She opened the door and the corridor exhaled — "
-              </Text>
+      {/* Continue reading */}
+      {activeThread && (
+        <View style={styles.section}>
+          <Pressable
+            onPress={() => openStory(activeThread.storyId)}
+            style={({ pressed }) => [
+              styles.continueCard,
+              { backgroundColor: c.paperRaised, shadowColor: c.ink },
+              pressed && styles.pressed,
+            ]}>
+            <View style={[styles.continueCover, { backgroundColor: c.paperSunk }]}>
+              {activeThread.coverImageUrl ? (
+                <Image
+                  source={{ uri: activeThread.coverImageUrl }}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="cover"
+                  transition={200}
+                />
+              ) : null}
+              <View style={styles.continueScrim} />
             </View>
-            <View style={styles.progressRow}>
-              <View style={[styles.progressTrack, { backgroundColor: c.rule, flex: 1 }]}>
-                <View style={[styles.progressFill, { width: '62%', backgroundColor: c.thread }]} />
+            <View style={styles.continueBody}>
+              <View>
+                <Text style={[styles.mono, { color: c.inkFaint }]}>
+                  {t('chapter', { chapter: String(activeThread.currentChapter).padStart(2, '0'), beat: '01' })}
+                </Text>
+                <Text style={[styles.continueTitle, { color: c.ink }]}>{activeThread.title}</Text>
+                <Text style={[styles.continueExcerpt, { color: c.inkSoft }]} numberOfLines={2}>
+                  {activeThread.description}
+                </Text>
               </View>
-              <Text style={[styles.mono, { color: c.inkFaint }]}>{t('progress', { percent: 62 })}</Text>
+              <View style={styles.progressRow}>
+                <View style={[styles.progressTrack, { backgroundColor: c.rule, flex: 1 }]}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${Math.round(parseFloat(activeThread.progress) * 100)}%` as any, backgroundColor: c.thread },
+                    ]}
+                  />
+                </View>
+                <Text style={[styles.mono, { color: c.inkFaint }]}>
+                  {t('progress', { percent: Math.round(parseFloat(activeThread.progress) * 100) })}
+                </Text>
+              </View>
             </View>
-          </View>
-        </Pressable>
-      </View>
-
-      {/* Woven for tonight */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: c.ink }]}>{t('woven')}</Text>
-          <Text style={[styles.seeAll, { color: c.thread }]}>{t('seeAll')}</Text>
+          </Pressable>
         </View>
-        <View style={styles.grid}>
-          <View style={styles.gridCell}>
-            <StoryCard
-              title="Where the river forgets"
-              mood="Drama"
-              chapters={12}
-              progress={0.24}
-              coverColor={COVERS.river}
-              onPress={() => openStory('river')}
-            />
+      )}
+
+      {/* Featured stories */}
+      {storiesLoading ? (
+        <ActivityIndicator color={c.thread} style={{ marginTop: 24 }} />
+      ) : featuredStories.length > 0 ? (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: c.ink }]}>{t('woven')}</Text>
+            <Text style={[styles.seeAll, { color: c.thread }]}>{t('seeAll')}</Text>
           </View>
-          <View style={styles.gridCell}>
-            <StoryCard
-              title="Small bones, large hands"
-              mood="Folk"
-              chapters={7}
-              progress={1}
-              coverColor={COVERS.bones}
-              onPress={() => openStory('bones')}
-            />
+          <View style={styles.grid}>
+            {featuredStories.map(story => (
+              <View key={story.id} style={styles.gridCell}>
+                <StoryCard
+                  title={story.title}
+                  mood={story.mood}
+                  chapters={story.estimatedChapters}
+                  progress={0}
+                  coverImageUrl={story.coverImageUrl}
+                  onPress={() => openStory(story.id)}
+                />
+              </View>
+            ))}
           </View>
         </View>
-      </View>
+      ) : null}
 
-      {/* Slow burns */}
-      <View>
-        <Text style={[styles.sectionTitle, { color: c.ink, paddingHorizontal: 20, marginBottom: 12 }]}>
-          {t('slowBurns')}
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScroll}>
-          {[
-            { id: 'cliff', cover: COVERS.cliff, title: 'A stranger at the cliff house', mood: 'Mystery', chapters: 14 },
-            { id: 'velvet', cover: COVERS.velvet, title: 'Velvet hour', mood: 'Romance', chapters: 9 },
-            { id: 'lemon2', cover: COVERS.lemon, title: 'The clockwinder', mood: 'Folk', chapters: 11 },
-          ].map(s => (
-            <View key={s.id} style={styles.horizontalCard}>
-              <StoryCard
-                title={s.title}
-                mood={s.mood}
-                chapters={s.chapters}
-                progress={0}
-                coverColor={s.cover}
-                onPress={() => openStory(s.id)}
-              />
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+      {/* More stories */}
+      {moreStories.length > 0 && (
+        <View>
+          <Text style={[styles.sectionTitle, { color: c.ink, paddingHorizontal: 20, marginBottom: 12 }]}>
+            {t('slowBurns')}
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}>
+            {moreStories.map(story => (
+              <View key={story.id} style={styles.horizontalCard}>
+                <StoryCard
+                  title={story.title}
+                  mood={story.mood}
+                  chapters={story.estimatedChapters}
+                  progress={0}
+                  coverImageUrl={story.coverImageUrl}
+                  onPress={() => openStory(story.id)}
+                />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -186,7 +223,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: '50%',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   continueBody: { flex: 1, justifyContent: 'space-between' },
   mono: { fontFamily: FONTS.mono, fontSize: 10, letterSpacing: 0.5 },

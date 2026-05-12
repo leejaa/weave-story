@@ -1,4 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 
@@ -7,13 +8,14 @@ type Props = {
   mood: string;
   chapters: number;
   progress: number;
-  coverColor: string;
+  coverImageUrl?: string | null;
+  coverColor?: string;
   onPress?: () => void;
 };
 
 const SCRIM_STOPS = [0, 0.02, 0.06, 0.12, 0.20, 0.30, 0.40, 0.48];
 
-export function StoryCard({ title, mood, chapters, progress, coverColor, onPress }: Props) {
+export function StoryCard({ title, mood, chapters, progress, coverImageUrl, coverColor, onPress }: Props) {
   const c = usePalette();
 
   return (
@@ -24,7 +26,15 @@ export function StoryCard({ title, mood, chapters, progress, coverColor, onPress
         { backgroundColor: c.paperRaised },
         pressed && styles.pressed,
       ]}>
-      <View style={[styles.cover, { backgroundColor: coverColor }]}>
+      <View style={[styles.cover, { backgroundColor: coverColor ?? c.paperSunk }]}>
+        {coverImageUrl ? (
+          <Image
+            source={{ uri: coverImageUrl }}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            transition={200}
+          />
+        ) : null}
         <View style={styles.coverScrim}>
           {SCRIM_STOPS.map((opacity, i) => (
             <View key={i} style={[styles.scrimLayer, { backgroundColor: `rgba(0,0,0,${opacity})` }]} />

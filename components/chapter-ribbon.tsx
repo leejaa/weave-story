@@ -6,13 +6,13 @@ import { FONTS, SIZES } from '@/constants/colors';
 type Props = {
   title: string;
   chapter: number;
-  beat: number;
-  totalBeats: number;
+  totalChapters: number;
   onBack?: () => void;
 };
 
-export function ChapterRibbon({ title, chapter, beat, totalBeats, onBack }: Props) {
+export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) {
   const c = usePalette();
+  const clamped = Math.min(totalChapters, 12);
 
   return (
     <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule }]}>
@@ -27,14 +27,14 @@ export function ChapterRibbon({ title, chapter, beat, totalBeats, onBack }: Prop
           {title}
         </Text>
         <Text style={[styles.position, { color: c.inkFaint }]}>
-          CH. {String(chapter).padStart(2, '0')} · BEAT {String(beat).padStart(2, '0')}
+          CH. {String(chapter).padStart(2, '0')} / {String(totalChapters).padStart(2, '0')}
         </Text>
       </View>
 
       <View style={styles.dots}>
-        {Array.from({ length: totalBeats }).map((_, i) => {
-          const done = i < beat - 1;
-          const current = i === beat - 1;
+        {Array.from({ length: clamped }).map((_, i) => {
+          const done = i < chapter - 1;
+          const current = i === chapter - 1;
           return (
             <View
               key={i}

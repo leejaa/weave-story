@@ -1,7 +1,16 @@
+import Constants from 'expo-constants';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { tokenStorage } from './storage';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
+function resolveBaseUrl(): string {
+  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
+  if (!__DEV__) return '';
+  // In dev client / Expo Go, hostUri is the Metro server address (e.g. "192.168.x.x:8081")
+  const host = Constants.expoConfig?.hostUri ?? 'localhost:8081';
+  return `http://${host}`;
+}
+
+const BASE_URL = resolveBaseUrl();
 
 GoogleSignin.configure({
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
