@@ -1,5 +1,19 @@
 {
   "position": "第{{chapter}}章 · BEAT {{beat}}",
   "chapterLabel": "第{{number}}章",
-  "prompt": "彼女はどうする？"
+  "prompt": "彼女はどうする？",
+  "notFound": "物語が見つかりません。",
+  "chapterFailed": "章の生成に失敗しました。\nしばらくしてから再試行してください。",
+  "end": "— 終 —",
+  "choice": {
+    "defaultQuestion": "どうする？",
+    "orInput": "または自分で入力",
+    "inputPlaceholder": "したい行動を入力してください…",
+    "continue": "物語を続ける"
+  },
+  "generating": {
+    "title": "次の章を\n準備しています",
+    "body": "しばらく他のことをしてから\n戻ってきてください。",
+    "estimate": "約1〜2分かかります"
+  }
 }

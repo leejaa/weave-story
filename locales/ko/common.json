@@ -21,5 +21,10 @@
   },
   "errors": {
     "threadSnagged": "실이 엉켰어요. 다시 선택해볼까요?"
+  },
+  "status": {
+    "ongoing": "진행 중",
+    "completed": "완결",
+    "generating": "준비 중…"
   }
 }

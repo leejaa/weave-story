@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ChapterRibbon } from '@/components/chapter-ribbon';
 import { TextPage } from '@/components/reading/text-page';
 import { ChoicePage } from '@/components/reading/choice-page';
@@ -113,6 +114,7 @@ export default function ReadingScreen() {
   const { width, height } = useWindowDimensions();
   const flatRef = useRef<FlatList>(null);
 
+  const { t } = useTranslation('reading');
   const { data, isLoading, choosing, choose } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
 
@@ -148,7 +150,7 @@ export default function ReadingScreen() {
   if (!data) {
     return (
       <View style={[styles.centered, { backgroundColor: c.paper }]}>
-        <Text style={[styles.errorText, { color: c.inkSoft }]}>이야기를 찾을 수 없어요.</Text>
+        <Text style={[styles.errorText, { color: c.inkSoft }]}>{t('notFound')}</Text>
       </View>
     );
   }
@@ -214,14 +216,12 @@ export default function ReadingScreen() {
             {item.type === 'generating' && <GeneratingPage />}
             {item.type === 'failed' && (
               <View style={styles.centered}>
-                <Text style={[styles.errorText, { color: c.inkSoft }]}>
-                  챕터 생성에 실패했어요.{'\n'}잠시 후 다시 시도해주세요.
-                </Text>
+                <Text style={[styles.errorText, { color: c.inkSoft }]}>{t('chapterFailed')}</Text>
               </View>
             )}
             {item.type === 'end' && (
               <View style={styles.centered}>
-                <Text style={[styles.endMark, { color: c.inkFaint }]}>— 끝 —</Text>
+                <Text style={[styles.endMark, { color: c.inkFaint }]}>{t('end')}</Text>
               </View>
             )}
           </View>

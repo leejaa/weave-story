@@ -1,5 +1,19 @@
 {
   "position": "CH. {{chapter}} · BEAT {{beat}}",
   "chapterLabel": "Chapter {{number}}",
-  "prompt": "What does she do?"
+  "prompt": "What does she do?",
+  "notFound": "Story not found.",
+  "chapterFailed": "Chapter generation failed.\nPlease try again later.",
+  "end": "— End —",
+  "choice": {
+    "defaultQuestion": "What will you do?",
+    "orInput": "Or type your own",
+    "inputPlaceholder": "Type what you want to do…",
+    "continue": "Continue story"
+  },
+  "generating": {
+    "title": "Preparing the\nnext chapter",
+    "body": "Feel free to step away\nand come back later.",
+    "estimate": "About 1–2 minutes"
+  }
 }

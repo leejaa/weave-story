@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/ui/icon';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { useStoryPrompt } from '@/hooks/use-story-prompt';
 import { ARCHETYPES } from '@/constants/story-archetypes';
@@ -17,6 +18,7 @@ import { FONTS, SIZES } from '@/constants/colors';
 export default function SetupScreen() {
   const c = usePalette();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('weave');
   const { prompt, setPrompt, canSubmit, isPending, error, submit, back } = useStoryPrompt();
 
   return (
@@ -34,18 +36,14 @@ export default function SetupScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
 
-        <Text style={[styles.headline, { color: c.ink }]}>
-          어떤 이야기를{'\n'}원하세요?
-        </Text>
-        <Text style={[styles.subtext, { color: c.inkSoft }]}>
-          원하는 이야기를 자유롭게 설명해주세요.
-        </Text>
+        <Text style={[styles.headline, { color: c.ink }]}>{t('headline')}</Text>
+        <Text style={[styles.subtext, { color: c.inkSoft }]}>{t('subtext')}</Text>
 
         {/* Free text input */}
         <View style={[styles.inputWrap, { borderColor: prompt.trim() ? c.thread : c.rule, backgroundColor: c.paperRaised }]}>
           <TextInput
             style={[styles.input, { color: c.ink }]}
-            placeholder="예) 마법사 학교에 입학한 소녀가 금지된 주문을 발견하는 이야기…"
+            placeholder={t('placeholder')}
             placeholderTextColor={c.inkFaint}
             value={prompt}
             onChangeText={setPrompt}
@@ -56,7 +54,7 @@ export default function SetupScreen() {
         </View>
 
         {/* Archetype quick-pick */}
-        <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>빠른 시작</Text>
+        <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('quickStart')}</Text>
         <View style={styles.cardGrid}>
           {ARCHETYPES.map(a => {
             const selected = prompt === a.prompt;
@@ -101,7 +99,7 @@ export default function SetupScreen() {
           ) : (
             <>
               <Text style={[styles.ctaLabel, { color: canSubmit ? c.paper : c.inkFaint }]}>
-                이야기 시작하기
+                {t('startBtn')}
               </Text>
               <Icon name="chevron-right" size={18} color={canSubmit ? c.paper : c.inkFaint} />
             </>

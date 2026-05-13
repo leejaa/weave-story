@@ -6,5 +6,20 @@
     "finished": "완독",
     "saved": "저장됨",
     "archived": "보관함"
+  },
+  "screenTitle": "내 이야기",
+  "section": {
+    "ongoing": "진행 중",
+    "completed": "완결"
+  },
+  "empty": {
+    "stories": {
+      "title": "아직 만든 이야기가 없어요",
+      "subtitle": "새 이야기 탭에서 첫 번째 이야기를 시작해보세요"
+    },
+    "threads": {
+      "title": "아직 읽은 이야기가 없어요",
+      "subtitle": "홈에서 이야기를 골라 시작해보세요"
+    }
   }
 }

@@ -14,5 +14,10 @@
   "slowBurns": "Slow burns",
   "seeAll": "See all →",
   "progress": "{{percent}}%",
-  "chapter": "CH. {{chapter}} · BEAT {{beat}}"
+  "chapter": "CH. {{chapter}} · BEAT {{beat}}",
+  "hero": {
+    "headline": "A story\nonly for you",
+    "body": "Describe what you want to read,\nand your story begins.",
+    "cta": "Start new story"
+  }
 }

@@ -1,5 +1,19 @@
 {
   "position": "CH. {{chapter}} · BEAT {{beat}}",
   "chapterLabel": "{{number}}번째 챕터",
-  "prompt": "그녀는 어떻게 할까요?"
+  "prompt": "그녀는 어떻게 할까요?",
+  "notFound": "이야기를 찾을 수 없어요.",
+  "chapterFailed": "챕터 생성에 실패했어요.\n잠시 후 다시 시도해주세요.",
+  "end": "— 끝 —",
+  "choice": {
+    "defaultQuestion": "어떻게 할 것인가?",
+    "orInput": "또는 직접 입력",
+    "inputPlaceholder": "원하는 행동을 직접 입력하세요…",
+    "continue": "이야기 계속하기"
+  },
+  "generating": {
+    "title": "다음 챕터를\n준비하고 있어요",
+    "body": "잠시 다른 걸 하다가\n돌아오셔도 돼요.",
+    "estimate": "약 1-2분 소요"
+  }
 }

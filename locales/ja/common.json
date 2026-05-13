@@ -21,5 +21,10 @@
   },
   "errors": {
     "threadSnagged": "物語の糸が絡まりました。もう一度選んでみてください。"
+  },
+  "status": {
+    "ongoing": "進行中",
+    "completed": "完結",
+    "generating": "準備中…"
   }
 }

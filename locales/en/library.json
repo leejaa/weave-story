@@ -6,5 +6,20 @@
     "finished": "Finished",
     "saved": "Saved",
     "archived": "Archived"
+  },
+  "screenTitle": "My Stories",
+  "section": {
+    "ongoing": "In progress",
+    "completed": "Completed"
+  },
+  "empty": {
+    "stories": {
+      "title": "No stories yet",
+      "subtitle": "Start your first story from the new story tab"
+    },
+    "threads": {
+      "title": "No stories read yet",
+      "subtitle": "Pick a story from home to get started"
+    }
   }
 }

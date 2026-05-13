@@ -14,5 +14,10 @@
   "slowBurns": "천천히 읽는 이야기",
   "seeAll": "모두 보기 →",
   "progress": "{{percent}}%",
-  "chapter": "CH. {{chapter}} · BEAT {{beat}}"
+  "chapter": "CH. {{chapter}} · BEAT {{beat}}",
+  "hero": {
+    "headline": "세상에 하나뿐인\n나만의 이야기",
+    "body": "원하는 이야기를 직접 설명하면\n당신만의 소설이 시작돼요.",
+    "cta": "새 이야기 시작"
+  }
 }

@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { ChoiceTile } from '@/components/choice-tile';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -28,6 +29,7 @@ type Props = {
 
 export function ChoicePage({ options, situation, question, chapterNumber, onChoose, choosing }: Props) {
   const c = usePalette();
+  const { t } = useTranslation('reading');
   const insets = useSafeAreaInsets();
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [customInput, setCustomInput] = useState('');
@@ -65,7 +67,7 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
           <Text style={[styles.situation, { color: c.inkSoft }]}>{situation}</Text>
         ) : null}
         <Text style={[styles.headline, { color: c.ink }]}>
-          {question || '어떻게 할 것인가?'}
+          {question || t('choice.defaultQuestion')}
         </Text>
       </View>
 
@@ -84,7 +86,7 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
 
       <View style={styles.dividerRow}>
         <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
-        <Text style={[styles.dividerLabel, { color: c.inkFaint }]}>또는 직접 입력</Text>
+        <Text style={[styles.dividerLabel, { color: c.inkFaint }]}>{t('choice.orInput')}</Text>
         <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
       </View>
 
@@ -98,7 +100,7 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
         ]}>
         <TextInput
           style={[styles.input, { color: c.ink }]}
-          placeholder="원하는 행동을 직접 입력하세요…"
+          placeholder={t('choice.inputPlaceholder')}
           placeholderTextColor={c.inkFaint}
           value={customInput}
           onChangeText={handleCustomChange}
@@ -114,7 +116,7 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
           <ActivityIndicator color={c.paper} size="small" />
         ) : (
           <Text style={[styles.ctaLabel, { color: canConfirm ? c.paper : c.inkFaint }]}>
-            이야기 계속하기
+            {t('choice.continue')}
           </Text>
         )}
       </Pressable>

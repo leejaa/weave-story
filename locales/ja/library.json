@@ -6,5 +6,20 @@
     "finished": "読了",
     "saved": "保存済み",
     "archived": "アーカイブ"
+  },
+  "screenTitle": "マイ物語",
+  "section": {
+    "ongoing": "進行中",
+    "completed": "完結"
+  },
+  "empty": {
+    "stories": {
+      "title": "まだ物語がありません",
+      "subtitle": "新しい物語タブから最初の物語を始めましょう"
+    },
+    "threads": {
+      "title": "まだ読んだ物語がありません",
+      "subtitle": "ホームから物語を選んで始めましょう"
+    }
   }
 }

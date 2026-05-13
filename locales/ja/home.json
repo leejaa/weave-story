@@ -14,5 +14,10 @@
   "slowBurns": "じっくり読む物語",
   "seeAll": "すべて見る →",
   "progress": "{{percent}}%",
-  "chapter": "第{{chapter}}章 · BEAT {{beat}}"
+  "chapter": "第{{chapter}}章 · BEAT {{beat}}",
+  "hero": {
+    "headline": "あなただけの\n物語",
+    "body": "読みたい物語を伝えると\nあなただけの小説が始まります。",
+    "cta": "新しい物語を始める"
+  }
 }

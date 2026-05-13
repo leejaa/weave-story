@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 
@@ -13,6 +14,7 @@ type Props = {
 
 export function GeneratingPage({ onComplete }: Props) {
   const c = usePalette();
+  const { t } = useTranslation('reading');
   const progress = useRef(new Animated.Value(0)).current;
   const completedRef = useRef(false);
 
@@ -34,10 +36,8 @@ export function GeneratingPage({ onComplete }: Props) {
   return (
     <View style={[styles.page, { backgroundColor: c.paper }]}>
       <View style={styles.center}>
-        <Text style={[styles.title, { color: c.ink }]}>다음 챕터를{'\n'}준비하고 있어요</Text>
-        <Text style={[styles.body, { color: c.inkSoft }]}>
-          잠시 다른 걸 하다가{'\n'}돌아오셔도 돼요.
-        </Text>
+        <Text style={[styles.title, { color: c.ink }]}>{t('generating.title')}</Text>
+        <Text style={[styles.body, { color: c.inkSoft }]}>{t('generating.body')}</Text>
 
         <View style={[styles.track, { backgroundColor: c.rule }]}>
           <Animated.View
@@ -46,7 +46,7 @@ export function GeneratingPage({ onComplete }: Props) {
         </View>
 
         <Text style={[styles.estimate, { color: c.inkFaint }]}>
-          약 1-2분 소요
+          {t('generating.estimate')}
         </Text>
       </View>
     </View>

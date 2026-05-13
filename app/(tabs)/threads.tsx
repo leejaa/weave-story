@@ -1,6 +1,7 @@
 import { ScrollView, View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { useThreads } from '@/hooks/use-threads';
 import { ThreadRow } from '@/components/thread-row';
@@ -10,6 +11,7 @@ export default function ThreadsScreen() {
   const c = usePalette();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('library');
   const { data: threads = [], isLoading } = useThreads();
 
   const ready = threads.filter(t => t.title !== null);
@@ -24,20 +26,20 @@ export default function ThreadsScreen() {
       contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: 130 }]}
       showsVerticalScrollIndicator={false}>
 
-      <Text style={[styles.screenTitle, { color: c.ink }]}>내 이야기</Text>
+      <Text style={[styles.screenTitle, { color: c.ink }]}>{t('screenTitle')}</Text>
 
       {isLoading ? (
         <ActivityIndicator color={c.thread} style={{ marginTop: 24 }} />
       ) : threads.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={[styles.emptyTitle, { color: c.inkSoft }]}>아직 읽은 이야기가 없어요</Text>
-          <Text style={[styles.emptySubtitle, { color: c.inkFaint }]}>홈에서 이야기를 골라 시작해보세요</Text>
+          <Text style={[styles.emptyTitle, { color: c.inkSoft }]}>{t('empty.threads.title')}</Text>
+          <Text style={[styles.emptySubtitle, { color: c.inkFaint }]}>{t('empty.threads.subtitle')}</Text>
         </View>
       ) : (
         <>
           {ongoing.length > 0 && (
             <View style={styles.section}>
-              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>진행 중</Text>
+              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('section.ongoing')}</Text>
               {ongoing.map(thread => (
                 <ThreadRow
                   key={thread.threadId}
@@ -50,7 +52,7 @@ export default function ThreadsScreen() {
 
           {finished.length > 0 && (
             <View style={styles.section}>
-              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>완결</Text>
+              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('section.completed')}</Text>
               {finished.map(thread => (
                 <ThreadRow
                   key={thread.threadId}

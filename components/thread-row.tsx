@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { ThreadWithStory } from '@/lib/api/types';
@@ -12,6 +13,7 @@ type Props = {
 
 export function ThreadRow({ thread, onPress }: Props) {
   const c = usePalette();
+  const { t } = useTranslation('common');
   const [pressed, setPressed] = useState(false);
   const progress = parseFloat(thread.progress);
   const finished = thread.status === 'completed';
@@ -43,11 +45,11 @@ export function ThreadRow({ thread, onPress }: Props) {
             <Text style={[styles.chapterTag, { color: c.inkFaint }]}>Ch.{thread.currentChapter}</Text>
           )}
           {finished && (
-            <Text style={[styles.finishedTag, { color: c.thread }]}>완결</Text>
+            <Text style={[styles.finishedTag, { color: c.thread }]}>{t('status.completed')}</Text>
           )}
         </View>
         <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>
-          {thread.title ?? '이야기 생성 중…'}
+          {thread.title ?? t('status.generating')}
         </Text>
         {!finished && (
           <View style={styles.progressRow}>

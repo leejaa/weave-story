@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -7,6 +8,7 @@ import { FONTS, SIZES } from '@/constants/colors';
 export default function CreateScreen() {
   const c = usePalette();
   const router = useRouter();
+  const { t } = useTranslation('home');
 
   return (
     <View
@@ -17,16 +19,12 @@ export default function CreateScreen() {
 
       <View style={styles.center}>
         <Icon name="sparkle" size={32} color={c.thread} filled />
-        <Text style={[styles.headline, { color: c.ink }]}>
-          세상에 하나뿐인{'\n'}나만의 이야기
-        </Text>
-        <Text style={[styles.body, { color: c.inkSoft }]}>
-          몇 가지 질문에 답하면 AI가{'\n'}당신만을 위한 소설을 만들어드려요.
-        </Text>
+        <Text style={[styles.headline, { color: c.ink }]}>{t('hero.headline')}</Text>
+        <Text style={[styles.body, { color: c.inkSoft }]}>{t('hero.body')}</Text>
         <Pressable
           onPress={() => router.push('/setup')}
           style={[styles.cta, { backgroundColor: c.thread }]}>
-          <Text style={[styles.ctaLabel, { color: c.paper }]}>새 이야기 시작</Text>
+          <Text style={[styles.ctaLabel, { color: c.paper }]}>{t('hero.cta')}</Text>
           <Icon name="chevron-right" size={18} color={c.paper} />
         </Pressable>
       </View>
