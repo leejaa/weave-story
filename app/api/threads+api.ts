@@ -16,12 +16,10 @@ export async function GET(request: Request) {
       lastReadAt: threads.lastReadAt,
       storyId: stories.id,
       title: stories.title,
-      slug: stories.slug,
       genre: stories.genre,
       mood: stories.mood,
       coverImageUrl: stories.coverImageUrl,
       estimatedChapters: stories.estimatedChapters,
-      description: stories.description,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))

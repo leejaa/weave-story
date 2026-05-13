@@ -61,11 +61,7 @@ export default function LoginScreen() {
         )}
         <Pressable
           onPress={signInWithGoogle}
-          style={({ pressed }) => [
-            styles.googleButton,
-            { borderColor: c.ruleStrong, backgroundColor: c.paperRaised },
-            pressed && styles.pressed,
-          ]}>
+          style={[styles.googleButton, { borderColor: c.ruleStrong, backgroundColor: c.paperRaised }]}>
           <View style={styles.googleInner}>
             <Ionicons name="logo-google" size={16} color={c.inkSoft} />
             <Text style={[styles.googleLabel, { color: c.ink }]}>Continue with Google</Text>

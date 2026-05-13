@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -14,6 +15,7 @@ type Props = {
 
 export function Button({ variant = 'primary', children, onPress, full, disabled }: Props) {
   const c = usePalette();
+  const [pressed, setPressed] = useState(false);
 
   const variantStyles: Record<Variant, ViewStyle & { color: string }> = {
     primary: { backgroundColor: c.thread, height: 52, paddingHorizontal: 24, color: '#fff' },
@@ -28,11 +30,13 @@ export function Button({ variant = 'primary', children, onPress, full, disabled 
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={[
         styles.base,
         containerStyle,
         full && styles.full,
-        (disabled || pressed) && styles.pressed,
+        pressed && !disabled && styles.pressed,
         disabled && styles.disabled,
       ]}>
       <Text style={[styles.label, { color }]}>{children}</Text>

@@ -7,9 +7,8 @@ import { usePalette } from '@/hooks/use-palette';
 import { FONTS } from '@/constants/colors';
 
 const TAB_DEFS: { name: string; labelKey: string; icon: IconName }[] = [
-  { name: 'index', labelKey: 'nav.today', icon: 'home' },
-  { name: 'threads', labelKey: 'nav.threads', icon: 'library' },
-  { name: 'you', labelKey: 'nav.you', icon: 'user' },
+  { name: 'index', labelKey: 'nav.create', icon: 'sparkle' },
+  { name: 'stories', labelKey: 'nav.stories', icon: 'library' },
 ];
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { usePalette } from '@/hooks/use-palette';
@@ -11,13 +12,16 @@ type Props = {
 
 export function ThreadRow({ thread, onPress }: Props) {
   const c = usePalette();
+  const [pressed, setPressed] = useState(false);
   const progress = parseFloat(thread.progress);
   const finished = thread.status === 'completed';
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={[
         styles.row,
         { backgroundColor: c.paperRaised, shadowColor: c.ink },
         pressed && styles.pressed,
@@ -42,12 +46,9 @@ export function ThreadRow({ thread, onPress }: Props) {
             <Text style={[styles.finishedTag, { color: c.thread }]}>완결</Text>
           )}
         </View>
-        <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>{thread.title}</Text>
-        {thread.description ? (
-          <Text style={[styles.excerpt, { color: c.inkSoft }]} numberOfLines={1}>
-            {thread.description}
-          </Text>
-        ) : null}
+        <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>
+          {thread.title ?? '이야기 생성 중…'}
+        </Text>
         {!finished && (
           <View style={styles.progressRow}>
             <View style={[styles.progressTrack, { backgroundColor: c.rule }]}>
@@ -91,12 +92,6 @@ const styles = StyleSheet.create({
   chapterTag: { fontFamily: FONTS.mono, fontSize: 10, letterSpacing: 0.5 },
   finishedTag: { fontFamily: FONTS.sansMedium, fontSize: 10, letterSpacing: 0.5 },
   title: { fontFamily: FONTS.serifSemibold, fontSize: SIZES.md, marginTop: 2 },
-  excerpt: {
-    fontFamily: FONTS.serifItalic,
-    fontSize: SIZES.sm,
-    marginTop: 3,
-    lineHeight: 18,
-  },
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   progressTrack: { flex: 1, height: 2, borderRadius: 1, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 1 },

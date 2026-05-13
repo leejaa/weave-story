@@ -1,7 +1,7 @@
 import { db } from '@/lib/db/client';
 import { threads, stories, chapters } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, asc } from 'drizzle-orm';
 
 function extractThreadId(url: string): string | null {
   const match = url.match(/\/api\/threads\/([^/]+)/);
@@ -24,12 +24,10 @@ export async function GET(request: Request) {
       lastReadAt: threads.lastReadAt,
       storyId: stories.id,
       title: stories.title,
-      slug: stories.slug,
       genre: stories.genre,
       mood: stories.mood,
       coverImageUrl: stories.coverImageUrl,
       estimatedChapters: stories.estimatedChapters,
-      description: stories.description,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))
@@ -37,38 +35,11 @@ export async function GET(request: Request) {
 
   if (!row) return Response.json({ error: 'Not found' }, { status: 404 });
 
-  let [chapter] = await db
+  const allChapters = await db
     .select()
     .from(chapters)
-    .where(
-      and(
-        eq(chapters.threadId, threadId),
-        eq(chapters.chapterNumber, row.currentChapter),
-      ),
-    );
+    .where(eq(chapters.threadId, threadId))
+    .orderBy(asc(chapters.chapterNumber));
 
-  // Fallback: find the same chapter number from any other thread for this story
-  if (!chapter) {
-    const storyThreads = await db
-      .select({ id: threads.id })
-      .from(threads)
-      .where(eq(threads.storyId, row.storyId));
-
-    const otherIds = storyThreads.map(t => t.id).filter(id => id !== threadId);
-
-    if (otherIds.length > 0) {
-      [chapter] = await db
-        .select()
-        .from(chapters)
-        .where(
-          and(
-            inArray(chapters.threadId, otherIds),
-            eq(chapters.chapterNumber, row.currentChapter),
-          ),
-        )
-        .limit(1);
-    }
-  }
-
-  return Response.json({ ...row, chapter: chapter ?? null });
+  return Response.json({ ...row, chapters: allChapters });
 }

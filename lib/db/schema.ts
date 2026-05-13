@@ -31,23 +31,28 @@ export const sessions = pgTable('sessions', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Each story is created by a user via setup questions — no shared global stories.
 export const stories = pgTable('stories', {
   id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
-  slug: text('slug').unique().notNull(),
-  description: text('description'),
-  genre: text('genre').notNull(),
-  mood: text('mood').notNull(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  // Setup answers from the 5 questions, stored as { mood, setting, protagonist, premise, length }
+  setupAnswers: jsonb('setup_answers').notNull().default('{}'),
+  // AI-generated fields (null until generation completes)
+  title: text('title'),
+  genre: text('genre'),
+  mood: text('mood'),
   coverImageUrl: text('cover_image_url'),
   estimatedChapters: integer('estimated_chapters').notNull().default(10),
+  // 'generating' → AI is working | 'ready' → first chapter done | 'completed' → story finished
+  status: text('status').notNull().default('generating'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const threads = pgTable('threads', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  storyId: uuid('story_id').notNull().references(() => stories.id),
-  status: text('status').notNull().default('active'), // 'active' | 'finished'
+  storyId: uuid('story_id').notNull().references(() => stories.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('active'), // 'active' | 'completed'
   currentChapter: integer('current_chapter').notNull().default(1),
   progress: numeric('progress', { precision: 4, scale: 3 }).notNull().default('0'),
   startedAt: timestamp('started_at', { withTimezone: true }).defaultNow().notNull(),
@@ -60,9 +65,12 @@ export const chapters = pgTable('chapters', {
   threadId: uuid('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),
   chapterNumber: integer('chapter_number').notNull(),
   title: text('title'),
-  content: text('content').notNull(),
+  content: text('content'),
   imageUrl: text('image_url'),
   options: jsonb('options'), // [{ index: 0, text: '...' }, ...]
+  situation: text('situation'), // narrative setup paragraph before the choice question
+  question: text('question'),   // the choice question posed to the reader
+  status: text('status').notNull().default('ready'), // 'generating' | 'ready' | 'failed'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -79,6 +87,7 @@ export const interventions = pgTable('interventions', {
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  stories: many(stories),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -89,7 +98,8 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
-export const storiesRelations = relations(stories, ({ many }) => ({
+export const storiesRelations = relations(stories, ({ one, many }) => ({
+  user: one(users, { fields: [stories.userId], references: [users.id] }),
   threads: many(threads),
 }));
 

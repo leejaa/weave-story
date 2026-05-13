@@ -2,6 +2,8 @@ import '@/global.css';
 import '@/lib/i18n';
 
 import { AuthProvider } from '@/lib/auth/client/context';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query-client';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -56,6 +58,7 @@ export default function RootLayout() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <Stack
         screenOptions={{
@@ -64,8 +67,10 @@ export default function RootLayout() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </AuthProvider>
+    </QueryClientProvider>
   );
 }

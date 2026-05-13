@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "Home",
-    "threads": "Stories",
-    "you": "You"
+    "create": "New Story",
+    "stories": "My Stories"
   },
   "genres": {
     "mystery": "Mystery",

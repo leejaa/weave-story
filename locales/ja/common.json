@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "ホーム",
-    "threads": "物語",
-    "you": "あなた"
+    "create": "新しい物語",
+    "stories": "マイ物語"
   },
   "genres": {
     "mystery": "ミステリー",

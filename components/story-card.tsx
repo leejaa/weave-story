@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { usePalette } from '@/hooks/use-palette';
@@ -17,11 +18,14 @@ const SCRIM_STOPS = [0, 0.02, 0.06, 0.12, 0.20, 0.30, 0.40, 0.48];
 
 export function StoryCard({ title, mood, chapters, progress, coverImageUrl, coverColor, onPress }: Props) {
   const c = usePalette();
+  const [pressed, setPressed] = useState(false);
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={[
         styles.card,
         { backgroundColor: c.paperRaised },
         pressed && styles.pressed,

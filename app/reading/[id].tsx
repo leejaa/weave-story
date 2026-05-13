@@ -1,47 +1,143 @@
 import { useRef, useState, useCallback } from 'react';
 import {
   View,
-  Text,
-  ScrollView,
-  Pressable,
+  FlatList,
   ActivityIndicator,
+  Text,
   StyleSheet,
+  useWindowDimensions,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChapterRibbon } from '@/components/chapter-ribbon';
-import { ChoiceTile } from '@/components/choice-tile';
+import { TextPage } from '@/components/reading/text-page';
+import { ChoicePage } from '@/components/reading/choice-page';
+import { GeneratingPage } from '@/components/reading/generating-page';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
+import { calcCharsPerPage, paginateText } from '@/lib/reading/paginate';
 import { FONTS, SIZES } from '@/constants/colors';
+import type { Chapter, ChapterOption } from '@/lib/api/types';
 
-const PAPER_SCRIM = [0, 0.05, 0.20, 0.50, 0.82, 0.95, 1];
+// ─── Page types ──────────────────────────────────────────────────────────────
+
+type TextPageItem = {
+  key: string; type: 'text';
+  chapterNumber: number;
+  content: string; pageIndex: number; totalPages: number;
+  chapterTitle: string | null;
+};
+type ChoicePageItem = {
+  key: string; type: 'choice';
+  chapterNumber: number;
+  options: ChapterOption[];
+  situation: string | null;
+  question: string | null;
+};
+type GeneratingPageItem = { key: string; type: 'generating'; chapterNumber: number };
+type FailedPageItem    = { key: string; type: 'failed';     chapterNumber: number };
+type EndPageItem       = { key: string; type: 'end' };
+
+type PageItem = TextPageItem | ChoicePageItem | GeneratingPageItem | FailedPageItem | EndPageItem;
+
+// ─── Page builder ─────────────────────────────────────────────────────────────
+
+function buildPages(
+  allChapters: Chapter[],
+  currentChapterNumber: number,
+  isCompleted: boolean,
+  width: number,
+  height: number,
+): { pages: PageItem[]; startIndex: number } {
+  const pages: PageItem[] = [];
+  let startIndex = 0;
+
+  for (const ch of allChapters) {
+    const isCurrentChapter = ch.chapterNumber === currentChapterNumber;
+
+    if (isCurrentChapter) startIndex = pages.length;
+
+    if (ch.status === 'generating') {
+      pages.push({ key: `ch${ch.chapterNumber}-gen`, type: 'generating', chapterNumber: ch.chapterNumber });
+      continue;
+    }
+
+    if (ch.status === 'failed') {
+      pages.push({ key: `ch${ch.chapterNumber}-fail`, type: 'failed', chapterNumber: ch.chapterNumber });
+      continue;
+    }
+
+    if (!ch.content) continue;
+
+    const charsFirst = calcCharsPerPage(width, height, true);
+    const charsRest  = calcCharsPerPage(width, height, false);
+    const textPages  = paginateText(ch.content, charsFirst, charsRest);
+
+    textPages.forEach((content, i) => {
+      pages.push({
+        key: `ch${ch.chapterNumber}-p${i}`,
+        type: 'text',
+        chapterNumber: ch.chapterNumber,
+        content,
+        pageIndex: i,
+        totalPages: textPages.length,
+        chapterTitle: ch.title,
+      });
+    });
+
+    // Choice page: only for the current chapter (past choices can't be re-made)
+    if (isCurrentChapter && ch.options && (ch.options as ChapterOption[]).length > 0) {
+      pages.push({
+        key: `ch${ch.chapterNumber}-choice`,
+        type: 'choice',
+        chapterNumber: ch.chapterNumber,
+        options: ch.options as ChapterOption[],
+        situation: ch.situation ?? null,
+        question: ch.question ?? null,
+      });
+    }
+  }
+
+  if (isCompleted && pages[pages.length - 1]?.type !== 'end') {
+    pages.push({ key: 'end', type: 'end' });
+  }
+
+  return { pages, startIndex };
+}
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ReadingScreen() {
   const c = usePalette();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const scrollRef = useRef<ScrollView>(null);
+  const { width, height } = useWindowDimensions();
+  const flatRef = useRef<FlatList>(null);
 
-  const { data, loading, choosing, choose } = useThreadDetail(id);
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const { data, isLoading, choosing, choose } = useThreadDetail(id);
+  const [visibleChapter, setVisibleChapter] = useState<number>(1);
 
-  const handleChoiceSelect = useCallback((index: number) => {
-    setSelectedChoice(prev => (prev === index ? null : index));
-  }, []);
+  const handleChoose = useCallback(
+    async (
+      chapterNumber: number,
+      selection: { choiceIndex: number } | { customInput: string },
+    ) => {
+      await choose(chapterNumber, selection);
+      // After state updates, FlatList re-renders with the generating page appended
+    },
+    [choose],
+  );
 
-  const handleConfirm = useCallback(async () => {
-    if (!data?.chapter || selectedChoice === null) return;
-    setSelectedChoice(null);
-    const next = await choose(data.chapter.chapterNumber, selectedChoice);
-    if (next) {
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-  }, [data, selectedChoice, choose]);
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: Array<{ item: PageItem }> }) => {
+      const first = viewableItems[0]?.item;
+      if (first && 'chapterNumber' in first) {
+        setVisibleChapter(first.chapterNumber);
+      }
+    },
+    [],
+  );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={[styles.centered, { backgroundColor: c.paper }]}>
         <ActivityIndicator color={c.thread} />
@@ -57,98 +153,80 @@ export default function ReadingScreen() {
     );
   }
 
-  const { chapter, title, estimatedChapters, currentChapter } = data;
-  const paragraphs = chapter?.content?.split(/\n\n+/).filter(Boolean) ?? [];
-  const options = chapter?.options ?? null;
-  const isCompleted = data.status === 'completed' || !chapter;
+  const { title, estimatedChapters, currentChapter } = data;
+  const isCompleted = data.status === 'completed';
+
+  const { pages, startIndex } = buildPages(
+    data.chapters,
+    currentChapter,
+    isCompleted,
+    width,
+    height,
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: c.paper }]}>
       <ChapterRibbon
-        title={title}
-        chapter={currentChapter}
+        title={title ?? ''}
+        chapter={visibleChapter}
         totalChapters={estimatedChapters}
         onBack={() => router.back()}
       />
 
-      <ScrollView
-        ref={scrollRef}
-        style={styles.scroll}
-        contentContainerStyle={[
-          styles.prose,
-          { paddingBottom: insets.bottom + (options ? 340 : 100) },
-        ]}
-        showsVerticalScrollIndicator={false}>
-
-        {chapter?.imageUrl ? (
-          <View style={styles.chapterImage}>
-            <Image
-              source={{ uri: chapter.imageUrl }}
-              style={StyleSheet.absoluteFill}
-              contentFit="cover"
-              transition={300}
-            />
-            <View style={styles.imageScrim} />
-          </View>
-        ) : null}
-
-        {chapter?.title ? (
-          <Text style={[styles.chapterTitle, { color: c.inkSoft }]}>{chapter.title}</Text>
-        ) : null}
-
-        {paragraphs.map((p, i) => (
-          <Text key={i} style={[styles.body, { color: c.ink }]}>{p}</Text>
-        ))}
-
-        {isCompleted && (
-          <Text style={[styles.endMark, { color: c.inkFaint }]}>— 끝 —</Text>
-        )}
-      </ScrollView>
-
-      {!isCompleted && options && options.length > 0 && (
-        <View style={[styles.choiceTray, { bottom: 0 }]}>
-          <View style={styles.gradientScrim} pointerEvents="none">
-            {PAPER_SCRIM.map((opacity, i) => (
-              <View key={i} style={{ flex: 1, backgroundColor: c.paper, opacity }} />
-            ))}
-          </View>
-          <View style={[styles.trayBody, { backgroundColor: c.paper }]}>
-            <Text style={[styles.prompt, { color: c.inkSoft }]}>
-              어떻게 할까요?
-            </Text>
-            <View style={styles.choices}>
-              {options.map(opt => (
-                <ChoiceTile
-                  key={opt.index}
-                  marker={String.fromCharCode(65 + opt.index)}
-                  text={opt.text}
-                  selected={selectedChoice === opt.index}
-                  faded={selectedChoice !== null && selectedChoice !== opt.index}
-                  onPress={() => handleChoiceSelect(opt.index)}
-                />
-              ))}
-            </View>
-
-            {selectedChoice !== null && (
-              <Pressable
-                onPress={handleConfirm}
-                disabled={choosing}
-                style={({ pressed }) => [
-                  styles.confirmButton,
-                  { backgroundColor: c.thread, opacity: pressed || choosing ? 0.8 : 1 },
-                ]}>
-                {choosing ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text style={styles.confirmText}>계속하기</Text>
-                )}
-              </Pressable>
+      <FlatList
+        ref={flatRef}
+        data={pages}
+        keyExtractor={item => item.key}
+        style={{ flex: 1 }}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        initialScrollIndex={startIndex}
+        scrollEnabled={!choosing}
+        getItemLayout={(_, index) => ({
+          length: width,
+          offset: width * index,
+          index,
+        })}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        renderItem={({ item }) => (
+          <View style={[styles.page, { width }]}>
+            {item.type === 'text' && (
+              <TextPage
+                content={item.content}
+                chapterTitle={item.pageIndex === 0 ? item.chapterTitle : null}
+                pageIndex={item.pageIndex}
+                totalPages={item.totalPages}
+              />
             )}
-
-            <View style={{ height: insets.bottom + 16 }} />
+            {item.type === 'choice' && (
+              <ChoicePage
+                options={item.options}
+                situation={item.situation}
+                question={item.question}
+                chapterNumber={item.chapterNumber}
+                onChoose={handleChoose}
+                choosing={choosing}
+              />
+            )}
+            {item.type === 'generating' && <GeneratingPage />}
+            {item.type === 'failed' && (
+              <View style={styles.centered}>
+                <Text style={[styles.errorText, { color: c.inkSoft }]}>
+                  챕터 생성에 실패했어요.{'\n'}잠시 후 다시 시도해주세요.
+                </Text>
+              </View>
+            )}
+            {item.type === 'end' && (
+              <View style={styles.centered}>
+                <Text style={[styles.endMark, { color: c.inkFaint }]}>— 끝 —</Text>
+              </View>
+            )}
           </View>
-        </View>
-      )}
+        )}
+      />
     </View>
   );
 }
@@ -156,65 +234,16 @@ export default function ReadingScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { fontFamily: FONTS.serifItalic, fontSize: SIZES.lg },
-  scroll: { flex: 1 },
-  prose: { paddingHorizontal: 24, paddingTop: 20, gap: 0 },
-  chapterImage: {
-    height: 200,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 24,
-    backgroundColor: '#2d2d2d',
-  },
-  imageScrim: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '40%',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  chapterTitle: {
+  errorText: {
     fontFamily: FONTS.serifItalic,
-    fontSize: SIZES.sm,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    marginBottom: 14,
+    fontSize: SIZES.lg,
+    textAlign: 'center',
+    lineHeight: 28,
   },
-  body: {
-    fontFamily: FONTS.serif,
-    fontSize: 18,
-    lineHeight: 30,
-    marginBottom: 16,
-  },
+  page: { flex: 1 },
   endMark: {
     fontFamily: FONTS.mono,
     fontSize: SIZES.sm,
-    textAlign: 'center',
-    marginTop: 32,
     letterSpacing: 2,
-  },
-  choiceTray: { position: 'absolute', left: 0, right: 0 },
-  gradientScrim: { height: 56, flexDirection: 'column' },
-  trayBody: { paddingHorizontal: 16, paddingTop: 8 },
-  prompt: {
-    fontFamily: FONTS.serifItalic,
-    fontSize: SIZES.sm,
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  choices: { gap: 8 },
-  confirmButton: {
-    marginTop: 12,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  confirmText: {
-    fontFamily: FONTS.sansSemibold,
-    fontSize: SIZES.md,
-    color: '#fff',
-    letterSpacing: 0.3,
   },
 });

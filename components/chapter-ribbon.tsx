@@ -1,4 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePalette } from '@/hooks/use-palette';
 import { Icon } from '@/components/ui/icon';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -12,10 +13,11 @@ type Props = {
 
 export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) {
   const c = usePalette();
+  const insets = useSafeAreaInsets();
   const clamped = Math.min(totalChapters, 12);
 
   return (
-    <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule }]}>
+    <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule, paddingTop: insets.top + 10 }]}>
       <Pressable
         onPress={onBack}
         style={[styles.backButton, { borderColor: c.rule, backgroundColor: c.paper }]}>
@@ -62,7 +64,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     paddingHorizontal: 16,
-    paddingTop: 14,
     paddingBottom: 12,
     borderBottomWidth: 1,
   },

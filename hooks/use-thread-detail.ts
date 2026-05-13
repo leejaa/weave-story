@@ -1,43 +1,58 @@
-import { useState, useEffect, useCallback } from 'react';
-import { authFetch } from '@/lib/auth/client/api';
-import type { ThreadDetail, Chapter } from '@/lib/api/types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/query-keys';
+import { fetchThreadDetail, postChoose } from '@/lib/api/fetch';
+import type { ThreadDetail } from '@/lib/api/types';
 
 export function useThreadDetail(threadId: string) {
-  const [data, setData] = useState<ThreadDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [choosing, setChoosing] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    authFetch(`/api/threads/${threadId}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [threadId]);
-
-  const choose = useCallback(
-    async (chapterNumber: number, choiceIndex: number): Promise<Chapter | null> => {
-      setChoosing(true);
-      try {
-        const res = await authFetch(`/api/threads/${threadId}/choose`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chapterNumber, choiceIndex }),
-        });
-        const { chapter, thread } = await res.json();
-        setData(prev =>
-          prev ? { ...prev, ...thread, chapter: chapter ?? null } : prev,
-        );
-        return chapter ?? null;
-      } finally {
-        setChoosing(false);
-      }
+  const query = useQuery({
+    queryKey: queryKeys.threadDetail(threadId),
+    queryFn: () => fetchThreadDetail(threadId),
+    // Poll every 8s while the current chapter is still generating.
+    // focusManager (AppState) handles immediate refetch on app foreground.
+    refetchInterval: (query) => {
+      const data = query.state.data as ThreadDetail | undefined;
+      if (!data) return false;
+      const current = data.chapters.find(c => c.chapterNumber === data.currentChapter);
+      return current?.status === 'generating' ? 8_000 : false;
     },
-    [threadId],
-  );
+  });
 
-  return { data, loading, error, choosing, choose };
+  const chooseMutation = useMutation({
+    mutationFn: ({
+      chapterNumber,
+      selection,
+    }: {
+      chapterNumber: number;
+      selection: { choiceIndex: number } | { customInput: string };
+    }) => postChoose(threadId, chapterNumber, selection),
+    onSuccess: ({ chapter, thread }) => {
+      queryClient.setQueryData<ThreadDetail>(
+        queryKeys.threadDetail(threadId),
+        old => {
+          if (!old) return old;
+          const rest = old.chapters.filter(
+            c => c.chapterNumber !== chapter?.chapterNumber,
+          );
+          return {
+            ...old,
+            ...thread,
+            chapters: chapter ? [...rest, chapter].sort((a, b) => a.chapterNumber - b.chapterNumber) : rest,
+          };
+        },
+      );
+    },
+  });
+
+  const choose = (
+    chapterNumber: number,
+    selection: { choiceIndex: number } | { customInput: string },
+  ) => chooseMutation.mutateAsync({ chapterNumber, selection });
+
+  return {
+    ...query,
+    choosing: chooseMutation.isPending,
+    choose,
+  };
 }

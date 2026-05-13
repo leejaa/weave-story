@@ -1,8 +1,7 @@
 {
   "nav": {
-    "today": "홈",
-    "threads": "이야기",
-    "you": "나"
+    "create": "새 이야기",
+    "stories": "내 이야기"
   },
   "genres": {
     "mystery": "미스터리",

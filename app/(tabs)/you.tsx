@@ -82,11 +82,8 @@ export default function YouScreen() {
           <Pressable
             key={key}
             onPress={key === 'language' ? handleLanguageTap : undefined}
-            style={({ pressed }) => [
-              styles.settingsRow,
-              { borderBottomColor: c.rule },
-              pressed && styles.pressed,
-            ]}>
+            android_ripple={{ color: 'rgba(0,0,0,0.06)' }}
+            style={[styles.settingsRow, { borderBottomColor: c.rule }]}>
             <Text style={[styles.settingsLabel, { color: c.ink }]}>{t(`settings.${key}`)}</Text>
             {key === 'language' ? (
               <Text style={[styles.settingsValue, { color: c.inkSoft }]}>
@@ -98,7 +95,8 @@ export default function YouScreen() {
         ))}
         <Pressable
           onPress={handleSignOut}
-          style={({ pressed }) => [styles.settingsRow, styles.lastRow, pressed && styles.pressed]}>
+          android_ripple={{ color: 'rgba(0,0,0,0.06)' }}
+          style={[styles.settingsRow, styles.lastRow]}>
           <Text style={[styles.settingsLabel, { color: c.ember }]}>{t('signOut')}</Text>
         </Pressable>
       </View>

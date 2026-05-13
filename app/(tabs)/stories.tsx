@@ -6,7 +6,7 @@ import { useThreads } from '@/hooks/use-threads';
 import { ThreadRow } from '@/components/thread-row';
 import { FONTS, SIZES } from '@/constants/colors';
 
-export default function ThreadsScreen() {
+export default function StoriesScreen() {
   const c = usePalette();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -30,8 +30,10 @@ export default function ThreadsScreen() {
         <ActivityIndicator color={c.thread} style={{ marginTop: 24 }} />
       ) : threads.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={[styles.emptyTitle, { color: c.inkSoft }]}>아직 읽은 이야기가 없어요</Text>
-          <Text style={[styles.emptySubtitle, { color: c.inkFaint }]}>홈에서 이야기를 골라 시작해보세요</Text>
+          <Text style={[styles.emptyTitle, { color: c.inkSoft }]}>아직 만든 이야기가 없어요</Text>
+          <Text style={[styles.emptySubtitle, { color: c.inkFaint }]}>
+            새 이야기 탭에서 첫 번째 이야기를 시작해보세요
+          </Text>
         </View>
       ) : (
         <>
@@ -83,5 +85,5 @@ const styles = StyleSheet.create({
   },
   empty: { marginTop: 60, alignItems: 'center', gap: 8 },
   emptyTitle: { fontFamily: FONTS.serifSemibold, fontSize: SIZES.lg },
-  emptySubtitle: { fontFamily: FONTS.serifItalic, fontSize: SIZES.sm },
+  emptySubtitle: { fontFamily: FONTS.serifItalic, fontSize: SIZES.sm, textAlign: 'center', lineHeight: 20 },
 });
