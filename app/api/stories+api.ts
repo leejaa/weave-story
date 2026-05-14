@@ -2,6 +2,7 @@ import { db } from '@/lib/db/client';
 import { stories, threads, chapters } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
 import { generateFirstChapter } from '@/lib/ai/story-generation';
+import { enqueueCoverJob } from '@/lib/queue/cover-queue';
 import { eq, asc } from 'drizzle-orm';
 
 export async function GET(request: Request) {
@@ -67,6 +68,14 @@ export async function POST(request: Request) {
           status: 'ready',
         })
         .where(eq(chapters.id, pendingChapter.id));
+
+      // Enqueue cover image generation — runs independently in CF Worker
+      await enqueueCoverJob({
+        storyId: story.id,
+        title: generated.title,
+        genre: generated.genre,
+        prompt: prompt.trim(),
+      });
     } catch (err) {
       console.error('[POST /api/stories] background generation failed:', err);
       await db

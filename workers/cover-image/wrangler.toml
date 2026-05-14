@@ -1,0 +1,22 @@
+name = "weave-story-cover-image"
+main = "src/index.ts"
+compatibility_date = "2025-05-13"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+# Queue consumer — wakes up automatically when a message arrives
+[[queues.consumers]]
+queue = "weave-story-cover-queue"
+max_batch_size = 1
+max_batch_timeout = 0
+max_retries = 3
+dead_letter_queue = "weave-story-cover-dlq"
+
+# R2 binding — direct bucket access, no HTTP needed
+[[r2_buckets]]
+binding = "COVER_IMAGES"
+bucket_name = "weave-story-media"
+
+# Secrets — set with: npx wrangler secret put SECRET_NAME
+# DATABASE_URL        — Neon connection string
+# AI_GATEWAY_API_KEY  — Vercel AI Gateway key (same as EAS API)
