@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   useWindowDimensions,
+  type LayoutChangeEvent,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +48,7 @@ function buildPages(
   currentChapterNumber: number,
   isCompleted: boolean,
   width: number,
-  height: number,
+  listHeight: number,
 ): { pages: PageItem[]; startIndex: number } {
   const pages: PageItem[] = [];
   let startIndex = 0;
@@ -69,8 +70,8 @@ function buildPages(
 
     if (!ch.content) continue;
 
-    const charsFirst = calcCharsPerPage(width, height, true);
-    const charsRest  = calcCharsPerPage(width, height, false);
+    const charsFirst = calcCharsPerPage(width, listHeight, true);
+    const charsRest  = calcCharsPerPage(width, listHeight, false);
     const textPages  = paginateText(ch.content, charsFirst, charsRest);
 
     textPages.forEach((content, i) => {
@@ -111,12 +112,17 @@ export default function ReadingScreen() {
   const c = usePalette();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const flatRef = useRef<FlatList>(null);
 
   const { t } = useTranslation('reading');
   const { data, isLoading, choosing, choose } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
+  const [listHeight, setListHeight] = useState(0);
+
+  const onListLayout = useCallback((e: LayoutChangeEvent) => {
+    setListHeight(e.nativeEvent.layout.height);
+  }, []);
 
   const handleChoose = useCallback(
     async (
@@ -163,7 +169,7 @@ export default function ReadingScreen() {
     currentChapter,
     isCompleted,
     width,
-    height,
+    listHeight,
   );
 
   return (
@@ -180,6 +186,7 @@ export default function ReadingScreen() {
         data={pages}
         keyExtractor={item => item.key}
         style={{ flex: 1 }}
+        onLayout={onListLayout}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -194,7 +201,7 @@ export default function ReadingScreen() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         renderItem={({ item }) => (
-          <View style={[styles.page, { width }]}>
+          <View style={{ width, height: listHeight || undefined, overflow: 'hidden' }}>
             {item.type === 'text' && (
               <TextPage
                 content={item.content}
@@ -240,7 +247,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 28,
   },
-  page: { flex: 1 },
   endMark: {
     fontFamily: FONTS.mono,
     fontSize: SIZES.sm,

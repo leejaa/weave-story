@@ -49,8 +49,9 @@ export async function POST(request: Request) {
 
   // Fire-and-forget — generate first chapter in background
   ;(async () => {
+    let generated: Awaited<ReturnType<typeof generateFirstChapter>>;
     try {
-      const generated = await generateFirstChapter({ prompt: prompt.trim(), estimatedChapters });
+      generated = await generateFirstChapter({ prompt: prompt.trim(), estimatedChapters });
 
       await db
         .update(stories)
@@ -68,14 +69,6 @@ export async function POST(request: Request) {
           status: 'ready',
         })
         .where(eq(chapters.id, pendingChapter.id));
-
-      // Enqueue cover image generation — runs independently in CF Worker
-      await enqueueCoverJob({
-        storyId: story.id,
-        title: generated.title,
-        genre: generated.genre,
-        prompt: prompt.trim(),
-      });
     } catch (err) {
       console.error('[POST /api/stories] background generation failed:', err);
       await db
@@ -86,6 +79,19 @@ export async function POST(request: Request) {
         .update(stories)
         .set({ status: 'failed' })
         .where(eq(stories.id, story.id));
+      return;
+    }
+
+    // Cover image is non-critical — queue failure must not mark the story as failed
+    try {
+      await enqueueCoverJob({
+        storyId: story.id,
+        title: generated.title,
+        genre: generated.genre,
+        prompt: prompt.trim(),
+      });
+    } catch (err) {
+      console.error('[POST /api/stories] cover job enqueue failed (non-critical):', err);
     }
   })();
 

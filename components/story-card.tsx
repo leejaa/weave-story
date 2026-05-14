@@ -1,119 +1,162 @@
-import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
+import type { ThreadWithStory } from '@/lib/api/types';
 
 type Props = {
-  title: string;
-  mood: string;
-  chapters: number;
-  progress: number;
-  coverImageUrl?: string | null;
-  coverColor?: string;
-  onPress?: () => void;
+  thread: ThreadWithStory;
+  onPress: () => void;
+  width: number;
 };
 
-const SCRIM_STOPS = [0, 0.02, 0.06, 0.12, 0.20, 0.30, 0.40, 0.48];
-
-export function StoryCard({ title, mood, chapters, progress, coverImageUrl, coverColor, onPress }: Props) {
+export function StoryCard({ thread, onPress, width }: Props) {
   const c = usePalette();
-  const [pressed, setPressed] = useState(false);
+  const { t } = useTranslation('common');
+  const progress = parseFloat(thread.progress);
+  const finished = thread.status === 'completed';
 
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}
-      style={[
+      style={({ pressed }) => [
         styles.card,
-        { backgroundColor: c.paperRaised },
+        { width, shadowColor: c.ink },
         pressed && styles.pressed,
       ]}>
-      <View style={[styles.cover, { backgroundColor: coverColor ?? c.paperSunk }]}>
-        {coverImageUrl ? (
+
+      {/* Cover */}
+      <View style={[styles.cover, { width, aspectRatio: 3 / 4, backgroundColor: c.paperSunk }]}>
+        {thread.coverImageUrl ? (
           <Image
-            source={{ uri: coverImageUrl }}
+            source={{ uri: thread.coverImageUrl }}
             style={StyleSheet.absoluteFill}
             contentFit="cover"
-            transition={200}
+            transition={400}
           />
         ) : null}
-        <View style={styles.coverScrim}>
+
+        {/* Gradient scrim + title overlay */}
+        <View style={styles.scrim}>
           {SCRIM_STOPS.map((opacity, i) => (
-            <View key={i} style={[styles.scrimLayer, { backgroundColor: `rgba(0,0,0,${opacity})` }]} />
+            <View key={i} style={[styles.scrimSlice, { backgroundColor: `rgba(0,0,0,${opacity})` }]} />
           ))}
         </View>
-        <Text style={styles.coverTitle} numberOfLines={2}>{title}</Text>
-      </View>
-      <View style={styles.meta}>
-        <Text style={[styles.metaText, { color: c.inkSoft }]}>
-          {mood} · {chapters} ch
+        <Text style={styles.coverTitle} numberOfLines={2}>
+          {thread.title ?? ''}
         </Text>
-        <View style={[styles.progressTrack, { backgroundColor: c.rule }]}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${Math.round(progress * 100)}%` as any, backgroundColor: c.thread },
-            ]}
-          />
-        </View>
+
+        {/* Progress bar pinned to bottom edge */}
+        {!finished && (
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${Math.round(progress * 100)}%` as any, backgroundColor: c.thread },
+              ]}
+            />
+          </View>
+        )}
+
+        {/* Completed badge */}
+        {finished && (
+          <View style={[styles.badge, { backgroundColor: c.thread }]}>
+            <Text style={[styles.badgeLabel, { color: c.paper }]}>
+              {t('status.completed')}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Meta row */}
+      <View style={[styles.meta, { backgroundColor: c.paperRaised }]}>
+        <Text style={[styles.genre, { color: c.inkFaint }]} numberOfLines={1}>
+          {thread.genre ?? thread.mood ?? ''}
+        </Text>
+        {!finished && (
+          <Text style={[styles.chapter, { color: c.inkFaint }]}>
+            {thread.currentChapter} / {thread.estimatedChapters}
+          </Text>
+        )}
       </View>
     </Pressable>
   );
 }
 
+// Stepped gradient stops for a natural-looking scrim
+const SCRIM_STOPS = [0, 0.01, 0.04, 0.09, 0.16, 0.25, 0.36, 0.46];
+
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#1c1a17',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  pressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
+  pressed: { opacity: 0.88, transform: [{ scale: 0.97 }] },
   cover: {
-    aspectRatio: 3 / 4,
-    justifyContent: 'flex-end',
-    padding: 10,
+    overflow: 'hidden',
   },
-  coverScrim: {
+  scrim: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: '55%',
+    height: '60%',
   },
-  scrimLayer: { flex: 1 },
+  scrimSlice: { flex: 1 },
   coverTitle: {
+    position: 'absolute',
+    bottom: 16,
+    left: 10,
+    right: 10,
     fontFamily: FONTS.serifSemibold,
     fontSize: SIZES.sm,
-    color: '#fff',
-    lineHeight: 18,
-  },
-  meta: {
-    padding: 10,
-    paddingTop: 8,
-    gap: 6,
-  },
-  metaText: {
-    fontFamily: FONTS.sans,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    color: '#ffffff',
+    lineHeight: 20,
   },
   progressTrack: {
-    height: 2,
-    borderRadius: 1,
-    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  progressFill: {
-    height: '100%',
-    borderRadius: 1,
+  progressFill: { height: '100%' },
+  badge: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  badgeLabel: {
+    fontFamily: FONTS.sansSemibold,
+    fontSize: SIZES['2xs'],
+    letterSpacing: 0.3,
+  },
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  genre: {
+    fontFamily: FONTS.mono,
+    fontSize: 9,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    flex: 1,
+  },
+  chapter: {
+    fontFamily: FONTS.mono,
+    fontSize: 9,
+    letterSpacing: 0.5,
   },
 });

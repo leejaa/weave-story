@@ -1,29 +1,36 @@
-import { ScrollView, View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { useThreads } from '@/hooks/use-threads';
-import { ThreadRow } from '@/components/thread-row';
+import { StoryCard } from '@/components/story-card';
 import { FONTS, SIZES } from '@/constants/colors';
+
+
+const H_PADDING = 20;
+const GRID_GAP = 12;
 
 export default function StoriesScreen() {
   const c = usePalette();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const { t } = useTranslation('library');
   const { data: threads = [], isLoading } = useThreads();
 
-  const ready = threads.filter(t => t.title !== null);
-  const ongoing = ready.filter(t => t.status !== 'completed');
-  const finished = ready.filter(t => t.status === 'completed');
+  const cardWidth = (width - H_PADDING * 2 - GRID_GAP) / 2;
+  const ready   = threads.filter(th => th.title !== null);
+  const ongoing = ready.filter(th => th.status !== 'completed');
+  const finished = ready.filter(th => th.status === 'completed');
+  const showSections = ongoing.length > 0 && finished.length > 0;
 
   const openThread = (threadId: string) => router.push(`/reading/${threadId}`);
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.paper }} edges={['top']}>
     <ScrollView
-      style={{ backgroundColor: c.paper }}
-      contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: 130 }]}
+      style={{ flex: 1 }}
+      contentContainerStyle={[styles.content, { paddingBottom: 130 }]}
       showsVerticalScrollIndicator={false}>
 
       <Text style={[styles.screenTitle, { color: c.ink }]}>{t('screenTitle')}</Text>
@@ -37,26 +44,34 @@ export default function StoriesScreen() {
         </View>
       ) : (
         <>
+          {showSections && ongoing.length > 0 && (
+            <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('section.ongoing')}</Text>
+          )}
           {ongoing.length > 0 && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('section.ongoing')}</Text>
+            <View style={styles.grid}>
               {ongoing.map(thread => (
-                <ThreadRow
+                <StoryCard
                   key={thread.threadId}
                   thread={thread}
+                  width={cardWidth}
                   onPress={() => openThread(thread.threadId)}
                 />
               ))}
             </View>
           )}
 
+          {showSections && finished.length > 0 && (
+            <Text style={[styles.sectionLabel, { color: c.inkFaint, marginTop: 28 }]}>
+              {t('section.completed')}
+            </Text>
+          )}
           {finished.length > 0 && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('section.completed')}</Text>
+            <View style={styles.grid}>
               {finished.map(thread => (
-                <ThreadRow
+                <StoryCard
                   key={thread.threadId}
                   thread={thread}
+                  width={cardWidth}
                   onPress={() => openThread(thread.threadId)}
                 />
               ))}
@@ -65,23 +80,28 @@ export default function StoriesScreen() {
         </>
       )}
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: 20, gap: 0 },
+  content: { paddingHorizontal: H_PADDING },
   screenTitle: {
     fontFamily: FONTS.serifSemibold,
     fontSize: SIZES['3xl'],
-    marginBottom: 24,
+    marginBottom: 20,
   },
-  section: { gap: 10, marginBottom: 32 },
   sectionLabel: {
     fontFamily: FONTS.mono,
     fontSize: 10,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: 4,
+    marginBottom: 12,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: GRID_GAP,
   },
   empty: { marginTop: 60, alignItems: 'center', gap: 8 },
   emptyTitle: { fontFamily: FONTS.serifSemibold, fontSize: SIZES.lg },

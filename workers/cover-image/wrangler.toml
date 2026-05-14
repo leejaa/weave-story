@@ -2,7 +2,12 @@ name = "weave-story-cover-image"
 main = "src/index.ts"
 compatibility_date = "2025-05-13"
 compatibility_flags = ["nodejs_compat"]
-workers_dev = false
+workers_dev = true
+
+# Queue producer — used by the HTTP /enqueue endpoint
+[[queues.producers]]
+binding = "COVER_QUEUE"
+queue = "weave-story-cover-queue"
 
 # Queue consumer — wakes up automatically when a message arrives
 [[queues.consumers]]
@@ -19,4 +24,4 @@ bucket_name = "weave-story-media"
 
 # Secrets — set with: npx wrangler secret put SECRET_NAME
 # DATABASE_URL        — Neon connection string
-# AI_GATEWAY_API_KEY  — Vercel AI Gateway key (same as EAS API)
+# AI_GATEWAY_API_KEY  — Vercel AI Gateway key (also used to auth /enqueue calls)

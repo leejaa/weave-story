@@ -1,28 +1,30 @@
 // Approximation-based text pagination for the e-reader view.
 // Korean serif at 18px/30lh on a typical phone fits ~350–420 chars per page.
 // First page reserves extra space for the chapter title.
+//
+// `listHeight` must be the FlatList's measured height (not full screen height),
+// so the calculation is device-agnostic and doesn't need a hardcoded ribbon constant.
 
 const LINE_HEIGHT = 30;
-const FONT_SIZE = 18;
 const H_PADDING = 24; // each side
-const RIBBON_HEIGHT = 82; // ribbon + safe area buffer
 const CHAPTER_TITLE_HEIGHT = 36; // title line + margin
 const V_PADDING_TOP = 20;
 const V_PADDING_BOTTOM = 24;
 
 export function calcCharsPerPage(
   screenWidth: number,
-  screenHeight: number,
+  listHeight: number,
   firstPage = false,
 ): number {
+  if (listHeight <= 0) return 400; // fallback before first layout measurement
+
   const contentWidth = screenWidth - H_PADDING * 2;
   // Korean chars in Fraunces 18px are roughly 17px wide on average
   const charsPerLine = Math.floor(contentWidth / 17);
 
   const titleOffset = firstPage ? CHAPTER_TITLE_HEIGHT : 0;
-  const availableHeight =
-    screenHeight - RIBBON_HEIGHT - V_PADDING_TOP - V_PADDING_BOTTOM - titleOffset;
-  const linesPerPage = Math.floor(availableHeight / LINE_HEIGHT);
+  const usableHeight = listHeight - V_PADDING_TOP - V_PADDING_BOTTOM - titleOffset;
+  const linesPerPage = Math.floor(usableHeight / LINE_HEIGHT);
 
   // Subtract ~20% to account for paragraph gap lines
   return Math.floor(charsPerLine * linesPerPage * 0.8);

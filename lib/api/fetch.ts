@@ -1,6 +1,7 @@
 import { authFetch } from '@/lib/auth/client/api';
 import type { ThreadWithStory, ThreadDetail, Story, Chapter } from '@/lib/api/types';
 
+
 async function throwIfError(res: Response) {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -44,6 +45,7 @@ export async function postChoose(
   await throwIfError(res);
   return res.json();
 }
+
 
 export async function postCreateStory(params: {
   prompt: string;

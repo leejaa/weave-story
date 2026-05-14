@@ -17,18 +17,18 @@ export function TextPage({ content, chapterTitle, pageIndex, totalPages }: Props
   return (
     <View style={styles.page}>
       {isFirst && chapterTitle ? (
-        <Text style={[styles.chapterTitle, { color: c.inkSoft }]}>{chapterTitle}</Text>
+        <Text allowFontScaling={false} style={[styles.chapterTitle, { color: c.inkSoft }]}>{chapterTitle}</Text>
       ) : null}
 
       <View style={styles.prose}>
         {paragraphs.map((p, i) => (
-          <Text key={i} style={[styles.body, { color: c.ink }]}>
+          <Text allowFontScaling={false} key={i} style={[styles.body, { color: c.ink }]}>
             {p}
           </Text>
         ))}
       </View>
 
-      <Text style={[styles.pageNum, { color: c.inkFaint }]}>
+      <Text allowFontScaling={false} style={[styles.pageNum, { color: c.inkFaint }]}>
         {pageIndex + 1} / {totalPages}
       </Text>
     </View>
