@@ -87,8 +87,9 @@ export default function StoriesScreen() {
 const styles = StyleSheet.create({
   content: { paddingHorizontal: H_PADDING },
   screenTitle: {
-    fontFamily: FONTS.serifSemibold,
+    fontFamily: FONTS.display,
     fontSize: SIZES['3xl'],
+    lineHeight: 44,
     marginBottom: 20,
   },
   sectionLabel: {

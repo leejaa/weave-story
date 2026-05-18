@@ -66,10 +66,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   question: {
-    fontFamily: FONTS.serifSemibold,
+    fontFamily: FONTS.display,
     fontSize: SIZES['2xl'],
-    lineHeight: 32,
-    letterSpacing: -0.3,
+    lineHeight: 34,
+    letterSpacing: 0,
     marginTop: -4,
   },
   choices: { gap: 8 },

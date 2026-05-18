@@ -46,13 +46,14 @@ export type ThemeColors = {
 };
 
 export const FONTS = {
+  display: 'BlackHanSans_400Regular',      // 한글 디스플레이 헤드라인
   serif: 'Fraunces_400Regular',
   serifSemibold: 'Fraunces_600SemiBold',
   serifItalic: 'Fraunces_400Regular_Italic',
-  sans: 'Inter_400Regular',
-  sansMedium: 'Inter_500Medium',
-  sansSemibold: 'Inter_600SemiBold',
-  mono: 'JetBrainsMono_400Regular',
+  sans: 'PlusJakartaSans_400Regular',
+  sansMedium: 'PlusJakartaSans_500Medium',
+  sansSemibold: 'PlusJakartaSans_600SemiBold',
+  mono: 'DMMono_400Regular',
 } as const;
 
 export const SIZES = {

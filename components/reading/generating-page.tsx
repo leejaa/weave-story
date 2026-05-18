@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   title: {
-    fontFamily: FONTS.serifSemibold,
+    fontFamily: FONTS.display,
     fontSize: SIZES['2xl'],
     textAlign: 'center',
     lineHeight: 34,
-    letterSpacing: -0.3,
+    letterSpacing: 0,
   },
   body: {
     fontFamily: FONTS.serifItalic,

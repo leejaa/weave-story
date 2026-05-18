@@ -16,8 +16,13 @@ import {
   Fraunces_400Regular_Italic,
   Fraunces_600SemiBold,
 } from '@expo-google-fonts/fraunces';
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
-import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
+import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+} from '@expo-google-fonts/plus-jakarta-sans';
+import { DMMono_400Regular } from '@expo-google-fonts/dm-mono';
+import { BlackHanSans_400Regular } from '@expo-google-fonts/black-han-sans';
 import { useFonts } from 'expo-font';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { palette } from '@/constants/colors';
@@ -38,10 +43,11 @@ export default function RootLayout() {
     Fraunces_400Regular,
     Fraunces_400Regular_Italic,
     Fraunces_600SemiBold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    JetBrainsMono_400Regular,
+    BlackHanSans_400Regular,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    DMMono_400Regular,
   });
 
   useEffect(() => {

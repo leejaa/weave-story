@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { postCreateStory } from '@/lib/api/fetch';
 
@@ -7,7 +7,8 @@ const DEFAULT_CHAPTERS = 10;
 
 export function useStoryPrompt() {
   const router = useRouter();
-  const [prompt, setPrompt] = useState('');
+  const { initialPrompt } = useLocalSearchParams<{ initialPrompt?: string }>();
+  const [prompt, setPrompt] = useState(initialPrompt ?? '');
 
   const mutation = useMutation({
     mutationFn: () =>
