@@ -12,14 +12,14 @@ import { Icon } from '@/components/ui/icon';
 import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { useStoryPrompt } from '@/hooks/use-story-prompt';
-import { ARCHETYPES } from '@/constants/story-archetypes';
+import { ErrorBox } from '@/components/ui/error-box';
 import { FONTS, SIZES } from '@/constants/colors';
 
 export default function SetupScreen() {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('weave');
-  const { prompt, setPrompt, canSubmit, isPending, error, submit, back } = useStoryPrompt();
+  const { prompt, setPrompt, canSubmit, isPending, error, rawError, submit, back } = useStoryPrompt();
 
   return (
     <View style={[styles.container, { backgroundColor: c.paper }]}>
@@ -52,36 +52,11 @@ export default function SetupScreen() {
             returnKeyType="default"
           />
         </View>
-
-        {/* Archetype quick-pick */}
-        <Text style={[styles.sectionLabel, { color: c.inkFaint }]}>{t('quickStart')}</Text>
-        <View style={styles.cardGrid}>
-          {ARCHETYPES.map(a => {
-            const selected = prompt === a.prompt;
-            return (
-              <Pressable
-                key={a.id}
-                onPress={() => setPrompt(selected ? '' : a.prompt)}
-                style={[
-                  styles.card,
-                  {
-                    backgroundColor: selected ? c.thread : c.paperRaised,
-                    borderColor: selected ? c.thread : c.rule,
-                  },
-                ]}>
-                <Text style={styles.cardEmoji}>{a.emoji}</Text>
-                <Text style={[styles.cardLabel, { color: selected ? c.paper : c.ink }]}>
-                  {a.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <Text style={[styles.hint, { color: c.inkFaint }]}>{t('hint')}</Text>
       </ScrollView>
 
-      {/* Error */}
       {error ? (
-        <Text style={[styles.error, { color: '#ef4444' }]}>{error}</Text>
+        <ErrorBox error={error} originalError={rawError} onRetry={submit} />
       ) : null}
 
       {/* Footer CTA */}
@@ -121,10 +96,10 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { paddingHorizontal: 24, paddingTop: 16 },
   headline: {
-    fontFamily: FONTS.serifSemibold,
+    fontFamily: FONTS.display,
     fontSize: SIZES['3xl'],
-    lineHeight: 40,
-    letterSpacing: -0.5,
+    lineHeight: 48,
+    letterSpacing: 0,
     marginBottom: 8,
   },
   subtext: {
@@ -138,40 +113,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     minHeight: 130,
-    marginBottom: 32,
+    marginBottom: 10,
   },
   input: {
     fontFamily: FONTS.sans,
     fontSize: SIZES.md,
     lineHeight: 24,
     minHeight: 100,
-  },
-  sectionLabel: {
-    fontFamily: FONTS.mono,
-    fontSize: 10,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    marginBottom: 12,
-  },
-  cardGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  card: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 8,
-  },
-  cardEmoji: {
-    fontSize: 22,
-  },
-  cardLabel: {
-    fontFamily: FONTS.sansSemibold,
-    fontSize: SIZES.sm,
-    lineHeight: 18,
   },
   footer: {
     paddingHorizontal: 20,
@@ -190,11 +138,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.sansSemibold,
     fontSize: SIZES.md,
   },
-  error: {
+  hint: {
     fontFamily: FONTS.sans,
     fontSize: SIZES.sm,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 8,
+    lineHeight: 20,
+    marginBottom: 32,
   },
 });

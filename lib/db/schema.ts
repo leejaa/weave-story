@@ -1,5 +1,18 @@
 import { relations } from 'drizzle-orm';
-import { integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+
+export const sampleCards = pgTable('sample_cards', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  genre: text('genre').notNull().unique(),
+  genreLabel: text('genre_label').notNull(),
+  title: text('title').notNull(),
+  color: text('color').notNull(),
+  imageUrl: text('image_url'),
+  prompt: text('prompt').notNull(),
+  displayOrder: integer('display_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
 
 export const testItems = pgTable('test_items', {
   id: uuid('id').defaultRandom().primaryKey(),

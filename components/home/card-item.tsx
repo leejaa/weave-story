@@ -3,12 +3,13 @@ import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 import { FONTS, SIZES } from '@/constants/colors';
-import { CARD_COUNT, STACK_OFFSET, STACK_SCALES, SWIPE_THRESHOLD } from '@/lib/sample-covers/constants';
-import type { SampleCard } from '@/lib/sample-covers/constants';
+import { STACK_OFFSET, STACK_SCALES, SWIPE_THRESHOLD } from '@/lib/sample-covers/constants';
+import type { SampleCardData } from '@/lib/api/types';
 
 type Props = {
-  card: SampleCard;
+  card: SampleCardData;
   cardIndex: number;
+  totalCards: number;
   topIndex: SharedValue<number>;
   swipeX: SharedValue<number>;
   swipeY: SharedValue<number>;
@@ -17,12 +18,16 @@ type Props = {
 };
 
 // Stays mounted for the lifetime of the stack — expo-image never reloads.
-export function CardItem({ card, cardIndex, topIndex, swipeX, swipeY, cardWidth, cardHeight }: Props) {
+export function CardItem({ card, cardIndex, totalCards, topIndex, swipeX, swipeY, cardWidth, cardHeight }: Props) {
   const animStyle = useAnimatedStyle(() => {
-    // 0 = front, 1 = middle, 2 = back
-    const stackPos = (topIndex.value - cardIndex + CARD_COUNT * 2) % CARD_COUNT;
+    const N = totalCards;
+    const stackPos = (topIndex.value - cardIndex + N * 4) % N;
 
-    // Progress of the ongoing swipe (0 → 1)
+    // Cards beyond slot 3 are completely hidden, no animation.
+    if (stackPos > 3) {
+      return { opacity: 0, zIndex: -10 };
+    }
+
     const progress = interpolate(
       Math.abs(swipeX.value),
       [0, SWIPE_THRESHOLD],
@@ -30,23 +35,16 @@ export function CardItem({ card, cardIndex, topIndex, swipeX, swipeY, cardWidth,
       Extrapolation.CLAMP,
     );
 
-    // All cards share the same base position (front slot).
-    // Stack depth is expressed as translateX/Y offsets:
-    //   front:  (0,        0)
-    //   middle: (+OFFSET, -OFFSET)
-    //   back:   (+2*OFFSET, -2*OFFSET)
     const restTX = stackPos * STACK_OFFSET;
     const restTY = -(stackPos * STACK_OFFSET);
     const nextTX = (stackPos - 1) * STACK_OFFSET;
     const nextTY = -((stackPos - 1) * STACK_OFFSET);
-
-    const restRotate = stackPos * -3;
-    const nextRotate = (stackPos - 1) * -3;
-    const restScale  = STACK_SCALES[stackPos] ?? 0.93;
-    const nextScale  = STACK_SCALES[stackPos - 1] ?? 1.0;
+    const restScale = STACK_SCALES[Math.min(stackPos, 2)] ?? 0.93;
+    const nextScale = STACK_SCALES[Math.max(stackPos - 1, 0)] ?? 1.0;
 
     if (stackPos === 0) {
       return {
+        opacity: 1,
         zIndex: 10,
         transform: [
           { translateX: swipeX.value + restTX },
@@ -63,13 +61,20 @@ export function CardItem({ card, cardIndex, topIndex, swipeX, swipeY, cardWidth,
       };
     }
 
+    // stackPos 1, 2: always visible; stackPos 3: fades in during swipe
+    const opacity =
+      stackPos === 3
+        ? interpolate(progress, [0.3, 1], [0, 1], Extrapolation.CLAMP)
+        : 1;
+
     return {
-      zIndex: 10 - stackPos * 3,
+      opacity,
+      zIndex: stackPos === 3 ? 0 : 10 - stackPos * 3,
       transform: [
         { translateX: interpolate(progress, [0, 1], [restTX, nextTX]) },
         { translateY: interpolate(progress, [0, 1], [restTY, nextTY]) },
-        { rotate: `${interpolate(progress, [0, 1], [restRotate, nextRotate])}deg` },
-        { scale:  interpolate(progress, [0, 1], [restScale, nextScale]) },
+        { rotate: `${interpolate(progress, [0, 1], [stackPos * -3, (stackPos - 1) * -3])}deg` },
+        { scale: interpolate(progress, [0, 1], [restScale, nextScale]) },
       ],
     };
   });
@@ -88,9 +93,11 @@ export function CardItem({ card, cardIndex, topIndex, swipeX, swipeY, cardWidth,
         animStyle,
       ]}
     >
-      <Image source={{ uri: card.imageUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
+      {card.imageUrl ? (
+        <Image source={{ uri: card.imageUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
+      ) : null}
       <View style={styles.scrim} />
-      <Text style={styles.genre} allowFontScaling={false}>{card.genre}</Text>
+      <Text style={styles.genre} allowFontScaling={false}>{card.genreLabel}</Text>
       <Text style={styles.title} numberOfLines={3} allowFontScaling={false}>{card.title}</Text>
     </Animated.View>
   );

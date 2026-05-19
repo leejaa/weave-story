@@ -1,12 +1,11 @@
 import { authFetch } from '@/lib/auth/client/api';
-import type { ThreadWithStory, ThreadDetail, Story, Chapter } from '@/lib/api/types';
+import { throwIfError } from '@/lib/api/errors';
+import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter } from '@/lib/api/types';
 
-
-async function throwIfError(res: Response) {
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `HTTP ${res.status}`);
-  }
+export async function fetchSampleCards(): Promise<SampleCardData[]> {
+  const res = await authFetch('/api/sample-cards');
+  await throwIfError(res);
+  return res.json();
 }
 
 export async function fetchThreads(): Promise<ThreadWithStory[]> {
@@ -46,6 +45,20 @@ export async function postChoose(
   return res.json();
 }
 
+export type CheckPromptResult = {
+  sufficient: boolean;
+  questions: string[];
+};
+
+export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult> {
+  const res = await authFetch('/api/stories/check-prompt', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+  await throwIfError(res);
+  return res.json();
+}
 
 export async function postCreateStory(params: {
   prompt: string;

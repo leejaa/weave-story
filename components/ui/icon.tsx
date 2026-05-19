@@ -14,7 +14,10 @@ export type IconName =
   | 'search'
   | 'sparkle'
   | 'history'
-  | 'settings';
+  | 'settings'
+  | 'alert'
+  | 'wifi-off'
+  | 'refresh';
 
 const ICON_MAP: Record<IconName, { outline: string; filled: string }> = {
   home: { outline: 'home-outline', filled: 'home' },
@@ -31,6 +34,9 @@ const ICON_MAP: Record<IconName, { outline: string; filled: string }> = {
   sparkle: { outline: 'sparkles-outline', filled: 'sparkles' },
   history: { outline: 'time-outline', filled: 'time' },
   settings: { outline: 'settings-outline', filled: 'settings' },
+  alert: { outline: 'alert-circle-outline', filled: 'alert-circle' },
+  'wifi-off': { outline: 'cloud-offline-outline', filled: 'cloud-offline' },
+  refresh: { outline: 'refresh-outline', filled: 'refresh' },
 };
 
 type Props = {

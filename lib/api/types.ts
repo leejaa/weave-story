@@ -1,3 +1,14 @@
+export type SampleCardData = {
+  id: string;
+  genre: string;
+  genreLabel: string;
+  title: string;
+  color: string;
+  imageUrl: string | null;
+  prompt: string;
+  displayOrder: number;
+};
+
 export type Story = {
   id: string;
   title: string | null;

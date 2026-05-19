@@ -2,30 +2,28 @@ import { useCallback, useRef } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSharedValue, withTiming, withSpring, runOnJS } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
-import { CARD_COUNT, SWIPE_THRESHOLD } from '@/lib/sample-covers/constants';
+import { SWIPE_THRESHOLD } from '@/lib/sample-covers/constants';
 
-export function useCardStack(onTap?: (frontIndex: number) => void) {
+export function useCardStack(totalCards: number, onTap?: (frontIndex: number) => void) {
   const { width } = useWindowDimensions();
 
-  const topIndex    = useSharedValue(CARD_COUNT - 1);
+  const topIndex    = useSharedValue(totalCards - 1);
   const swipeX      = useSharedValue(0);
   const swipeY      = useSharedValue(0);
   const isAnimating = useSharedValue(false);
 
-  // Keep a stable ref so the worklet closure never goes stale.
   const onTapRef = useRef(onTap);
   onTapRef.current = onTap;
   const callOnTap = useCallback((frontIndex: number) => {
     onTapRef.current?.(frontIndex);
   }, []);
 
-  // Reset positions BEFORE updating topIndex so all animated styles land cleanly.
   const cycleNext = useCallback(() => {
     swipeX.value = 0;
     swipeY.value = 0;
-    topIndex.value = (topIndex.value - 1 + CARD_COUNT) % CARD_COUNT;
+    topIndex.value = (topIndex.value - 1 + totalCards) % totalCards;
     isAnimating.value = false;
-  }, [topIndex, swipeX, swipeY, isAnimating]);
+  }, [topIndex, swipeX, swipeY, isAnimating, totalCards]);
 
   const pan = Gesture.Pan()
     .activeOffsetX([-10, 10])

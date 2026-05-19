@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { postCreateStory } from '@/lib/api/fetch';
+import { postCreateStory, postCheckPrompt } from '@/lib/api/fetch';
+import { toUserMessage } from '@/lib/api/errors';
 
 const DEFAULT_CHAPTERS = 10;
 
@@ -11,10 +12,26 @@ export function useStoryPrompt() {
   const [prompt, setPrompt] = useState(initialPrompt ?? '');
 
   const mutation = useMutation({
-    mutationFn: () =>
-      postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS }),
-    onSuccess: ({ threadId }) => {
-      router.replace(`/reading/${threadId}`);
+    mutationFn: async () => {
+      const check = await postCheckPrompt(prompt.trim());
+
+      if (!check.sufficient && check.questions.length > 0) {
+        router.push({
+          pathname: '/refine',
+          params: {
+            prompt: prompt.trim(),
+            questions: JSON.stringify(check.questions.slice(0, 3)),
+          },
+        });
+        return null;
+      }
+
+      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS });
+    },
+    onSuccess: (result) => {
+      if (result) {
+        router.replace(`/reading/${result.threadId}`);
+      }
     },
   });
 
@@ -25,7 +42,8 @@ export function useStoryPrompt() {
     setPrompt,
     canSubmit: prompt.trim().length > 0,
     isPending: mutation.isPending,
-    error: mutation.error?.message ?? null,
+    error: mutation.error ? toUserMessage(mutation.error) : null,
+    rawError: mutation.error,
     submit: () => mutation.mutate(),
     back,
   };

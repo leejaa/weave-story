@@ -12,7 +12,12 @@
   "begin": "Begin weaving",
   "headline": "What story\ndo you want?",
   "subtext": "Freely describe the story you want.",
-  "placeholder": "e.g. A girl who joins a magic academy discovers a forbidden spell…",
+  "placeholder": "e.g. A detective in 1920s Shanghai uncovers a conspiracy that reaches the highest levels of power…",
+  "hint": "The more specific the character, setting, and conflict — the more vivid the story.",
   "quickStart": "Quick start",
-  "startBtn": "Start story"
+  "startBtn": "Start story",
+  "refine_label": "Tell us a bit more",
+  "refine_placeholder": "Answer freely (you can also skip this)",
+  "refine_next": "Next",
+  "refine_skip": "Skip this question"
 }
