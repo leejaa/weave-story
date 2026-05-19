@@ -1,7 +1,8 @@
-import { ScrollView, View, Text, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, View, Text, Pressable, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { useThreads } from '@/hooks/use-threads';
 import { StoryCard } from '@/components/story-card';
@@ -33,7 +34,12 @@ export default function StoriesScreen() {
       contentContainerStyle={[styles.content, { paddingBottom: 130 }]}
       showsVerticalScrollIndicator={false}>
 
-      <Text style={[styles.screenTitle, { color: c.ink }]}>{t('screenTitle')}</Text>
+      <View style={styles.header}>
+        <Text style={[styles.screenTitle, { color: c.ink }]}>{t('screenTitle')}</Text>
+        <Pressable onPress={() => router.push('/profile')} hitSlop={12}>
+          <Icon name="user" size={22} color={c.inkSoft} />
+        </Pressable>
+      </View>
 
       {isLoading ? (
         <ActivityIndicator color={c.thread} style={{ marginTop: 24 }} />
@@ -86,11 +92,16 @@ export default function StoriesScreen() {
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: H_PADDING },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
   screenTitle: {
     fontFamily: FONTS.display,
     fontSize: SIZES['3xl'],
     lineHeight: 44,
-    marginBottom: 20,
   },
   sectionLabel: {
     fontFamily: FONTS.mono,

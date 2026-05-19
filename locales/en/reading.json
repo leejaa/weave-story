@@ -9,7 +9,8 @@
     "defaultQuestion": "What will you do?",
     "orInput": "Or type your own",
     "inputPlaceholder": "Type what you want to do…",
-    "continue": "Continue story"
+    "continue": "Continue story",
+    "yourChoice": "Your choice"
   },
   "generating": {
     "title": "Preparing the\nnext chapter",

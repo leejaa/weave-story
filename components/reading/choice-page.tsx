@@ -104,7 +104,10 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
           placeholderTextColor={c.inkFaint}
           value={customInput}
           onChangeText={handleCustomChange}
-          returnKeyType="done"
+          multiline
+          textAlignVertical="top"
+          returnKeyType="default"
+          blurOnSubmit={false}
         />
       </View>
 
@@ -165,12 +168,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 11,
+    paddingVertical: 12,
+    minHeight: 100,
   },
   input: {
     fontFamily: FONTS.sans,
     fontSize: SIZES.sm,
-    lineHeight: 20,
+    lineHeight: 22,
+    minHeight: 76,
   },
   cta: {
     borderRadius: 14,

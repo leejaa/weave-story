@@ -1,6 +1,14 @@
 import { authFetch } from '@/lib/auth/client/api';
 import { throwIfError } from '@/lib/api/errors';
-import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter } from '@/lib/api/types';
+import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter, Intervention } from '@/lib/api/types';
+
+export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null };
+
+export async function fetchMe(): Promise<MeResult> {
+  const res = await authFetch('/api/me');
+  await throwIfError(res);
+  return res.json();
+}
 
 export async function fetchSampleCards(): Promise<SampleCardData[]> {
   const res = await authFetch('/api/sample-cards');
@@ -29,6 +37,7 @@ export async function fetchStories(): Promise<Story[]> {
 export type ChooseResult = {
   chapter: Chapter | null;
   thread: Pick<ThreadDetail, 'currentChapter' | 'progress' | 'status'>;
+  intervention: Intervention | null;
 };
 
 export async function postChoose(

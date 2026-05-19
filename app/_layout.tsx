@@ -6,10 +6,11 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 import {
   Fraunces_400Regular,
@@ -66,6 +67,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
     <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <Stack
@@ -77,10 +79,17 @@ export default function RootLayout() {
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="refine" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
       </Stack>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <SystemBars
+        style={{
+          statusBar: colorScheme === 'dark' ? 'light' : 'dark',
+          navigationBar: colorScheme === 'dark' ? 'light' : 'dark',
+        }}
+      />
     </AuthProvider>
     </QueryClientProvider>
+    </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

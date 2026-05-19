@@ -14,99 +14,12 @@ import { ChapterRibbon } from '@/components/chapter-ribbon';
 import { TextPage } from '@/components/reading/text-page';
 import { ChoicePage } from '@/components/reading/choice-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
+import { InterventionPage } from '@/components/reading/intervention-page';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
-import { calcCharsPerPage, paginateText } from '@/lib/reading/paginate';
+import { buildPages } from '@/lib/reading/build-pages';
 import { FONTS, SIZES } from '@/constants/colors';
-import type { Chapter, ChapterOption } from '@/lib/api/types';
-
-// ─── Page types ──────────────────────────────────────────────────────────────
-
-type TextPageItem = {
-  key: string; type: 'text';
-  chapterNumber: number;
-  content: string; pageIndex: number; totalPages: number;
-  chapterTitle: string | null;
-};
-type ChoicePageItem = {
-  key: string; type: 'choice';
-  chapterNumber: number;
-  options: ChapterOption[];
-  situation: string | null;
-  question: string | null;
-};
-type GeneratingPageItem = { key: string; type: 'generating'; chapterNumber: number };
-type FailedPageItem    = { key: string; type: 'failed';     chapterNumber: number };
-type EndPageItem       = { key: string; type: 'end' };
-
-type PageItem = TextPageItem | ChoicePageItem | GeneratingPageItem | FailedPageItem | EndPageItem;
-
-// ─── Page builder ─────────────────────────────────────────────────────────────
-
-function buildPages(
-  allChapters: Chapter[],
-  currentChapterNumber: number,
-  isCompleted: boolean,
-  width: number,
-  listHeight: number,
-): { pages: PageItem[]; startIndex: number } {
-  const pages: PageItem[] = [];
-  let startIndex = 0;
-
-  for (const ch of allChapters) {
-    const isCurrentChapter = ch.chapterNumber === currentChapterNumber;
-
-    if (isCurrentChapter) startIndex = pages.length;
-
-    if (ch.status === 'generating') {
-      pages.push({ key: `ch${ch.chapterNumber}-gen`, type: 'generating', chapterNumber: ch.chapterNumber });
-      continue;
-    }
-
-    if (ch.status === 'failed') {
-      pages.push({ key: `ch${ch.chapterNumber}-fail`, type: 'failed', chapterNumber: ch.chapterNumber });
-      continue;
-    }
-
-    if (!ch.content) continue;
-
-    const charsFirst = calcCharsPerPage(width, listHeight, true);
-    const charsRest  = calcCharsPerPage(width, listHeight, false);
-    const textPages  = paginateText(ch.content, charsFirst, charsRest);
-
-    textPages.forEach((content, i) => {
-      pages.push({
-        key: `ch${ch.chapterNumber}-p${i}`,
-        type: 'text',
-        chapterNumber: ch.chapterNumber,
-        content,
-        pageIndex: i,
-        totalPages: textPages.length,
-        chapterTitle: ch.title,
-      });
-    });
-
-    // Choice page: only for the current chapter (past choices can't be re-made)
-    if (isCurrentChapter && ch.options && (ch.options as ChapterOption[]).length > 0) {
-      pages.push({
-        key: `ch${ch.chapterNumber}-choice`,
-        type: 'choice',
-        chapterNumber: ch.chapterNumber,
-        options: ch.options as ChapterOption[],
-        situation: ch.situation ?? null,
-        question: ch.question ?? null,
-      });
-    }
-  }
-
-  if (isCompleted && pages[pages.length - 1]?.type !== 'end') {
-    pages.push({ key: 'end', type: 'end' });
-  }
-
-  return { pages, startIndex };
-}
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
+import type { PageItem } from '@/lib/reading/types';
 
 export default function ReadingScreen() {
   const c = usePalette();
@@ -130,7 +43,6 @@ export default function ReadingScreen() {
       selection: { choiceIndex: number } | { customInput: string },
     ) => {
       await choose(chapterNumber, selection);
-      // After state updates, FlatList re-renders with the generating page appended
     },
     [choose],
   );
@@ -166,6 +78,7 @@ export default function ReadingScreen() {
 
   const { pages, startIndex } = buildPages(
     data.chapters,
+    data.interventions ?? [],
     currentChapter,
     isCompleted,
     width,
@@ -220,12 +133,8 @@ export default function ReadingScreen() {
                 choosing={choosing}
               />
             )}
-            {item.type === 'generating' && <GeneratingPage />}
-            {item.type === 'failed' && (
-              <View style={styles.centered}>
-                <Text style={[styles.errorText, { color: c.inkSoft }]}>{t('chapterFailed')}</Text>
-              </View>
-            )}
+            {item.type === 'generating' && <GeneratingPage genre={data.genre} />}
+            {item.type === 'intervention' && <InterventionPage text={item.text} />}
             {item.type === 'end' && (
               <View style={styles.centered}>
                 <Text style={[styles.endMark, { color: c.inkFaint }]}>{t('end')}</Text>

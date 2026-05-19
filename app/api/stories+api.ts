@@ -47,8 +47,11 @@ export async function POST(request: Request) {
     .values({ threadId: thread.id, chapterNumber: 1, status: 'generating', content: null })
     .returning();
 
+  console.log(`[stories] bg:start story=${story.id} thread=${thread.id} prompt_len=${prompt.trim().length}`);
+
   // Fire-and-forget — generate first chapter in background
   ;(async () => {
+    const startMs = Date.now();
     let generated: Awaited<ReturnType<typeof generateFirstChapter>>;
     try {
       generated = await generateFirstChapter({ prompt: prompt.trim(), estimatedChapters });
@@ -69,8 +72,10 @@ export async function POST(request: Request) {
           status: 'ready',
         })
         .where(eq(chapters.id, pendingChapter.id));
+
+      console.log(`[stories] bg:done story=${story.id} title="${generated.title}" genre=${generated.genre} content=${generated.content.length} elapsed=${Date.now() - startMs}ms`);
     } catch (err) {
-      console.error('[POST /api/stories] background generation failed:', err);
+      console.error(`[stories] bg:error story=${story.id} elapsed=${Date.now() - startMs}ms`, err);
       await db
         .update(chapters)
         .set({ status: 'failed' })

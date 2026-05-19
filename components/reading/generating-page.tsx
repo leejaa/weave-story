@@ -1,53 +1,127 @@
-import { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
+import { InkBloom } from '@/components/reading/ink-bloom';
+import { FloatingParticles } from '@/components/reading/floating-particles';
+import { getGenreParticles } from '@/lib/reading/genre-particles';
 
-// Claude Sonnet 4.6 benchmark: ~48 t/s, chapter output ~4500 tokens → ~95s
-const ESTIMATED_MS = 95_000;
+// ─── Bouncing dot ─────────────────────────────────────────────────────────────
 
-type Props = {
-  /** Called repeatedly so the parent can poll and decide to navigate away */
-  onComplete?: () => void;
-};
-
-export function GeneratingPage({ onComplete }: Props) {
-  const c = usePalette();
-  const { t } = useTranslation('reading');
-  const progress = useRef(new Animated.Value(0)).current;
-  const completedRef = useRef(false);
+function BounceDot({ delay, color }: { delay: number; color: string }) {
+  const scale = useSharedValue(0.5);
+  const opacity = useSharedValue(0.3);
 
   useEffect(() => {
-    // Animate to 90% over estimated duration, then stall waiting for real completion
-    Animated.timing(progress, {
-      toValue: 0.9,
-      duration: ESTIMATED_MS,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
+    scale.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 320, easing: Easing.out(Easing.quad) }),
+          withTiming(0.5, { duration: 320, easing: Easing.in(Easing.quad) }),
+          withTiming(0.5, { duration: 360 }),
+        ),
+        -1,
+        false,
+      ),
+    );
+    opacity.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 320 }),
+          withTiming(0.3, { duration: 320 }),
+          withTiming(0.3, { duration: 360 }),
+        ),
+        -1,
+        false,
+      ),
+    );
+    return () => {
+      cancelAnimation(scale);
+      cancelAnimation(opacity);
+    };
   }, []);
 
-  const fillWidth = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View
+      style={[{ width: 8, height: 8, borderRadius: 4, backgroundColor: color }, style]}
+    />
+  );
+}
+
+// ─── Center emoji ─────────────────────────────────────────────────────────────
+
+function BreathingEmoji({ emoji, color }: { emoji: string; color: string }) {
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.08, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.93, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
+    );
+    return () => cancelAnimation(scale);
+  }, []);
+
+  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  return (
+    <Animated.Text style={[styles.emoji, style]}>{emoji}</Animated.Text>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+type Props = {
+  genre?: string | null;
+};
+
+export function GeneratingPage({ genre }: Props) {
+  const c = usePalette();
+  const { t } = useTranslation('reading');
+  const particleSet = getGenreParticles(genre);
 
   return (
     <View style={[styles.page, { backgroundColor: c.paper }]}>
-      <View style={styles.center}>
-        <Text style={[styles.title, { color: c.ink }]}>{t('generating.title')}</Text>
-        <Text style={[styles.body, { color: c.inkSoft }]}>{t('generating.body')}</Text>
+      <InkBloom color={c.ink} />
+      <FloatingParticles particles={particleSet.particles} color={c.inkSoft} />
 
-        <View style={[styles.track, { backgroundColor: c.rule }]}>
-          <Animated.View
-            style={[styles.fill, { width: fillWidth, backgroundColor: c.thread }]}
-          />
+      <View style={styles.content}>
+        <BreathingEmoji emoji={particleSet.centerEmoji} color={c.ink} />
+
+        <View style={styles.textBlock}>
+          <Text style={[styles.title, { color: c.ink }]}>{t('generating.title')}</Text>
+          <Text style={[styles.body, { color: c.inkSoft }]}>{t('generating.body')}</Text>
         </View>
 
-        <Text style={[styles.estimate, { color: c.inkFaint }]}>
-          {t('generating.estimate')}
-        </Text>
+        <View style={styles.dots}>
+          <BounceDot delay={0} color={c.thread} />
+          <BounceDot delay={200} color={c.thread} />
+          <BounceDot delay={400} color={c.thread} />
+        </View>
+
+        <Text style={[styles.estimate, { color: c.inkFaint }]}>{t('generating.estimate')}</Text>
       </View>
     </View>
   );
@@ -58,12 +132,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  content: {
+    alignItems: 'center',
+    gap: 28,
     paddingHorizontal: 40,
   },
-  center: {
-    width: '100%',
+  emoji: {
+    fontSize: 64,
+  },
+  textBlock: {
     alignItems: 'center',
-    gap: 20,
+    gap: 10,
   },
   title: {
     fontFamily: FONTS.display,
@@ -78,16 +158,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
   },
-  track: {
-    width: '100%',
-    height: 3,
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginTop: 8,
-  },
-  fill: {
-    height: '100%',
-    borderRadius: 2,
+  dots: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
   },
   estimate: {
     fontFamily: FONTS.mono,

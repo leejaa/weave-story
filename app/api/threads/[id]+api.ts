@@ -1,5 +1,5 @@
 import { db } from '@/lib/db/client';
-import { threads, stories, chapters } from '@/lib/db/schema';
+import { threads, stories, chapters, interventions } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
 import { eq, and, asc } from 'drizzle-orm';
 
@@ -35,11 +35,10 @@ export async function GET(request: Request) {
 
   if (!row) return Response.json({ error: 'Not found' }, { status: 404 });
 
-  const allChapters = await db
-    .select()
-    .from(chapters)
-    .where(eq(chapters.threadId, threadId))
-    .orderBy(asc(chapters.chapterNumber));
+  const [allChapters, allInterventions] = await Promise.all([
+    db.select().from(chapters).where(eq(chapters.threadId, threadId)).orderBy(asc(chapters.chapterNumber)),
+    db.select().from(interventions).where(eq(interventions.threadId, threadId)).orderBy(asc(interventions.createdAt)),
+  ]);
 
-  return Response.json({ ...row, chapters: allChapters });
+  return Response.json({ ...row, chapters: allChapters, interventions: allInterventions });
 }

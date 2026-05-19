@@ -32,6 +32,10 @@ export async function POST(request: Request) {
 
   if (existingAccount) {
     userId = existingAccount.userId;
+    await db
+      .update(users)
+      .set({ email: email ?? null, name: name ?? null, avatarUrl: picture ?? null })
+      .where(eq(users.id, userId));
   } else {
     const [newUser] = await db
       .insert(users)

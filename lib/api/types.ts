@@ -52,6 +52,17 @@ export type Chapter = {
   createdAt: string;
 };
 
+export type Intervention = {
+  id: string;
+  threadId: string;
+  chapterNumber: number;
+  type: 'choice' | 'free_input';
+  choiceIndex: number | null;
+  freeText: string | null;
+  createdAt: string;
+};
+
 export type ThreadDetail = ThreadWithStory & {
   chapters: Chapter[];
+  interventions: Intervention[];
 };

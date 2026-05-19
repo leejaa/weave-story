@@ -57,7 +57,8 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.857705716385-r8e3m7ctl80d3pikd0drr4mt0sd5uv2q"
         }
-      ]
+      ],
+      ["react-native-edge-to-edge", { "android": { "enforceNavigationBarContrast": false } }]
     ],
     "experiments": {
       "typedRoutes": true,

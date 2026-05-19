@@ -42,7 +42,7 @@ export default function SetupScreen() {
         {/* Free text input */}
         <View style={[styles.inputWrap, { borderColor: prompt.trim() ? c.thread : c.rule, backgroundColor: c.paperRaised }]}>
           <TextInput
-            style={[styles.input, { color: c.ink }]}
+            style={[styles.input, { color: c.ink, paddingRight: prompt.trim() ? 28 : 0 }]}
             placeholder={t('placeholder')}
             placeholderTextColor={c.inkFaint}
             value={prompt}
@@ -51,6 +51,14 @@ export default function SetupScreen() {
             textAlignVertical="top"
             returnKeyType="default"
           />
+          {prompt.trim().length > 0 && (
+            <Pressable
+              onPress={() => setPrompt('')}
+              hitSlop={8}
+              style={styles.clearBtn}>
+              <Icon name="close-circle" size={18} color={c.inkFaint} />
+            </Pressable>
+          )}
         </View>
         <Text style={[styles.hint, { color: c.inkFaint }]}>{t('hint')}</Text>
       </ScrollView>
@@ -114,6 +122,12 @@ const styles = StyleSheet.create({
     padding: 16,
     minHeight: 130,
     marginBottom: 10,
+    position: 'relative',
+  },
+  clearBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
   },
   input: {
     fontFamily: FONTS.sans,

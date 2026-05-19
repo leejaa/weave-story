@@ -27,19 +27,19 @@ export function useThreadDetail(threadId: string) {
       chapterNumber: number;
       selection: { choiceIndex: number } | { customInput: string };
     }) => postChoose(threadId, chapterNumber, selection),
-    onSuccess: ({ chapter, thread }) => {
+    onSuccess: ({ chapter, thread, intervention }) => {
       queryClient.setQueryData<ThreadDetail>(
         queryKeys.threadDetail(threadId),
         old => {
           if (!old) return old;
-          const rest = old.chapters.filter(
-            c => c.chapterNumber !== chapter?.chapterNumber,
-          );
-          return {
-            ...old,
-            ...thread,
-            chapters: chapter ? [...rest, chapter].sort((a, b) => a.chapterNumber - b.chapterNumber) : rest,
-          };
+          const rest = old.chapters.filter(c => c.chapterNumber !== chapter?.chapterNumber);
+          const updatedChapters = chapter
+            ? [...rest, chapter].sort((a, b) => a.chapterNumber - b.chapterNumber)
+            : rest;
+          const updatedInterventions = intervention
+            ? [...(old.interventions ?? []), intervention]
+            : (old.interventions ?? []);
+          return { ...old, ...thread, chapters: updatedChapters, interventions: updatedInterventions };
         },
       );
     },

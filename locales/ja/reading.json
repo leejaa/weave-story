@@ -9,7 +9,8 @@
     "defaultQuestion": "どうする？",
     "orInput": "または自分で入力",
     "inputPlaceholder": "したい行動を入力してください…",
-    "continue": "物語を続ける"
+    "continue": "物語を続ける",
+    "yourChoice": "あなたの選択"
   },
   "generating": {
     "title": "次の章を\n準備しています",
