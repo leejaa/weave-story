@@ -1,8 +1,9 @@
 import { db } from '@/lib/db/client';
 import { threads, stories, chapters, interventions } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
-import { generateNextChapter } from '@/lib/ai/story-generation';
-import { eq, and } from 'drizzle-orm';
+import { buildChapterContext, type PrevChapterRow } from '@/lib/threads/chapter-context';
+import { fireGenerateChapter } from '@/lib/threads/fire-generate';
+import { eq, and, lte, asc } from 'drizzle-orm';
 
 function extractThreadId(url: string): string | null {
   const match = url.match(/\/api\/threads\/([^/]+)\/choose/);
@@ -61,11 +62,24 @@ export async function POST(request: Request) {
     }
   }
 
-  const [currentChapter] = await db
-    .select({ options: chapters.options, content: chapters.content })
+  // Fetch all chapters up to chapterNumber for context (summaries + current content)
+  const allPrevChapters = await db
+    .select({
+      chapterNumber: chapters.chapterNumber,
+      options: chapters.options,
+      content: chapters.content,
+      summary: chapters.summary,
+    })
     .from(chapters)
-    .where(and(eq(chapters.threadId, threadId), eq(chapters.chapterNumber, chapterNumber)));
+    .where(and(eq(chapters.threadId, threadId), lte(chapters.chapterNumber, chapterNumber)))
+    .orderBy(asc(chapters.chapterNumber));
 
+  const { current: currentChapter, previousChaptersSummaries } = buildChapterContext(
+    allPrevChapters as PrevChapterRow[],
+    chapterNumber,
+  );
+
+  // Resolve chosen text and record intervention
   let chosenText: string;
   let ivRecord: typeof interventions.$inferSelect;
 
@@ -79,15 +93,11 @@ export async function POST(request: Request) {
   } else {
     const opts = (currentChapter?.options as { index: number; text: string }[] | null) ?? [];
     chosenText = opts.find(o => o.index === choiceIndex)?.text ?? '';
-
     if (!chosenText) {
-      console.error(
-        `[choose] CHOICE_LOOKUP_FAILED thread=${threadId} chapter=${chapterNumber} choiceIndex=${choiceIndex} opts_count=${opts.length} opts=${JSON.stringify(opts)}`,
-      );
+      console.error(`[choose] CHOICE_LOOKUP_FAILED thread=${threadId} chapter=${chapterNumber} choiceIndex=${choiceIndex} opts_count=${opts.length}`);
     } else {
       console.log(`[choose] choice resolved thread=${threadId} chapter=${chapterNumber} index=${choiceIndex} text="${chosenText.slice(0, 60)}"`);
     }
-
     const [iv] = await db.insert(interventions).values({
       threadId, chapterNumber, type: 'choice', choiceIndex,
     }).returning();
@@ -95,58 +105,27 @@ export async function POST(request: Request) {
   }
 
   const nextChapterNumber = chapterNumber + 1;
+  const answers = threadRow.setupAnswers as { prompt?: string };
+  const genCtx = {
+    threadId,
+    prompt: answers.prompt ?? '',
+    estimatedChapters: threadRow.estimatedChapters,
+    previousChapterNumber: chapterNumber,
+    previousChapterContent: currentChapter?.content ?? '',
+    previousChaptersSummaries,
+    chosenOption: chosenText,
+    nextChapterNumber,
+  };
 
+  // ── Retry path: reset failed chapter and re-generate ──────────────────────
   if (isRetry) {
-    // Reset the failed chapter back to generating
     const [resetChapter] = await db
       .update(chapters)
-      .set({ status: 'generating', content: null, title: null, options: null, situation: null, question: null })
+      .set({ status: 'generating', content: null, title: null, options: null, situation: null, question: null, summary: null })
       .where(and(eq(chapters.threadId, threadId), eq(chapters.chapterNumber, nextChapterNumber)))
       .returning();
 
-    const answers = threadRow.setupAnswers as { prompt?: string };
-
-    console.log(`[choose] retry bg:start thread=${threadId} retryChapter=${nextChapterNumber} chosenText_len=${chosenText.length}`);
-
-    ;(async () => {
-      const startMs = Date.now();
-      try {
-        const generated = await generateNextChapter({
-          threadId,
-          prompt: answers.prompt ?? '',
-          estimatedChapters: threadRow.estimatedChapters,
-          previousChapterNumber: chapterNumber,
-          previousChapterContent: currentChapter?.content ?? '',
-          chosenOption: chosenText,
-          nextChapterNumber,
-        });
-
-        await db
-          .update(chapters)
-          .set({
-            title: generated.chapterTitle,
-            content: generated.content,
-            situation: generated.situation || null,
-            question: generated.question || null,
-            status: 'ready',
-            options:
-              generated.choices.length > 0
-                ? generated.choices.map((text, index) => ({ index, text }))
-                : null,
-          })
-          .where(eq(chapters.id, resetChapter.id));
-
-        console.log(
-          `[choose] retry bg:done thread=${threadId} chapter=${nextChapterNumber} elapsed=${Date.now() - startMs}ms`,
-        );
-      } catch (err) {
-        console.error(`[choose] retry bg:error thread=${threadId} chapter=${nextChapterNumber} elapsed=${Date.now() - startMs}ms`, err);
-        await db
-          .update(chapters)
-          .set({ status: 'failed' })
-          .where(eq(chapters.id, resetChapter.id));
-      }
-    })();
+    fireGenerateChapter({ chapterId: resetChapter.id, genCtx });
 
     const [currentThread] = await db
       .select({ currentChapter: threads.currentChapter, progress: threads.progress, status: threads.status })
@@ -156,7 +135,7 @@ export async function POST(request: Request) {
     return Response.json({ chapter: resetChapter, thread: currentThread, intervention: ivRecord });
   }
 
-  // Normal flow
+  // ── Normal path ────────────────────────────────────────────────────────────
   const isLast = nextChapterNumber > threadRow.estimatedChapters;
   const newProgress = Math.min((nextChapterNumber - 1) / threadRow.estimatedChapters, 1).toFixed(3);
   const newStatus = isLast ? 'completed' : 'active';
@@ -171,11 +150,7 @@ export async function POST(request: Request) {
       ...(newStatus === 'completed' ? { finishedAt: new Date() } : {}),
     })
     .where(eq(threads.id, threadId))
-    .returning({
-      currentChapter: threads.currentChapter,
-      progress: threads.progress,
-      status: threads.status,
-    });
+    .returning({ currentChapter: threads.currentChapter, progress: threads.progress, status: threads.status });
 
   if (isLast) {
     console.log(`[choose] story completed thread=${threadId} chapter=${chapterNumber}`);
@@ -194,59 +169,11 @@ export async function POST(request: Request) {
 
   const [pendingChapter] = await db
     .insert(chapters)
-    .values({
-      threadId,
-      chapterNumber: nextChapterNumber,
-      title: null,
-      content: null,
-      status: 'generating',
-      options: null,
-    })
+    .values({ threadId, chapterNumber: nextChapterNumber, title: null, content: null, status: 'generating', options: null })
     .returning();
 
-  const answers = threadRow.setupAnswers as { prompt?: string };
-
-  console.log(`[choose] bg:start thread=${threadId} nextChapter=${nextChapterNumber} chosenText_len=${chosenText.length}`);
-
-  ;(async () => {
-    const startMs = Date.now();
-    try {
-      const generated = await generateNextChapter({
-        threadId,
-        prompt: answers.prompt ?? '',
-        estimatedChapters: threadRow.estimatedChapters,
-        previousChapterNumber: chapterNumber,
-        previousChapterContent: currentChapter?.content ?? '',
-        chosenOption: chosenText,
-        nextChapterNumber,
-      });
-
-      await db
-        .update(chapters)
-        .set({
-          title: generated.chapterTitle,
-          content: generated.content,
-          situation: generated.situation || null,
-          question: generated.question || null,
-          status: 'ready',
-          options:
-            generated.choices.length > 0
-              ? generated.choices.map((text, index) => ({ index, text }))
-              : null,
-        })
-        .where(eq(chapters.id, pendingChapter.id));
-
-      console.log(
-        `[choose] bg:done thread=${threadId} chapter=${nextChapterNumber} content=${generated.content.length} choices=${generated.choices.length} elapsed=${Date.now() - startMs}ms`,
-      );
-    } catch (err) {
-      console.error(`[choose] bg:error thread=${threadId} chapter=${nextChapterNumber} elapsed=${Date.now() - startMs}ms`, err);
-      await db
-        .update(chapters)
-        .set({ status: 'failed' })
-        .where(eq(chapters.id, pendingChapter.id));
-    }
-  })();
+  console.log(`[choose] bg:start thread=${threadId} nextChapter=${nextChapterNumber} summaries=${previousChaptersSummaries.length}`);
+  fireGenerateChapter({ chapterId: pendingChapter.id, genCtx });
 
   return Response.json({ chapter: pendingChapter, thread: updatedThread, intervention: ivRecord });
 }

@@ -2,6 +2,7 @@ import { db } from '@/lib/db/client';
 import { stories, threads, chapters } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
 import { generateFirstChapter } from '@/lib/ai/story-generation';
+import { fireSummarizeChapter } from '@/lib/ai/summarize-chapter';
 import { enqueueCoverJob } from '@/lib/queue/cover-queue';
 import { eq, asc } from 'drizzle-orm';
 
@@ -74,6 +75,8 @@ export async function POST(request: Request) {
         .where(eq(chapters.id, pendingChapter.id));
 
       console.log(`[stories] bg:done story=${story.id} title="${generated.title}" genre=${generated.genre} content=${generated.content.length} elapsed=${Date.now() - startMs}ms`);
+
+      fireSummarizeChapter(pendingChapter.id, generated.content, 1, thread.id);
     } catch (err) {
       console.error(`[stories] bg:error story=${story.id} elapsed=${Date.now() - startMs}ms`, err);
       await db

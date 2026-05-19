@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject } from 'ai';
+import { generateObject, generateText } from 'ai';
 import { z } from 'zod';
 
 const gateway = createGateway({ apiKey: process.env.AI_GATEWAY_API_KEY! });
@@ -130,10 +130,13 @@ export type SetupContext = {
   estimatedChapters: number;
 };
 
+export type ChapterSummaryEntry = { chapterNumber: number; summary: string };
+
 export type ContinuationContext = SetupContext & {
   threadId?: string;
   previousChapterNumber: number;
   previousChapterContent: string;
+  previousChaptersSummaries: ChapterSummaryEntry[]; // ch1..chN-2 summaries (oldest to newest)
   chosenOption: string;
   nextChapterNumber: number;
 };
@@ -181,10 +184,14 @@ export async function generateNextChapter(ctx: ContinuationContext): Promise<Nex
     console.warn(`${tag} WARN: chosenOption is empty — AI will generate without explicit choice context`);
   }
 
+  const summariesSection = ctx.previousChaptersSummaries.length > 0
+    ? `[이전 챕터 요약]\n${ctx.previousChaptersSummaries.map(s => `챕터 ${s.chapterNumber}: ${s.summary}`).join('\n')}\n\n`
+    : '';
+
   const basePrompt = `이야기 설정: "${ctx.prompt}"
 전체 챕터 수: ${ctx.estimatedChapters}챕터
 
-[챕터 ${ctx.previousChapterNumber} 내용]
+${summariesSection}[챕터 ${ctx.previousChapterNumber} 내용]
 ${ctx.previousChapterContent}
 
 독자의 선택: "${ctx.chosenOption}"
@@ -212,4 +219,28 @@ ${isFinal ? '' : '- choices: 반드시 정확히 2개의 선택지를 제공하�
   validateChapterResult({ threadId: ctx.threadId, chapterNumber: ctx.nextChapterNumber, isFinal }, object);
 
   return object as NextChapterResult;
+}
+
+// ─── Chapter summary ───────────────────────────────────────────────────────────
+
+export async function generateChapterSummary(
+  content: string,
+  chapterNumber: number,
+  threadId?: string,
+): Promise<string> {
+  const tag = `[summary] thread=${threadId ?? '?'} chapter=${chapterNumber}`;
+  console.log(`${tag} start content=${content.length}`);
+
+  const { text } = await generateText({
+    model: gateway('anthropic/claude-haiku-4-5-20251001'),
+    system: '당신은 소설 편집자입니다. 챕터 내용을 간결하게 요약합니다.',
+    prompt: `다음 인터랙티브 소설 챕터의 핵심 사건, 인물 행동, 감정 변화를 200자 이내로 요약하세요. 이 요약은 다음 챕터 작성 시 맥락으로 사용됩니다.
+
+[챕터 ${chapterNumber} 내용]
+${content}`,
+  });
+
+  const summary = text.trim();
+  console.log(`${tag} done len=${summary.length}`);
+  return summary;
 }

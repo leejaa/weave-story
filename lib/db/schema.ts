@@ -83,6 +83,7 @@ export const chapters = pgTable('chapters', {
   options: jsonb('options'), // [{ index: 0, text: '...' }, ...]
   situation: text('situation'), // narrative setup paragraph before the choice question
   question: text('question'),   // the choice question posed to the reader
+  summary: text('summary'),     // AI-generated 200-char summary, stored async after 'ready'
   status: text('status').notNull().default('ready'), // 'generating' | 'ready' | 'failed'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
