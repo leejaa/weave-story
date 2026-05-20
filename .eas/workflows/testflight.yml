@@ -1,10 +1,5 @@
 name: Deploy to TestFlight
 
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   build:
     name: iOS Production Build

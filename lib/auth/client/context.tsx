@@ -1,6 +1,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { signInWithApple, signInWithGoogle } from './api';
+import { clearStaleTokensOnFreshInstall } from './install-guard';
 import { tokenStorage } from './storage';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
@@ -18,9 +19,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>('loading');
 
   useEffect(() => {
-    tokenStorage.getRefreshToken().then((token) => {
-      setState(token ? 'authenticated' : 'unauthenticated');
-    });
+    clearStaleTokensOnFreshInstall()
+      .then(() => tokenStorage.getRefreshToken())
+      .then((token) => setState(token ? 'authenticated' : 'unauthenticated'));
   }, []);
 
   const handleAppleSignIn = useCallback(async () => {

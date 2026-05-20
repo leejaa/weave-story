@@ -8,6 +8,12 @@
     "scheme": "weavestory",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bb0fb2c3-b94d-4ac0-80ba-fac5164c72fa"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.leejahun.weavestory",
