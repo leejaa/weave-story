@@ -1,0 +1,23 @@
+name: Deploy to TestFlight
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: iOS Production Build
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit:
+    name: Submit to TestFlight
+    type: submit
+    needs:
+      - build
+    params:
+      platform: ios
+      profile: production

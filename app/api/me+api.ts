@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const [user] = await db
-    .select({ id: users.id, email: users.email, name: users.name, avatarUrl: users.avatarUrl })
+    .select({ id: users.id, email: users.email, name: users.name, avatarUrl: users.avatarUrl, credits: users.credits })
     .from(users)
     .where(eq(users.id, userId));
 

@@ -1,18 +1,31 @@
 import { useState, useCallback } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postCreateStory, postCheckPrompt } from '@/lib/api/fetch';
 import { toUserMessage } from '@/lib/api/errors';
+import { usePurchases } from '@/lib/purchases/context';
+import { useMe } from '@/hooks/use-me';
 
 const DEFAULT_CHAPTERS = 10;
 
 export function useStoryPrompt() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { initialPrompt } = useLocalSearchParams<{ initialPrompt?: string }>();
   const [prompt, setPrompt] = useState(initialPrompt ?? '');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { isPremium } = usePurchases();
+  const { data: me } = useMe();
+
+  const canCreateStory = isPremium || (me?.credits ?? 0) > 0;
 
   const mutation = useMutation({
     mutationFn: async () => {
+      if (!canCreateStory) {
+        setShowPaywall(true);
+        return null;
+      }
+
       const check = await postCheckPrompt(prompt.trim());
 
       if (!check.sufficient && check.questions.length > 0) {
@@ -26,16 +39,24 @@ export function useStoryPrompt() {
         return null;
       }
 
-      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS });
+      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS, hasPremium: isPremium });
     },
     onSuccess: (result) => {
       if (result) {
+        queryClient.invalidateQueries({ queryKey: ['me'] });
         router.replace(`/reading/${result.threadId}`);
       }
     },
   });
 
   const back = useCallback(() => router.back(), [router]);
+
+  const closePaywall = useCallback(() => setShowPaywall(false), []);
+
+  const onPaywallSuccess = useCallback(() => {
+    setShowPaywall(false);
+    mutation.mutate();
+  }, [mutation]);
 
   return {
     prompt,
@@ -46,5 +67,8 @@ export function useStoryPrompt() {
     rawError: mutation.error,
     submit: () => mutation.mutate(),
     back,
+    showPaywall,
+    closePaywall,
+    onPaywallSuccess,
   };
 }

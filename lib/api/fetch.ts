@@ -2,7 +2,7 @@ import { authFetch } from '@/lib/auth/client/api';
 import { throwIfError } from '@/lib/api/errors';
 import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter, Intervention } from '@/lib/api/types';
 
-export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null };
+export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null; credits: number };
 
 export async function fetchMe(): Promise<MeResult> {
   const res = await authFetch('/api/me');
@@ -72,8 +72,22 @@ export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult
 export async function postCreateStory(params: {
   prompt: string;
   estimatedChapters: number;
+  hasPremium?: boolean;
 }): Promise<{ threadId: string }> {
   const res = await authFetch('/api/stories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  await throwIfError(res);
+  return res.json();
+}
+
+export async function postGrantCredits(params: {
+  productId: string;
+  purchaseDateMs: string;
+}): Promise<{ credits: number; alreadyGranted?: boolean }> {
+  const res = await authFetch('/api/purchases/grant', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),

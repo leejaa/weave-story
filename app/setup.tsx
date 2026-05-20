@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { useStoryPrompt } from '@/hooks/use-story-prompt';
 import { ErrorBox } from '@/components/ui/error-box';
+import { PaywallModal } from '@/components/ui/paywall-modal';
 import { FONTS, SIZES } from '@/constants/colors';
 
 export default function SetupScreen() {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('weave');
-  const { prompt, setPrompt, canSubmit, isPending, error, rawError, submit, back } = useStoryPrompt();
+  const { prompt, setPrompt, canSubmit, isPending, error, rawError, submit, back, showPaywall, closePaywall, onPaywallSuccess } = useStoryPrompt();
 
   return (
     <View style={[styles.container, { backgroundColor: c.paper }]}>
@@ -90,6 +91,7 @@ export default function SetupScreen() {
         </Pressable>
       </View>
 
+      <PaywallModal visible={showPaywall} onClose={closePaywall} onSuccess={onPaywallSuccess} />
     </View>
   );
 }

@@ -2,6 +2,7 @@ import '@/global.css';
 import '@/lib/i18n';
 
 import { AuthProvider } from '@/lib/auth/client/context';
+import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import { Stack } from 'expo-router';
@@ -70,6 +71,7 @@ export default function RootLayout() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
     <QueryClientProvider client={queryClient}>
     <AuthProvider>
+    <PurchasesProviderWrapper>
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: colors.paper },
@@ -87,6 +89,7 @@ export default function RootLayout() {
           navigationBar: colorScheme === 'dark' ? 'light' : 'dark',
         }}
       />
+    </PurchasesProviderWrapper>
     </AuthProvider>
     </QueryClientProvider>
     </SafeAreaProvider>

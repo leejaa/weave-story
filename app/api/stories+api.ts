@@ -1,10 +1,10 @@
 import { db } from '@/lib/db/client';
-import { stories, threads, chapters } from '@/lib/db/schema';
+import { stories, threads, chapters, users } from '@/lib/db/schema';
 import { getAuthUserId } from '@/lib/auth/server';
 import { generateFirstChapter } from '@/lib/ai/story-generation';
 import { fireSummarizeChapter } from '@/lib/ai/summarize-chapter';
 import { enqueueCoverJob } from '@/lib/queue/cover-queue';
-import { eq, asc } from 'drizzle-orm';
+import { eq, asc, sql } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   const userId = await getAuthUserId(request);
@@ -26,9 +26,18 @@ export async function POST(request: Request) {
   const body = await request.json();
   const prompt = body?.prompt as string | undefined;
   const estimatedChapters = typeof body?.estimatedChapters === 'number' ? body.estimatedChapters : 10;
+  const hasPremium = body?.hasPremium === true;
 
   if (!prompt?.trim()) {
     return Response.json({ error: 'prompt required' }, { status: 400 });
+  }
+
+  if (!hasPremium) {
+    const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
+    if (!userRow || userRow.credits <= 0) {
+      return Response.json({ error: 'insufficient_credits' }, { status: 402 });
+    }
+    await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
   }
 
   const setupAnswers = { prompt: prompt.trim() };

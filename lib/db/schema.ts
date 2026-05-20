@@ -25,6 +25,16 @@ export const users = pgTable('users', {
   email: text('email'),
   name: text('name'),
   avatarUrl: text('avatar_url'),
+  credits: integer('credits').notNull().default(1),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const purchaseGrants = pgTable('purchase_grants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  productId: text('product_id').notNull(),
+  rcPurchaseDateMs: text('rc_purchase_date_ms').notNull(),
+  creditsGranted: integer('credits_granted').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
