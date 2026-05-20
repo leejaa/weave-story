@@ -1,0 +1,14 @@
+name = "weave-story-api"
+main = "src/index.ts"
+compatibility_date = "2025-05-13"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Secrets — set with: npx wrangler secret put SECRET_NAME
+# DATABASE_URL
+# JWT_SECRET
+# AI_GATEWAY_API_KEY
+# CF_COVER_WORKER_URL
+# REVENUECAT_SECRET_KEY
+# GOOGLE_IOS_CLIENT_ID
+# GOOGLE_WEB_CLIENT_ID

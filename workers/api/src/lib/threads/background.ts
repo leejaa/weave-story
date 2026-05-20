@@ -1,0 +1,104 @@
+import { eq } from 'drizzle-orm';
+import { chapters } from '../schema';
+import { generateNextChapter, generateChapterSummary, generateFirstChapter } from '../ai/story-generation';
+import type { ContinuationContext, SetupContext } from '../ai/story-generation';
+import type { DB } from '../db';
+
+type GenerateNextParams = {
+  chapterId: string;
+  genCtx: ContinuationContext;
+  db: DB;
+  apiKey: string;
+};
+
+type GenerateFirstParams = {
+  storyId: string;
+  threadId: string;
+  chapterId: string;
+  genCtx: SetupContext;
+  db: DB;
+  apiKey: string;
+  coverWorkerUrl: string;
+  coverWorkerApiKey: string;
+};
+
+/**
+ * Used with ctx.waitUntil() — generates next chapter and its summary sequentially.
+ */
+export async function generateNextChapterBackground({ chapterId, genCtx, db, apiKey }: GenerateNextParams): Promise<void> {
+  const { threadId = '?', nextChapterNumber } = genCtx;
+  const tag = `[bg] thread=${threadId} chapter=${nextChapterNumber}`;
+  const startMs = Date.now();
+
+  try {
+    const generated = await generateNextChapter(genCtx, apiKey);
+
+    await db.update(chapters).set({
+      title: generated.chapterTitle,
+      content: generated.content,
+      situation: generated.situation || null,
+      question: generated.question || null,
+      status: 'ready',
+      options: generated.choices.length > 0
+        ? generated.choices.map((text, index) => ({ index, text }))
+        : null,
+    }).where(eq(chapters.id, chapterId));
+
+    console.log(`${tag} chapter saved elapsed=${Date.now() - startMs}ms`);
+
+    const summary = await generateChapterSummary(generated.content, nextChapterNumber, threadId, apiKey);
+    await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
+    console.log(`${tag} summary saved elapsed=${Date.now() - startMs}ms`);
+  } catch (err) {
+    console.error(`${tag} error elapsed=${Date.now() - startMs}ms`, err);
+    await db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, chapterId));
+  }
+}
+
+/**
+ * Used with ctx.waitUntil() — generates first chapter, updates story/chapter, queues cover job.
+ */
+export async function generateFirstChapterBackground({
+  storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey,
+}: GenerateFirstParams): Promise<void> {
+  const { stories } = await import('../schema');
+  const tag = `[bg] story=${storyId}`;
+  const startMs = Date.now();
+
+  try {
+    const generated = await generateFirstChapter(genCtx, apiKey);
+
+    await db.update(stories)
+      .set({ title: generated.title, genre: generated.genre, status: 'ready' })
+      .where(eq(stories.id, storyId));
+
+    await db.update(chapters).set({
+      title: generated.chapterTitle,
+      content: generated.content,
+      situation: generated.situation,
+      question: generated.question,
+      options: generated.choices.map((text, index) => ({ index, text })),
+      status: 'ready',
+    }).where(eq(chapters.id, chapterId));
+
+    console.log(`${tag} done title="${generated.title}" elapsed=${Date.now() - startMs}ms`);
+
+    const summary = await generateChapterSummary(generated.content, 1, threadId, apiKey);
+    await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
+
+    // Cover image — non-critical
+    try {
+      await fetch(coverWorkerUrl, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${coverWorkerApiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storyId, title: generated.title, genre: generated.genre, prompt: genCtx.prompt }),
+      });
+    } catch (err) {
+      console.error(`${tag} cover enqueue failed (non-critical)`, err);
+    }
+  } catch (err) {
+    console.error(`${tag} error elapsed=${Date.now() - startMs}ms`, err);
+    await db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, chapterId));
+    await db.update(stories).set({ status: 'failed' }).where(eq(stories.id, storyId));
+  }
+}

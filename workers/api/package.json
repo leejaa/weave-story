@@ -1,0 +1,23 @@
+{
+  "name": "weave-story-api-worker",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@ai-sdk/gateway": "^3.0.112",
+    "@neondatabase/serverless": "^1.1.0",
+    "ai": "^6.0.177",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.7.10",
+    "jose": "^6.2.3",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "~5.9.2",
+    "wrangler": "^4.0.0"
+  }
+}
