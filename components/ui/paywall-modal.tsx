@@ -15,7 +15,7 @@ import { postGrantCredits } from '@/lib/api/fetch';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS } from '@/constants/colors';
-import type { PurchasesPackage, PurchasesStoreProduct } from 'react-native-purchases';
+import type { PurchasesPackage, PurchasesStoreProduct, PurchasesStoreTransaction } from 'react-native-purchases';
 
 type Props = {
   visible: boolean;
@@ -41,10 +41,10 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
       const credits = CREDITS_PER_PRODUCT[productId];
 
       if (credits) {
-        const nonSubs = (customerInfo as any).nonSubscriptionTransactions ?? [];
+        const nonSubs: PurchasesStoreTransaction[] = customerInfo.nonSubscriptionTransactions ?? [];
         const latest = nonSubs
-          .filter((t: any) => t.productIdentifier === productId)
-          .sort((a: any, b: any) => b.purchaseDateMillis - a.purchaseDateMillis)[0];
+          .filter(t => t.productIdentifier === productId)
+          .sort((a, b) => b.purchaseDateMillis - a.purchaseDateMillis)[0];
 
         const purchaseDateMs = latest
           ? String(latest.purchaseDateMillis)
@@ -53,13 +53,12 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
         await postGrantCredits({ productId, purchaseDateMs });
         await queryClient.invalidateQueries({ queryKey: ['me'] });
       } else {
-        // subscription — premium entitlement already set via RC
         await queryClient.invalidateQueries({ queryKey: ['me'] });
       }
 
       onSuccess();
-    } catch (err: any) {
-      if (err?.userCancelled) return;
+    } catch (err) {
+      if (err instanceof Error && (err as Error & { userCancelled?: boolean }).userCancelled) return;
       console.error('[paywall] purchase error', err);
     } finally {
       setLoading(null);
