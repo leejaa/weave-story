@@ -2,5 +2,8 @@
   "language": "언어",
   "signOut": "로그아웃",
   "signOutConfirm": "로그아웃 하시겠어요?",
-  "cancel": "취소"
+  "cancel": "취소",
+  "plan": "요금제",
+  "unlimitedStories": "무제한 스토리 이용 중",
+  "creditsRemaining": "크레딧 {{count}}개 남음"
 }

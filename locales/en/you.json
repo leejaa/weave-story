@@ -2,5 +2,9 @@
   "language": "Language",
   "signOut": "Sign out",
   "signOutConfirm": "Are you sure you want to sign out?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "plan": "Plan",
+  "unlimitedStories": "Unlimited stories",
+  "creditsRemaining": "{{count}} credit remaining",
+  "creditsRemaining_other": "{{count}} credits remaining"
 }

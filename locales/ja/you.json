@@ -2,5 +2,8 @@
   "language": "言語",
   "signOut": "サインアウト",
   "signOutConfirm": "サインアウトしますか？",
-  "cancel": "キャンセル"
+  "cancel": "キャンセル",
+  "plan": "プラン",
+  "unlimitedStories": "ストーリー無制限",
+  "creditsRemaining": "クレジット残り{{count}}個"
 }
