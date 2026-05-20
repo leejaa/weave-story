@@ -1,5 +1,12 @@
 import '@/global.css';
 import '@/lib/i18n';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  enabled: !__DEV__,
+  tracesSampleRate: 0.2,
+});
 
 import { AuthProvider } from '@/lib/auth/client/context';
 import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
@@ -36,7 +43,7 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-export default function RootLayout() {
+function RootLayout() {
   const colorScheme = useColorScheme();
   const colors = palette[colorScheme === 'dark' ? 'dark' : 'light'];
   const [localeReady, setLocaleReady] = useState(false);
@@ -96,3 +103,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

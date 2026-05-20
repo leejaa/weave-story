@@ -44,10 +44,10 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
         const nonSubs: PurchasesStoreTransaction[] = customerInfo.nonSubscriptionTransactions ?? [];
         const latest = nonSubs
           .filter(t => t.productIdentifier === productId)
-          .sort((a, b) => b.purchaseDateMillis - a.purchaseDateMillis)[0];
+          .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate))[0];
 
         const purchaseDateMs = latest
-          ? String(latest.purchaseDateMillis)
+          ? String(new Date(latest.purchaseDate).getTime())
           : String(Date.now());
 
         await postGrantCredits({ productId, purchaseDateMs });
