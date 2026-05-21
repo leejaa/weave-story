@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { eq, desc, ne, and, lte, asc } from 'drizzle-orm';
+import { eq, desc, ne, and, lte, asc, sql } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
-import { threads, stories, chapters, interventions } from '../lib/schema';
+import { threads, stories, chapters, interventions, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter-context';
 import { generateNextChapterBackground } from '../lib/threads/background';
@@ -109,7 +109,7 @@ threadsRouter.get('/:id', async (c) => {
 threadsRouter.post('/:id/choose', async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
-  const { chapterNumber, choiceIndex, customInput } = await c.req.json();
+  const { chapterNumber, choiceIndex, customInput, hasPremium } = await c.req.json();
 
   if (typeof chapterNumber !== 'number') return c.json({ error: 'chapterNumber required' }, 400);
   const hasChoice = typeof choiceIndex === 'number';
@@ -200,6 +200,13 @@ threadsRouter.post('/:id/choose', async (c) => {
   }
 
   const isLast = nextChapterNumber > threadRow.estimatedChapters;
+
+  if (!isRetry && !isLast && !hasPremium) {
+    const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
+    if (!userRow || userRow.credits <= 0) return c.json({ error: 'insufficient_credits' }, 402);
+    await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
+  }
+
   const newProgress = Math.min((nextChapterNumber - 1) / threadRow.estimatedChapters, 1).toFixed(3);
   const newStatus = isLast ? 'completed' : 'active';
 

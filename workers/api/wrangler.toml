@@ -4,6 +4,9 @@ compatibility_date = "2025-05-13"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
+[observability]
+enabled = true
+
 # Secrets — set with: npx wrangler secret put SECRET_NAME
 # DATABASE_URL
 # JWT_SECRET

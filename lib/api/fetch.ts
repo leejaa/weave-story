@@ -44,11 +44,12 @@ export async function postChoose(
   threadId: string,
   chapterNumber: number,
   selection: { choiceIndex: number } | { customInput: string },
+  hasPremium: boolean,
 ): Promise<ChooseResult> {
   const res = await authFetch(`/api/threads/${threadId}/choose`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chapterNumber, ...selection }),
+    body: JSON.stringify({ chapterNumber, ...selection, hasPremium }),
   });
   await throwIfError(res);
   return res.json();

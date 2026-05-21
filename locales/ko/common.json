@@ -26,5 +26,27 @@
     "ongoing": "진행 중",
     "completed": "완결",
     "generating": "준비 중…"
+  },
+  "paywall": {
+    "credits": {
+      "title": "크레딧 구매",
+      "subtitle": "읽을 챕터만큼만 구매하세요",
+      "popular": "인기",
+      "creditsDesc_one": "챕터 {{count}}개",
+      "creditsDesc_other": "챕터 {{count}}개",
+      "goSubscription": "무제한으로 읽고 싶다면? 구독 보기 →"
+    },
+    "subscription": {
+      "back": "← 뒤로",
+      "title": "월정액 구독",
+      "subtitle": "매달 무제한 챕터 생성",
+      "badge": "무제한",
+      "productDesc": "원하는 만큼 챕터를 생성하세요",
+      "perMonth": " / 월",
+      "restoreLink": "이미 구독 중이셨나요? 복원하기",
+      "restoreHint": "앱 재설치 또는 기기 변경 시 사용하세요",
+      "restoreSuccess": "구독이 복원되었습니다!",
+      "restoreNone": "활성 구독을 찾을 수 없습니다."
+    }
   }
 }

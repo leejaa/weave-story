@@ -26,5 +26,27 @@
     "ongoing": "進行中",
     "completed": "完結",
     "generating": "準備中…"
+  },
+  "paywall": {
+    "credits": {
+      "title": "クレジット購入",
+      "subtitle": "読みたい章だけ購入しよう",
+      "popular": "人気",
+      "creditsDesc_one": "{{count}}章分",
+      "creditsDesc_other": "{{count}}章分",
+      "goSubscription": "無制限で読みたい方はこちら →"
+    },
+    "subscription": {
+      "back": "← 戻る",
+      "title": "月額サブスク",
+      "subtitle": "毎月無制限に章を生成",
+      "badge": "無制限",
+      "productDesc": "好きなだけ章を生成できます",
+      "perMonth": " / 月",
+      "restoreLink": "すでにご登録済みですか？復元する",
+      "restoreHint": "アプリの再インストールや機種変更の際にご利用ください",
+      "restoreSuccess": "サブスクが復元されました！",
+      "restoreNone": "有効なサブスクが見つかりませんでした。"
+    }
   }
 }

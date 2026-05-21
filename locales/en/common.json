@@ -26,5 +26,27 @@
     "ongoing": "In progress",
     "completed": "Completed",
     "generating": "Preparing…"
+  },
+  "paywall": {
+    "credits": {
+      "title": "Buy Credits",
+      "subtitle": "Only pay for what you read",
+      "popular": "POPULAR",
+      "creditsDesc_one": "{{count}} chapter",
+      "creditsDesc_other": "{{count}} chapters",
+      "goSubscription": "Prefer unlimited? View subscription →"
+    },
+    "subscription": {
+      "back": "← Back",
+      "title": "Monthly Subscription",
+      "subtitle": "Unlimited chapters, every month",
+      "badge": "UNLIMITED",
+      "productDesc": "Generate as many chapters as you like",
+      "perMonth": " / mo",
+      "restoreLink": "Already subscribed? Restore",
+      "restoreHint": "Use this if you reinstalled the app or switched devices",
+      "restoreSuccess": "Subscription restored!",
+      "restoreNone": "No active subscription found."
+    }
   }
 }

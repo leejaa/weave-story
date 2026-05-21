@@ -18,6 +18,11 @@ GoogleSignin.configure({
 });
 
 let refreshPromise: Promise<string | null> | null = null;
+let onSignedOut: (() => void) | null = null;
+
+export function setSignedOutCallback(cb: () => void) {
+  onSignedOut = cb;
+}
 
 async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = await tokenStorage.getRefreshToken();
@@ -29,9 +34,15 @@ async function refreshAccessToken(): Promise<string | null> {
     body: JSON.stringify({ refreshToken }),
   });
 
-  if (!res.ok) {
+  if (res.status === 401) {
     await tokenStorage.clear();
+    onSignedOut?.();
     return null;
+  }
+
+  if (!res.ok) {
+    // Transient server/network error — don't wipe tokens, let the caller handle it
+    throw new Error(`Refresh failed: ${res.status}`);
   }
 
   const { accessToken, refreshToken: newRefreshToken } = await res.json();

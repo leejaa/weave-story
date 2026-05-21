@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/api/query-keys';
 import { fetchThreadDetail, postChoose } from '@/lib/api/fetch';
+import { ApiError } from '@/lib/api/errors';
 import type { ThreadDetail } from '@/lib/api/types';
 
-export function useThreadDetail(threadId: string) {
+export function useThreadDetail(threadId: string, isPremium: boolean) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -26,7 +27,7 @@ export function useThreadDetail(threadId: string) {
     }: {
       chapterNumber: number;
       selection: { choiceIndex: number } | { customInput: string };
-    }) => postChoose(threadId, chapterNumber, selection),
+    }) => postChoose(threadId, chapterNumber, selection, isPremium),
     onSuccess: ({ chapter, thread, intervention }) => {
       queryClient.setQueryData<ThreadDetail>(
         queryKeys.threadDetail(threadId),
@@ -50,9 +51,14 @@ export function useThreadDetail(threadId: string) {
     selection: { choiceIndex: number } | { customInput: string },
   ) => chooseMutation.mutateAsync({ chapterNumber, selection });
 
+  const isInsufficientCredits =
+    chooseMutation.error instanceof ApiError && chooseMutation.error.status === 402;
+
   return {
     ...query,
     choosing: chooseMutation.isPending,
     choose,
+    isInsufficientCredits,
+    clearChooseError: chooseMutation.reset,
   };
 }
