@@ -3,20 +3,44 @@ import { Redirect } from 'expo-router';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { FONTS, SIZES } from '@/constants/colors';
 import { useAuth } from '@/lib/auth/client/context';
-import { usePalette } from '@/hooks/use-palette';
-import { FloatingParticles } from '@/components/login/floating-particles';
+
+const BG = '#0D0B10';
+const TEXT_PRIMARY = '#EDE8F0';
+const TEXT_SECONDARY = 'rgba(237,232,240,0.55)';
+const TEXT_FAINT = 'rgba(237,232,240,0.3)';
+const ACCENT = '#c8b8ce';
+
+function LoginBackground() {
+  const player = useVideoPlayer(require('@/assets/videos/login-bg.mp4'), (p) => {
+    p.loop = true;
+    p.muted = true;
+    p.play();
+  });
+
+  return (
+    <>
+      <VideoView
+        player={player}
+        style={StyleSheet.absoluteFill}
+        contentFit="cover"
+        nativeControls={false}
+      />
+      <View style={styles.overlay} />
+    </>
+  );
+}
 
 export default function LoginScreen() {
   const { state, signInWithApple, signInWithGoogle } = useAuth();
-  const c = usePalette();
   const insets = useSafeAreaInsets();
 
   if (state === 'loading') {
     return (
-      <View style={[styles.center, { backgroundColor: c.paper }]}>
-        <ActivityIndicator color={c.thread} />
+      <View style={[styles.center, { backgroundColor: BG }]}>
+        <ActivityIndicator color={ACCENT} />
       </View>
     );
   }
@@ -30,22 +54,22 @@ export default function LoginScreen() {
       style={[
         styles.container,
         {
-          backgroundColor: c.paper,
+          backgroundColor: BG,
           paddingTop: insets.top + 64,
           paddingBottom: insets.bottom + 40,
         },
       ]}>
 
-      <FloatingParticles />
+      <LoginBackground />
 
       <View style={styles.brand}>
-        <View style={[styles.diamond, { backgroundColor: c.thread }]} />
-        <Text style={[styles.wordmark, { color: c.inkFaint }]}>WEAVE STORY</Text>
+        <View style={[styles.diamond, { backgroundColor: ACCENT }]} />
+        <Text style={[styles.wordmark, { color: TEXT_FAINT }]}>WEAVE STORY</Text>
       </View>
 
       <View style={styles.headline}>
-        <Text style={[styles.title, { color: c.ink }]}>Weave Story</Text>
-        <Text style={[styles.subtitle, { color: c.inkSoft }]}>
+        <Text style={[styles.title, { color: TEXT_PRIMARY }]}>Weave Story</Text>
+        <Text style={[styles.subtitle, { color: TEXT_SECONDARY }]}>
           Your stories, woven together.
         </Text>
       </View>
@@ -56,7 +80,7 @@ export default function LoginScreen() {
         {Platform.OS === 'ios' && (
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
             cornerRadius={10}
             style={styles.authButton}
             onPress={signInWithApple}
@@ -64,14 +88,14 @@ export default function LoginScreen() {
         )}
         <Pressable
           onPress={signInWithGoogle}
-          style={[styles.googleButton, { borderColor: c.ruleStrong, backgroundColor: c.paperRaised }]}>
+          style={styles.googleButton}>
           <View style={styles.googleInner}>
-            <Ionicons name="logo-google" size={16} color={c.inkSoft} />
-            <Text style={[styles.googleLabel, { color: c.ink }]}>Continue with Google</Text>
+            <Ionicons name="logo-google" size={16} color={TEXT_SECONDARY} />
+            <Text style={[styles.googleLabel, { color: TEXT_PRIMARY }]}>Continue with Google</Text>
           </View>
         </Pressable>
 
-        <Text style={[styles.legal, { color: c.inkFaint }]}>
+        <Text style={[styles.legal, { color: TEXT_FAINT }]}>
           By continuing, you agree to our Terms of Service and Privacy Policy.
         </Text>
       </View>
@@ -133,11 +157,17 @@ const styles = StyleSheet.create({
     height: 52,
     width: '100%',
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(8,6,12,0.55)',
+  },
   googleButton: {
     height: 52,
     width: '100%',
     borderRadius: 10,
     borderWidth: 1,
+    borderColor: 'rgba(237,232,240,0.25)',
+    backgroundColor: 'rgba(237,232,240,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -79,7 +79,8 @@
           "project": "weave-story"
         }
       ],
-      "expo-iap"
+      "expo-iap",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
