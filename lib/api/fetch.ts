@@ -44,12 +44,11 @@ export async function postChoose(
   threadId: string,
   chapterNumber: number,
   selection: { choiceIndex: number } | { customInput: string },
-  hasPremium: boolean,
 ): Promise<ChooseResult> {
   const res = await authFetch(`/api/threads/${threadId}/choose`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chapterNumber, ...selection, hasPremium }),
+    body: JSON.stringify({ chapterNumber, ...selection }),
   });
   await throwIfError(res);
   return res.json();
@@ -73,7 +72,6 @@ export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult
 export async function postCreateStory(params: {
   prompt: string;
   estimatedChapters: number;
-  hasPremium?: boolean;
 }): Promise<{ threadId: string }> {
   const res = await authFetch('/api/stories', {
     method: 'POST',
@@ -86,7 +84,7 @@ export async function postCreateStory(params: {
 
 export async function postGrantCredits(params: {
   productId: string;
-  purchaseDateMs: string;
+  transactionId: string;
 }): Promise<{ credits: number; alreadyGranted?: boolean }> {
   const res = await authFetch('/api/purchases/grant', {
     method: 'POST',

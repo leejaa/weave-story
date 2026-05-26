@@ -24,17 +24,13 @@ storiesRouter.post('/', async (c) => {
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
   const estimatedChapters = typeof body?.estimatedChapters === 'number' ? body.estimatedChapters : 10;
-  const hasPremium = body?.hasPremium === true;
-
   if (!prompt?.trim()) return c.json({ error: 'prompt required' }, 400);
 
   const db = makeDb(c.env.DATABASE_URL);
 
-  if (!hasPremium) {
-    const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
-    if (!userRow || userRow.credits <= 0) return c.json({ error: 'insufficient_credits' }, 402);
-    await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
-  }
+  const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
+  if (!userRow || userRow.credits <= 0) return c.json({ error: 'insufficient_credits' }, 402);
+  await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
 
   const [story] = await db.insert(stories)
     .values({ userId, setupAnswers: { prompt: prompt.trim() }, estimatedChapters, status: 'generating' })

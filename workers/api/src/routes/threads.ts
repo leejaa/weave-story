@@ -109,7 +109,7 @@ threadsRouter.get('/:id', async (c) => {
 threadsRouter.post('/:id/choose', async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
-  const { chapterNumber, choiceIndex, customInput, hasPremium } = await c.req.json();
+  const { chapterNumber, choiceIndex, customInput } = await c.req.json();
 
   if (typeof chapterNumber !== 'number') return c.json({ error: 'chapterNumber required' }, 400);
   const hasChoice = typeof choiceIndex === 'number';
@@ -201,7 +201,7 @@ threadsRouter.post('/:id/choose', async (c) => {
 
   const isLast = nextChapterNumber > threadRow.estimatedChapters;
 
-  if (!isRetry && !isLast && !hasPremium) {
+  if (!isRetry && !isLast) {
     const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
     if (!userRow || userRow.credits <= 0) return c.json({ error: 'insufficient_credits' }, 402);
     await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));

@@ -3,7 +3,9 @@ export type WorkerEnv = {
   JWT_SECRET: string;
   AI_GATEWAY_API_KEY: string;
   CF_COVER_WORKER_URL: string;
-  REVENUECAT_SECRET_KEY: string;
+  APPLE_IAP_KEY_ID: string;
+  APPLE_IAP_ISSUER_ID: string;
+  APPLE_IAP_PRIVATE_KEY: string;
   GOOGLE_IOS_CLIENT_ID: string;
   GOOGLE_WEB_CLIENT_ID: string;
 };

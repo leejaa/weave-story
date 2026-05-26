@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { FONTS, SIZES } from '@/constants/colors';
 import { useAuth } from '@/lib/auth/client/context';
 import { usePalette } from '@/hooks/use-palette';
+import { FloatingParticles } from '@/components/login/floating-particles';
 
 export default function LoginScreen() {
   const { state, signInWithApple, signInWithGoogle } = useAuth();
@@ -34,6 +35,8 @@ export default function LoginScreen() {
           paddingBottom: insets.bottom + 40,
         },
       ]}>
+
+      <FloatingParticles />
 
       <View style={styles.brand}>
         <View style={[styles.diamond, { backgroundColor: c.thread }]} />

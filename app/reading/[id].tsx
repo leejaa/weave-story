@@ -17,7 +17,6 @@ import { GeneratingPage } from '@/components/reading/generating-page';
 import { InterventionPage } from '@/components/reading/intervention-page';
 import { PaywallModal } from '@/components/ui/paywall-modal';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
-import { usePurchases } from '@/lib/purchases/context';
 import { usePalette } from '@/hooks/use-palette';
 import { buildPages } from '@/lib/reading/build-pages';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -31,8 +30,7 @@ export default function ReadingScreen() {
   const flatRef = useRef<FlatList>(null);
 
   const { t } = useTranslation('reading');
-  const { isPremium } = usePurchases();
-  const { data, isLoading, choosing, choose, isInsufficientCredits, clearChooseError } = useThreadDetail(id, isPremium);
+  const { data, isLoading, choosing, choose, isInsufficientCredits, clearChooseError } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
   const [listHeight, setListHeight] = useState(0);
 

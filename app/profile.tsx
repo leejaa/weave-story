@@ -7,7 +7,6 @@ import { usePalette } from '@/hooks/use-palette';
 import { useLocale } from '@/hooks/use-locale';
 import { useAuth } from '@/lib/auth/client/context';
 import { useMe } from '@/hooks/use-me';
-import { usePurchases } from '@/lib/purchases/context';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { SupportedLocale } from '@/lib/i18n';
 
@@ -19,8 +18,6 @@ export default function ProfileScreen() {
   const { locale, setLocale, supportedLocales, localeLabels } = useLocale();
   const { signOut } = useAuth();
   const { data: me } = useMe();
-  const { isPremium } = usePurchases();
-
   const handleSignOut = () => {
     Alert.alert(t('signOut'), t('signOutConfirm'), [
       { text: t('cancel'), style: 'cancel' },
@@ -61,22 +58,13 @@ export default function ProfileScreen() {
         </Text>
       </View>
 
-      {/* Plan */}
+      {/* Credits */}
       <View style={[styles.section, { borderBottomColor: c.rule }]}>
         <Text style={[styles.label, { color: c.inkFaint }]}>{t('plan')}</Text>
         <View style={styles.planRow}>
-          <View style={[styles.planBadge, { backgroundColor: isPremium ? c.thread : c.paperSunk, borderColor: isPremium ? c.thread : c.rule }]}>
-            <Text style={[styles.planBadgeText, { color: isPremium ? c.paper : c.inkSoft }]}>
-              {isPremium ? 'Premium' : 'Free'}
-            </Text>
-          </View>
-          {isPremium ? (
-            <Text style={[styles.planDesc, { color: c.inkSoft }]}>{t('unlimitedStories')}</Text>
-          ) : (
-            <Text style={[styles.planDesc, { color: c.inkSoft }]}>
-              {t('creditsRemaining', { count: me?.credits ?? 0 })}
-            </Text>
-          )}
+          <Text style={[styles.planDesc, { color: c.inkSoft }]}>
+            {t('creditsRemaining', { count: me?.credits ?? 0 })}
+          </Text>
         </View>
       </View>
 

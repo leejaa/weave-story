@@ -3,7 +3,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postCreateStory, postCheckPrompt } from '@/lib/api/fetch';
 import { toUserMessage } from '@/lib/api/errors';
-import { usePurchases } from '@/lib/purchases/context';
 import { useMe } from '@/hooks/use-me';
 
 const DEFAULT_CHAPTERS = 10;
@@ -14,10 +13,9 @@ export function useStoryPrompt() {
   const { initialPrompt } = useLocalSearchParams<{ initialPrompt?: string }>();
   const [prompt, setPrompt] = useState(initialPrompt ?? '');
   const [showPaywall, setShowPaywall] = useState(false);
-  const { isPremium } = usePurchases();
   const { data: me } = useMe();
 
-  const canCreateStory = isPremium || (me?.credits ?? 0) > 0;
+  const canCreateStory = (me?.credits ?? 0) > 0;
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -39,7 +37,7 @@ export function useStoryPrompt() {
         return null;
       }
 
-      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS, hasPremium: isPremium });
+      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS });
     },
     onSuccess: (result) => {
       if (result) {

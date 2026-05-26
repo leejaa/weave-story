@@ -4,7 +4,7 @@ import { fetchThreadDetail, postChoose } from '@/lib/api/fetch';
 import { ApiError } from '@/lib/api/errors';
 import type { ThreadDetail } from '@/lib/api/types';
 
-export function useThreadDetail(threadId: string, isPremium: boolean) {
+export function useThreadDetail(threadId: string) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -27,7 +27,7 @@ export function useThreadDetail(threadId: string, isPremium: boolean) {
     }: {
       chapterNumber: number;
       selection: { choiceIndex: number } | { customInput: string };
-    }) => postChoose(threadId, chapterNumber, selection, isPremium),
+    }) => postChoose(threadId, chapterNumber, selection),
     onSuccess: ({ chapter, thread, intervention }) => {
       queryClient.setQueryData<ThreadDetail>(
         queryKeys.threadDetail(threadId),

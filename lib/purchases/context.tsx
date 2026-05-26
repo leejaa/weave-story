@@ -1,76 +1,97 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import Purchases, {
-  LOG_LEVEL,
-  type CustomerInfo,
-  type PurchasesOfferings,
-  type PurchasesPackage,
-} from 'react-native-purchases';
-import { RC_PUBLIC_KEY, ENTITLEMENT_PREMIUM } from './config';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useIAP } from 'expo-iap';
+import type { Product, Purchase, PurchaseError } from 'expo-iap';
+import * as Sentry from '@sentry/react-native';
+import { PRODUCT_IDS } from './config';
+
+type PendingPurchase = {
+  resolve: (purchase: Purchase) => void;
+  reject: (error: PurchaseError | Error) => void;
+};
 
 type PurchasesContextValue = {
-  customerInfo: CustomerInfo | null;
-  offerings: PurchasesOfferings | null;
+  products: Product[];
   isLoading: boolean;
-  isPremium: boolean;
-  purchasePackage: (pkg: PurchasesPackage) => Promise<CustomerInfo>;
-  restorePurchases: () => Promise<CustomerInfo>;
+  connected: boolean;
+  purchaseProduct: (sku: string) => Promise<Purchase>;
+  finishTransaction: (purchase: Purchase) => Promise<void>;
+  restorePurchases: () => Promise<void>;
 };
 
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
 
-export function PurchasesProvider({
-  children,
-  userId,
-}: {
-  children: React.ReactNode;
-  userId: string | null;
-}) {
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
-  const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null);
+const CREDIT_SKUS = Object.values(PRODUCT_IDS);
+
+export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
+  const pendingRef = useRef<PendingPurchase | null>(null);
+
+  const {
+    connected,
+    products,
+    fetchProducts,
+    requestPurchase,
+    finishTransaction: iapFinishTransaction,
+    restorePurchases: iapRestorePurchases,
+  } = useIAP({
+    onPurchaseSuccess: (purchase) => {
+      Sentry.addBreadcrumb({ category: 'iap', message: `onPurchaseSuccess productId=${purchase.productId} transactionId=${purchase.transactionId}` });
+      pendingRef.current?.resolve(purchase);
+      pendingRef.current = null;
+    },
+    onPurchaseError: (error) => {
+      Sentry.addBreadcrumb({ category: 'iap', message: `onPurchaseError code=${error.code} message=${error.message}` });
+      pendingRef.current?.reject(error);
+      pendingRef.current = null;
+    },
+    onError: (error) => {
+      Sentry.captureException(error, { tags: { context: 'iap_hook_error' } });
+      console.warn('[iap] onError', error);
+    },
+  });
 
   useEffect(() => {
-    if (!RC_PUBLIC_KEY || !userId) {
-      setIsLoading(false);
-      return;
-    }
-
-    Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
-    Purchases.configure({ apiKey: RC_PUBLIC_KEY, appUserID: userId });
-
-    let mounted = true;
-    Promise.all([Purchases.getCustomerInfo(), Purchases.getOfferings()])
-      .then(([info, offs]) => {
-        if (!mounted) return;
-        setCustomerInfo(info);
-        setOfferings(offs);
+    Sentry.captureMessage(`[iap] connected=${connected}`, 'info');
+    if (!connected) return;
+    setIsLoading(true);
+    fetchProducts({ skus: CREDIT_SKUS, type: 'inapp' })
+      .then(() => {
+        Sentry.captureMessage('[iap] fetchProducts resolved', 'info');
       })
-      .catch(err => console.warn('[RC] init error', err))
-      .finally(() => { if (mounted) setIsLoading(false); });
+      .catch((err: unknown) => {
+        Sentry.captureException(err, { tags: { context: 'iap_fetch_products' } });
+        console.warn('[iap] fetchProducts error', err);
+      })
+      .finally(() => setIsLoading(false));
+  }, [connected]);
 
-    Purchases.addCustomerInfoUpdateListener((info: CustomerInfo) => {
-      if (mounted) setCustomerInfo(info);
+  useEffect(() => {
+    Sentry.captureMessage(`[iap] products count=${products.length} ids=${products.map(p => p.id).join(',') || 'none'}`, 'info');
+  }, [products]);
+
+  const purchaseProduct = useCallback((sku: string): Promise<Purchase> => {
+    return new Promise((resolve, reject) => {
+      pendingRef.current = { resolve, reject };
+      requestPurchase({
+        type: 'in-app',
+        request: { apple: { sku } },
+      }).catch((err: unknown) => {
+        pendingRef.current = null;
+        reject(err instanceof Error ? err : new Error(String(err)));
+      });
     });
+  }, [requestPurchase]);
 
-    return () => { mounted = false; };
-  }, [userId]);
-
-  const purchasePackage = useCallback(async (pkg: PurchasesPackage) => {
-    const { customerInfo: info } = await Purchases.purchasePackage(pkg);
-    setCustomerInfo(info);
-    return info;
-  }, []);
+  const finishTransaction = useCallback(async (purchase: Purchase) => {
+    await iapFinishTransaction({ purchase, isConsumable: true });
+  }, [iapFinishTransaction]);
 
   const restorePurchases = useCallback(async () => {
-    const info = await Purchases.restorePurchases();
-    setCustomerInfo(info);
-    return info;
-  }, []);
-
-  const isPremium = !!customerInfo?.entitlements.active[ENTITLEMENT_PREMIUM];
+    await iapRestorePurchases();
+  }, [iapRestorePurchases]);
 
   return (
-    <PurchasesContext.Provider value={{ customerInfo, offerings, isLoading, isPremium, purchasePackage, restorePurchases }}>
+    <PurchasesContext.Provider value={{ products, isLoading, connected, purchaseProduct, finishTransaction, restorePurchases }}>
       {children}
     </PurchasesContext.Provider>
   );

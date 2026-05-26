@@ -78,7 +78,8 @@
           "organization": "leejahun",
           "project": "weave-story"
         }
-      ]
+      ],
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true,

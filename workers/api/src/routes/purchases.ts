@@ -3,7 +3,9 @@ import { eq, and, sql } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
 import { users, purchaseGrants } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
-import type { AppEnv } from '../types';
+import type { AppEnv, WorkerEnv } from '../types';
+
+const BUNDLE_ID = 'com.leejahun.weavestory';
 
 const CREDITS_PER_PRODUCT: Record<string, number> = {
   'com.leejahun.weavestory.credits_starter_3': 3,
@@ -16,10 +18,11 @@ purchasesRouter.use(requireAuth);
 
 purchasesRouter.post('/grant', async (c) => {
   const userId = c.get('userId');
-  const { productId, purchaseDateMs } = await c.req.json();
+  const body = await c.req.json() as { productId?: unknown; transactionId?: unknown };
+  const { productId, transactionId } = body;
 
-  if (typeof productId !== 'string' || typeof purchaseDateMs !== 'string') {
-    return c.json({ error: 'productId and purchaseDateMs required' }, 400);
+  if (typeof productId !== 'string' || typeof transactionId !== 'string') {
+    return c.json({ error: 'productId and transactionId required' }, 400);
   }
 
   const creditsToGrant = CREDITS_PER_PRODUCT[productId];
@@ -33,7 +36,7 @@ purchasesRouter.post('/grant', async (c) => {
     .where(and(
       eq(purchaseGrants.userId, userId),
       eq(purchaseGrants.productId, productId),
-      eq(purchaseGrants.rcPurchaseDateMs, purchaseDateMs),
+      eq(purchaseGrants.rcPurchaseDateMs, transactionId),
     ));
 
   if (alreadyGranted.length > 0) {
@@ -41,21 +44,11 @@ purchasesRouter.post('/grant', async (c) => {
     return c.json({ credits: user.credits, alreadyGranted: true });
   }
 
-  const secretKey = c.env.REVENUECAT_SECRET_KEY;
-  const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
-    headers: { Authorization: `Bearer ${secretKey}`, 'Content-Type': 'application/json' },
-  });
-
-  if (!res.ok) {
-    console.error(`[grant] RC API error status=${res.status}`);
+  const isValid = await verifyAppleTransaction(transactionId, productId, c.env);
+  if (!isValid) {
+    console.error(`[grant] Apple verification failed transactionId=${transactionId} product=${productId}`);
     return c.json({ error: 'Purchase verification failed' }, 402);
   }
-
-  const data = await res.json() as { subscriber?: { non_subscriptions?: Record<string, { purchase_date_ms: number }[]> } };
-  const purchases = data.subscriber?.non_subscriptions?.[productId] ?? [];
-  const isValid = purchases.some(p => String(p.purchase_date_ms) === purchaseDateMs);
-
-  if (!isValid) return c.json({ error: 'Purchase verification failed' }, 402);
 
   const [updated] = await db
     .update(users)
@@ -63,8 +56,105 @@ purchasesRouter.post('/grant', async (c) => {
     .where(eq(users.id, userId))
     .returning({ credits: users.credits });
 
-  await db.insert(purchaseGrants).values({ userId, productId, rcPurchaseDateMs: purchaseDateMs, creditsGranted: creditsToGrant });
+  await db.insert(purchaseGrants).values({
+    userId,
+    productId,
+    rcPurchaseDateMs: transactionId,
+    creditsGranted: creditsToGrant,
+  });
 
   console.log(`[grant] granted userId=${userId} product=${productId} credits=${creditsToGrant} total=${updated.credits}`);
   return c.json({ credits: updated.credits });
 });
+
+async function verifyAppleTransaction(
+  transactionId: string,
+  expectedProductId: string,
+  env: WorkerEnv,
+): Promise<boolean> {
+  const jwt = await buildAppleJWT(env);
+
+  for (const baseUrl of [
+    'https://api.storekit.itunes.apple.com',
+    'https://api.storekit-sandbox.itunes.apple.com',
+  ]) {
+    const res = await fetch(`${baseUrl}/inApps/v1/transactions/${transactionId}`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+
+    if (res.status === 404) continue;
+    if (!res.ok) {
+      console.error(`[apple-verify] HTTP ${res.status} from ${baseUrl}`);
+      return false;
+    }
+
+    const { signedTransaction } = await res.json() as { signedTransaction: string };
+    const payload = decodeJWSPayload(signedTransaction);
+
+    const valid =
+      payload.bundleId === BUNDLE_ID &&
+      payload.productId === expectedProductId &&
+      payload.type === 'Consumable';
+
+    if (!valid) {
+      console.error(`[apple-verify] payload mismatch`, { bundleId: payload.bundleId, productId: payload.productId, type: payload.type });
+    }
+
+    return valid;
+  }
+
+  return false;
+}
+
+function decodeJWSPayload(jws: string): Record<string, string> {
+  const segment = jws.split('.')[1];
+  const padded = segment + '='.repeat((4 - segment.length % 4) % 4);
+  const decoded = atob(padded.replace(/-/g, '+').replace(/_/g, '/'));
+  return JSON.parse(decoded) as Record<string, string>;
+}
+
+async function buildAppleJWT(env: WorkerEnv): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+
+  const toB64url = (s: string) =>
+    btoa(s).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+  const header = toB64url(JSON.stringify({ alg: 'ES256', kid: env.APPLE_IAP_KEY_ID, typ: 'JWT' }));
+  const payload = toB64url(JSON.stringify({
+    iss: env.APPLE_IAP_ISSUER_ID,
+    iat: now,
+    exp: now + 300,
+    aud: 'appstoreconnect-v1',
+    bid: BUNDLE_ID,
+  }));
+
+  const signingInput = `${header}.${payload}`;
+
+  const pemContent = env.APPLE_IAP_PRIVATE_KEY
+    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+    .replace(/-----END PRIVATE KEY-----/g, '')
+    .replace(/\s+/g, '');
+
+  const keyBuffer = Uint8Array.from(atob(pemContent), ch => ch.charCodeAt(0)).buffer;
+
+  const cryptoKey = await crypto.subtle.importKey(
+    'pkcs8',
+    keyBuffer,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['sign'],
+  );
+
+  const encoder = new TextEncoder();
+  const signatureBuffer = await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    cryptoKey,
+    encoder.encode(signingInput),
+  );
+
+  const sigBytes = new Uint8Array(signatureBuffer);
+  const sigB64 = btoa(String.fromCharCode(...sigBytes))
+    .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+  return `${signingInput}.${sigB64}`;
+}

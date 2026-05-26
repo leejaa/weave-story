@@ -8,6 +8,7 @@ Sentry.init({
   tracesSampleRate: 0.2,
 });
 
+
 import { AuthProvider } from '@/lib/auth/client/context';
 import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
 import { QueryClientProvider } from '@tanstack/react-query';
