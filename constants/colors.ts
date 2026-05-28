@@ -47,6 +47,7 @@ export type ThemeColors = {
 
 export const FONTS = {
   display: 'BlackHanSans_400Regular',      // 한글 디스플레이 헤드라인
+  cover: 'Jua_400Regular',
   serif: 'Fraunces_400Regular',
   serifSemibold: 'Fraunces_600SemiBold',
   serifItalic: 'Fraunces_400Regular_Italic',

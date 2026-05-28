@@ -4,6 +4,7 @@
  * then seeds (upserts) the sample_cards table in the DB.
  *
  * Run: node scripts/generate-sample-cards.mjs
+ * Force new GPT Image 2 covers: node scripts/generate-sample-cards.mjs --refresh
  *
  * Images are stored in R2 at covers/card-{key}.png.
  * Re-running is safe — R2 checks cache and DB upserts by genre.
@@ -44,6 +45,8 @@ const CARD_KEYS = [
   'card-sf',
 ];
 
+const refresh = process.argv.includes('--refresh');
+
 console.log(`Generating ${CARD_KEYS.length} sample card images (one at a time)...`);
 console.log('Each GPT Image 2 call takes ~15–30s.\n');
 
@@ -52,7 +55,8 @@ for (const key of CARD_KEYS) {
   process.stdout.write(`  ${key} ... `);
   let card;
   try {
-    const res = await fetch(`${workerUrl}/sample-cards/${key}`, {
+    const suffix = refresh ? '?refresh=1' : '';
+    const res = await fetch(`${workerUrl}/sample-cards/${key}${suffix}`, {
       headers: { Authorization: `Bearer ${apiKey}` },
       signal: AbortSignal.timeout(240_000),
     });

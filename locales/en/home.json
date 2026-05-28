@@ -19,5 +19,47 @@
     "headline": "A story\nonly for you",
     "body": "Describe what you want to read,\nand your story begins.",
     "cta": "Start new story"
+  },
+  "sampleCards": {
+    "ROMANCE": {
+      "genreLabel": "Romance",
+      "title": "Contract\nMarriage",
+      "prompt": "A contract marriage begins out of mutual necessity. They agreed there would be no feelings, but every day together makes that promise harder to keep."
+    },
+    "ROFAN": {
+      "genreLabel": "Romantasy",
+      "title": "Chosen by\nthe Duke",
+      "prompt": "After waking inside a novel, you meet the cold duke who was supposed to be the villain. For some reason, he only draws closer to you, and the original story starts to unravel."
+    },
+    "FANTASY": {
+      "genreLabel": "Fantasy",
+      "title": "The Weakest\nWas Supreme",
+      "prompt": "Everyone dismissed the one person with no powers. But an ancient awakening begins, revealing a strength the world never knew existed."
+    },
+    "WUXIA": {
+      "genreLabel": "Wuxia",
+      "title": "The Last\nSwordsman",
+      "prompt": "Ten years after vanishing from the martial world, a swordsman takes up his blade again to uncover the truth behind his master's death."
+    },
+    "MYSTERY": {
+      "genreLabel": "Mystery",
+      "title": "The Painter's\nLast Canvas",
+      "prompt": "A renowned painter vanished the night his final work was completed. Hidden inside the unfinished canvas is a clue no one has noticed yet."
+    },
+    "HISTORICAL": {
+      "genreLabel": "Historical",
+      "title": "Joseon's\nHidden Officer",
+      "prompt": "In Joseon, a woman hides her identity to join the police bureau. While chasing a series of disappearances among noble families, she steps into a royal conspiracy."
+    },
+    "MODERN_FANTASY": {
+      "genreLabel": "Urban Fantasy",
+      "title": "The Shop of\nLast Words",
+      "prompt": "At the end of a Seoul alley is a shop with no sign. Its owner delivers the final words of the dead. Tonight, a new visitor knocks."
+    },
+    "SF": {
+      "genreLabel": "Sci-Fi",
+      "title": "The Last\nEarthling",
+      "prompt": "After humanity's fall, one astronaut survives alone. On a nameless planet, they search for a way home and encounter something unexpected."
+    }
   }
 }

@@ -16,6 +16,8 @@
   "hint": "The more specific the character, setting, and conflict — the more vivid the story.",
   "quickStart": "Quick start",
   "startBtn": "Start story",
+  "loadingTitle": "Writing your first line",
+  "loadingSubtitle": "Give us a moment while your story settles onto the page.",
   "refine_label": "Tell us a bit more",
   "refine_placeholder": "Answer freely (you can also skip this)",
   "refine_next": "Next",

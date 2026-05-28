@@ -16,6 +16,8 @@
   "hint": "주인공, 배경, 갈등이 구체적일수록 더 생생한 이야기가 만들어져요.",
   "quickStart": "빠른 시작",
   "startBtn": "이야기 시작하기",
+  "loadingTitle": "첫 문장을 쓰고 있어요",
+  "loadingSubtitle": "잠시만 기다려주세요. 당신의 이야기가 종이 위에 놓이고 있어요.",
   "refine_label": "조금 더 알려주세요",
   "refine_placeholder": "자유롭게 답해주세요 (건너뛰기도 가능해요)",
   "refine_next": "다음",

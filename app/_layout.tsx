@@ -1,14 +1,6 @@
 import '@/global.css';
 import '@/lib/i18n';
 import * as Sentry from '@sentry/react-native';
-
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  enabled: !__DEV__,
-  tracesSampleRate: 0.2,
-});
-
-
 import { AuthProvider } from '@/lib/auth/client/context';
 import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -33,10 +25,17 @@ import {
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { DMMono_400Regular } from '@expo-google-fonts/dm-mono';
 import { BlackHanSans_400Regular } from '@expo-google-fonts/black-han-sans';
+import { Jua_400Regular } from '@expo-google-fonts/jua';
 import { useFonts } from 'expo-font';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { palette } from '@/constants/colors';
 import { loadSavedLocale } from '@/hooks/use-locale';
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  enabled: !__DEV__,
+  tracesSampleRate: 0.2,
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,6 +53,7 @@ function RootLayout() {
     Fraunces_400Regular_Italic,
     Fraunces_600SemiBold,
     BlackHanSans_400Regular,
+    Jua_400Regular,
     PlusJakartaSans_400Regular,
     PlusJakartaSans_500Medium,
     PlusJakartaSans_600SemiBold,
@@ -86,6 +86,7 @@ function RootLayout() {
         }}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="book-preview" options={{ headerShown: false, animation: 'fade_from_bottom' }} />
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="refine" options={{ headerShown: false, animation: 'slide_from_right' }} />

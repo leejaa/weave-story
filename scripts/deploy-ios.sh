@@ -7,7 +7,7 @@ set -e
 IPA_PATH="./build/app.ipa"
 
 echo "🔨 Step 1/2: Building iOS locally..."
-npx eas-cli env:exec production "npx eas-cli build --platform ios --profile production --local --output $IPA_PATH"
+npx eas-cli env:exec production "SENTRY_ALLOW_FAILURE=true npx eas-cli build --platform ios --profile production --local --output $IPA_PATH"
 
 echo "🚀 Step 2/2: Submitting to TestFlight..."
 npx eas-cli submit --platform ios --path "$IPA_PATH" --profile production
