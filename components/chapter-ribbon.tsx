@@ -2,6 +2,8 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePalette } from '@/hooks/use-palette';
 import { Icon } from '@/components/ui/icon';
+import { ChapterBookmarkLabel } from '@/components/reading/chapter-bookmark-label';
+import { ChapterProgressLine } from '@/components/reading/chapter-progress-line';
 import { FONTS, SIZES } from '@/constants/colors';
 
 type Props = {
@@ -14,58 +16,44 @@ type Props = {
 export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
-  const clamped = Math.min(totalChapters, 12);
 
   return (
     <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule, paddingTop: insets.top + 10 }]}>
-      <Pressable
-        onPress={onBack}
-        style={[styles.backButton, { borderColor: c.rule, backgroundColor: c.paper }]}>
-        <Icon name="chevron-left" size={16} color={c.inkSoft} />
-      </Pressable>
+      <View style={styles.topRow}>
+        <Pressable
+          onPress={onBack}
+          style={[styles.backButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
+          <Icon name="chevron-left" size={16} color={c.inkSoft} />
+        </Pressable>
 
-      <View style={styles.titleBlock}>
-        <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={[styles.position, { color: c.inkFaint }]}>
-          CH. {String(chapter).padStart(2, '0')} / {String(totalChapters).padStart(2, '0')}
-        </Text>
+        <View style={styles.titleBlock}>
+          <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>
+            {title}
+          </Text>
+          <Text style={[styles.position, { color: c.inkFaint }]}>
+            읽고 있는 장
+          </Text>
+        </View>
+
+        <ChapterBookmarkLabel chapter={chapter} totalChapters={totalChapters} colors={c} />
       </View>
 
-      <View style={styles.dots}>
-        {Array.from({ length: clamped }).map((_, i) => {
-          const done = i < chapter - 1;
-          const current = i === chapter - 1;
-          return (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: done || current ? c.thread : c.ruleStrong,
-                  shadowColor: current ? c.threadSoft : 'transparent',
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: current ? 1 : 0,
-                  shadowRadius: current ? 4 : 0,
-                },
-              ]}
-            />
-          );
-        })}
-      </View>
+      <ChapterProgressLine chapter={chapter} totalChapters={totalChapters} colors={c} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   ribbon: {
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
   },
   backButton: {
     width: 32,
@@ -86,17 +74,7 @@ const styles = StyleSheet.create({
   },
   position: {
     fontFamily: FONTS.mono,
-    fontSize: 9,
-    letterSpacing: 0.5,
-  },
-  dots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    fontSize: 10,
+    letterSpacing: 0,
   },
 });

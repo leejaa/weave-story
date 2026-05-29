@@ -4,7 +4,8 @@ import { makeDb } from '../lib/db';
 import { threads, stories, chapters, interventions, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter-context';
-import { generateNextChapterBackground } from '../lib/threads/background';
+import { createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
+import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import type { AppEnv } from '../types';
 
 export const threadsRouter = new Hono<AppEnv>();
@@ -190,7 +191,16 @@ threadsRouter.post('/:id/choose', async (c) => {
       .where(and(eq(chapters.threadId, threadId), eq(chapters.chapterNumber, nextChapterNumber)))
       .returning();
 
-    c.executionCtx.waitUntil(generateNextChapterBackground({ chapterId: resetChapter.id, genCtx, db, apiKey: c.env.AI_GATEWAY_API_KEY }));
+    try {
+      await enqueueStoryGenerationJob(
+        c.env.STORY_GENERATION_QUEUE,
+        createNextChapterGenerationJob({ chapterId: resetChapter.id, genCtx }),
+      );
+    } catch (err) {
+      console.error(`[threads] retry generation enqueue failed thread=${threadId} chapter=${nextChapterNumber}`, err);
+      await db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, resetChapter.id));
+      return c.json({ error: 'generation enqueue failed' }, 503);
+    }
 
     const [currentThread] = await db
       .select({ currentChapter: threads.currentChapter, progress: threads.progress, status: threads.status })
@@ -230,7 +240,19 @@ threadsRouter.post('/:id/choose', async (c) => {
     .values({ threadId, chapterNumber: nextChapterNumber, title: null, content: null, status: 'generating', options: null })
     .returning();
 
-  c.executionCtx.waitUntil(generateNextChapterBackground({ chapterId: pendingChapter.id, genCtx, db, apiKey: c.env.AI_GATEWAY_API_KEY }));
+  try {
+    await enqueueStoryGenerationJob(
+      c.env.STORY_GENERATION_QUEUE,
+      createNextChapterGenerationJob({ chapterId: pendingChapter.id, genCtx }),
+    );
+  } catch (err) {
+    console.error(`[threads] generation enqueue failed thread=${threadId} chapter=${nextChapterNumber}`, err);
+    await Promise.all([
+      db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, pendingChapter.id)),
+      db.update(users).set({ credits: sql`${users.credits} + 1` }).where(eq(users.id, userId)),
+    ]);
+    return c.json({ error: 'generation enqueue failed' }, 503);
+  }
 
   return c.json({ chapter: pendingChapter, thread: updatedThread, intervention: ivRecord });
 });

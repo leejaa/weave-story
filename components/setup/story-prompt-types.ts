@@ -6,8 +6,7 @@ export type StoryPromptCopy = {
   placeholder: string;
   hint: string;
   startBtn: string;
-  loadingTitle: string;
-  loadingSubtitle: string;
+  preparingBtn: string;
 };
 
 export type StoryPromptScreenProps = {

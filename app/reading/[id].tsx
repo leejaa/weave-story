@@ -2,7 +2,6 @@ import { useRef, useState, useCallback } from 'react';
 import {
   View,
   FlatList,
-  ActivityIndicator,
   Text,
   StyleSheet,
   useWindowDimensions,
@@ -49,7 +48,7 @@ export default function ReadingScreen() {
   );
 
   const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: Array<{ item: PageItem }> }) => {
+    ({ viewableItems }: { viewableItems: { item: PageItem }[] }) => {
       const first = viewableItems[0]?.item;
       if (first && 'chapterNumber' in first) {
         setVisibleChapter(first.chapterNumber);
@@ -60,8 +59,8 @@ export default function ReadingScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.centered, { backgroundColor: c.paper }]}>
-        <ActivityIndicator color={c.thread} />
+      <View style={[styles.container, { backgroundColor: c.paper }]}>
+        <GeneratingPage />
       </View>
     );
   }
@@ -139,7 +138,7 @@ export default function ReadingScreen() {
                 choosing={choosing}
               />
             )}
-            {item.type === 'generating' && <GeneratingPage genre={data.genre} />}
+            {item.type === 'generating' && <GeneratingPage />}
             {item.type === 'intervention' && <InterventionPage text={item.text} />}
             {item.type === 'end' && (
               <View style={styles.centered}>

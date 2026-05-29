@@ -6,7 +6,9 @@ import { storiesRouter } from './routes/stories';
 import { threadsRouter } from './routes/threads';
 import { sampleCardsRouter } from './routes/sample-cards';
 import { purchasesRouter } from './routes/purchases';
-import type { AppEnv } from './types';
+import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
+import type { StoryGenerationJob } from './lib/queue/story-generation-jobs';
+import type { AppEnv, WorkerEnv } from './types';
 
 const app = new Hono<AppEnv>();
 
@@ -21,4 +23,11 @@ app.route('/api/purchases', purchasesRouter);
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 
-export default app;
+export default {
+  fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
+    return app.fetch(request, env, ctx);
+  },
+  queue(batch: MessageBatch<StoryGenerationJob>, env: WorkerEnv) {
+    return handleStoryGenerationQueue(batch, env);
+  },
+};

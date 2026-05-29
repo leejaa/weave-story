@@ -31,8 +31,7 @@ export default function SetupScreen() {
           placeholder: t('placeholder'),
           hint: t('hint'),
           startBtn: t('startBtn'),
-          loadingTitle: t('loadingTitle'),
-          loadingSubtitle: t('loadingSubtitle'),
+          preparingBtn: t('preparingBtn'),
         }}
         prompt={prompt}
         onPromptChange={setPrompt}

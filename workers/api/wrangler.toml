@@ -7,6 +7,17 @@ workers_dev = true
 [observability]
 enabled = true
 
+[[queues.producers]]
+binding = "STORY_GENERATION_QUEUE"
+queue = "weave-story-generation-queue"
+
+[[queues.consumers]]
+queue = "weave-story-generation-queue"
+max_batch_size = 1
+max_batch_timeout = 0
+max_retries = 3
+dead_letter_queue = "weave-story-generation-dlq"
+
 # Secrets — set with: npx wrangler secret put SECRET_NAME
 # DATABASE_URL
 # JWT_SECRET

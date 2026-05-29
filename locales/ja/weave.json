@@ -16,6 +16,7 @@
   "hint": "主人公、舞台、葛藤が具体的なほど、物語はより鮮やかになります。",
   "quickStart": "クイックスタート",
   "startBtn": "物語を始める",
-  "loadingTitle": "最初の一行を書いています",
-  "loadingSubtitle": "少しだけお待ちください。あなたの物語が紙の上に置かれています。"
+  "preparingBtn": "物語を準備しています...",
+  "loadingTitle": "物語を書いています",
+  "loadingSubtitle": "少しだけお待ちください。"
 }

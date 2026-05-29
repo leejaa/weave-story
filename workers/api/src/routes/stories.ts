@@ -4,7 +4,8 @@ import { makeDb } from '../lib/db';
 import { stories, threads, chapters, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { checkPromptSpecificity } from '../lib/ai/prompt-check';
-import { generateFirstChapterBackground } from '../lib/threads/background';
+import { createFirstChapterGenerationJob } from '../lib/queue/story-generation-jobs';
+import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import type { AppEnv } from '../types';
 
 export const storiesRouter = new Hono<AppEnv>();
@@ -42,18 +43,24 @@ storiesRouter.post('/', async (c) => {
     .values({ threadId: thread.id, chapterNumber: 1, status: 'generating', content: null })
     .returning();
 
-  console.log(`[stories] bg:start story=${story.id} thread=${thread.id}`);
-
-  c.executionCtx.waitUntil(generateFirstChapterBackground({
+  const generationJob = createFirstChapterGenerationJob({
     storyId: story.id,
     threadId: thread.id,
     chapterId: pendingChapter.id,
     genCtx: { prompt: prompt.trim(), estimatedChapters },
-    db,
-    apiKey: c.env.AI_GATEWAY_API_KEY,
-    coverWorkerUrl: c.env.CF_COVER_WORKER_URL,
-    coverWorkerApiKey: c.env.AI_GATEWAY_API_KEY,
-  }));
+  });
+
+  try {
+    await enqueueStoryGenerationJob(c.env.STORY_GENERATION_QUEUE, generationJob);
+  } catch (err) {
+    console.error(`[stories] generation enqueue failed story=${story.id} thread=${thread.id}`, err);
+    await Promise.all([
+      db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, pendingChapter.id)),
+      db.update(stories).set({ status: 'failed' }).where(eq(stories.id, story.id)),
+      db.update(users).set({ credits: sql`${users.credits} + 1` }).where(eq(users.id, userId)),
+    ]);
+    return c.json({ error: 'generation enqueue failed' }, 503);
+  }
 
   return c.json({ threadId: thread.id }, 201);
 });
