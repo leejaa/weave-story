@@ -4,15 +4,9 @@ import { chapters, stories } from '../schema';
 import { generateFirstChapterBackground, generateNextChapterBackground } from '../threads/background';
 import type { WorkerEnv } from '../../types';
 import type { StoryGenerationJob } from './story-generation-jobs';
+import { NonRetryableStoryGenerationError } from '../story-harness/errors';
 
 const MAX_DELIVERY_ATTEMPTS = 4;
-
-class NonRetryableGenerationJobError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NonRetryableGenerationJobError';
-  }
-}
 
 function serializeError(err: unknown): Record<string, unknown> {
   if (err instanceof Error) {
@@ -47,7 +41,7 @@ async function assertJobCanRun(job: StoryGenerationJob, db: ReturnType<typeof ma
     .limit(1);
 
   if (!chapter) {
-    throw new NonRetryableGenerationJobError(`chapter not found: ${job.chapterId}`);
+    throw new NonRetryableStoryGenerationError(`chapter not found: ${job.chapterId}`);
   }
 
   if (chapter.status === 'ready') {
@@ -68,7 +62,7 @@ async function assertJobCanRun(job: StoryGenerationJob, db: ReturnType<typeof ma
       .limit(1);
 
     if (!story) {
-      throw new NonRetryableGenerationJobError(`story not found: ${job.storyId}`);
+      throw new NonRetryableStoryGenerationError(`story not found: ${job.storyId}`);
     }
 
     if (chapter.status === 'ready' && (story.status === 'ready' || story.status === 'completed')) {
@@ -116,6 +110,7 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
       apiKey: env.AI_GATEWAY_API_KEY,
       coverWorkerUrl: env.CF_COVER_WORKER_URL,
       coverWorkerApiKey: env.AI_GATEWAY_API_KEY,
+      useHarness: env.USE_STORY_HARNESS !== 'false',
     });
     return;
   }
@@ -125,6 +120,7 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     genCtx: job.genCtx,
     db,
     apiKey: env.AI_GATEWAY_API_KEY,
+    useHarness: env.USE_STORY_HARNESS !== 'false',
   });
 }
 
@@ -148,7 +144,8 @@ export async function handleStoryGenerationQueue(
       const error = serializeError(err);
       console.error(`${tag} error attempt=${message.attempts} elapsed=${elapsed}ms`, error);
 
-      if (err instanceof NonRetryableGenerationJobError) {
+      if (err instanceof NonRetryableStoryGenerationError) {
+        await markJobFailed(job, env);
         message.ack();
         console.warn(`${tag} ack non_retryable`);
         continue;

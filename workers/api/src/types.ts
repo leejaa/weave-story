@@ -6,6 +6,7 @@ export type WorkerEnv = {
   AI_GATEWAY_API_KEY: string;
   CF_COVER_WORKER_URL: string;
   STORY_GENERATION_QUEUE: Queue<StoryGenerationJob>;
+  USE_STORY_HARNESS?: string;
   APPLE_IAP_KEY_ID: string;
   APPLE_IAP_ISSUER_ID: string;
   APPLE_IAP_PRIVATE_KEY: string;

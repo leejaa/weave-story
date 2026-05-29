@@ -7,6 +7,9 @@ workers_dev = true
 [observability]
 enabled = true
 
+[vars]
+USE_STORY_HARNESS = "true"
+
 [[queues.producers]]
 binding = "STORY_GENERATION_QUEUE"
 queue = "weave-story-generation-queue"
