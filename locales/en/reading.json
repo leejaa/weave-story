@@ -10,7 +10,9 @@
     "orInput": "Or type your own",
     "inputPlaceholder": "Type what you want to do…",
     "continue": "Continue story",
-    "yourChoice": "Your choice"
+    "yourChoice": "Your choice",
+    "entryKicker": "Moment of choice",
+    "openChoice": "Choose what happens next"
   },
   "generating": {
     "title": "Opening your storybook",

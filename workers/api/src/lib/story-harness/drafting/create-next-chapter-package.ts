@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import type { ContinuationContext } from '../../ai/story-generation';
 import { NEXT_CHAPTER_HARNESS_MODEL } from '../types';
 import type { StoryBibleSnapshot } from '../memory/load-story-bible';
@@ -87,15 +87,15 @@ function buildPrompt({ genCtx, storyBible, attempt, previousIssues }: Params): s
 
 export async function createNextChapterPackage(params: Params): Promise<GenerateResult> {
   const gateway = createGateway({ apiKey: params.apiKey });
-  const result = await generateObject({
+  const result = await generateText({
     model: gateway(NEXT_CHAPTER_HARNESS_MODEL),
-    schema: NextChapterPackageSchema,
+    output: Output.object({ schema: NextChapterPackageSchema }),
     system: NEXT_CHAPTER_SYSTEM,
     prompt: buildPrompt(params),
   });
 
   return {
-    nextChapterPackage: result.object,
+    nextChapterPackage: result.output,
     usage: result.usage,
   };
 }

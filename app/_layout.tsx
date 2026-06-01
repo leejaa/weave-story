@@ -88,6 +88,7 @@ function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="book-preview" options={{ headerShown: false, animation: 'fade_from_bottom' }} />
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="reading-choice/[id]" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="refine" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />

@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { z } from 'zod';
 
 const gateway = createGateway({ apiKey: process.env.AI_GATEWAY_API_KEY! });
@@ -30,11 +30,11 @@ insufficient인 경우: 누락된 요소를 자연스럽게 채울 수 있는 �
 예: "주인공은 어떤 사람인가요?", "이야기의 배경은 어디인가요?", "주인공이 해결해야 할 가장 큰 문제는 무엇인가요?"`;
 
 export async function checkPromptSpecificity(prompt: string): Promise<PromptCheckResult> {
-  const { object } = await generateObject({
+  const { output } = await generateText({
     model: gateway('anthropic/claude-haiku-4-5-20251001'),
-    schema: PromptCheckSchema,
+    output: Output.object({ schema: PromptCheckSchema }),
     system: SYSTEM,
     prompt: `다음 이야기 프롬프트를 평가해주세요:\n\n"${prompt}"`,
   });
-  return object;
+  return output;
 }

@@ -1,27 +1,34 @@
 import { createGateway } from "@ai-sdk/gateway";
-import { generateObject, generateText } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
 
 const gateway = createGateway({ apiKey: process.env.AI_GATEWAY_API_KEY! });
 
 // Retry once when the AI SDK rejects the response for schema mismatch.
 // This handles cases where the model returns shorter content than minLength.
-async function generateObjectWithRetry<T extends z.ZodTypeAny>(
-  params: Parameters<typeof generateObject<T>>[0],
+async function generateStructuredWithRetry<T extends z.ZodTypeAny>(
+  params: Parameters<typeof generateText>[0] & { schema: T },
   tag: string,
   attempt = 1,
-): Promise<Awaited<ReturnType<typeof generateObject<T>>>> {
+): Promise<z.infer<T>> {
   try {
-    return await generateObject(params);
+    const { schema, ...generateParams } = params;
+    const result = await generateText({
+      ...generateParams,
+      output: Output.object({ schema }),
+    });
+    return result.output;
   } catch (err) {
     const isSchemaFailure =
       err instanceof Error &&
-      err.message.includes("response did not match schema");
+      (err.message.includes("response did not match schema") ||
+        err.message.includes("No output generated") ||
+        err.message.includes("No object generated"));
     if (attempt < 2 && isSchemaFailure) {
       console.warn(
         `${tag} schema validation failed (attempt ${attempt}/2), retrying…`,
       );
-      return generateObjectWithRetry(params, tag, attempt + 1);
+      return generateStructuredWithRetry(params, tag, attempt + 1);
     }
     throw err;
   }
@@ -184,7 +191,7 @@ export async function generateFirstChapter(
     `${tag} start prompt_len=${ctx.prompt.length} estimated=${ctx.estimatedChapters}`,
   );
 
-  const { object } = await generateObjectWithRetry(
+  const object = await generateStructuredWithRetry(
     {
       model: gateway("anthropic/claude-sonnet-4-6"),
       schema: FirstChapterSchema,
@@ -251,21 +258,25 @@ ${isFinal ? "\n이것이 마지막 챕터입니다. 이야기를 완결지어주
 - content와 situation에 같은 내용을 중복으로 쓰지 마세요.
 ${isFinal ? "" : "- choices: 반드시 정확히 2개의 선택지를 제공하세요."}`;
 
-  const genParams = isFinal
-    ? {
-        model: gateway("anthropic/claude-sonnet-4-6"),
-        schema: FinalChapterSchema,
-        system: WRITER_SYSTEM,
-        prompt: basePrompt,
-      }
-    : {
-        model: gateway("anthropic/claude-sonnet-4-6"),
-        schema: MidChapterSchema,
-        system: WRITER_SYSTEM,
-        prompt: basePrompt,
-      };
-
-  const { object } = await generateObjectWithRetry(genParams, tag);
+  const object = isFinal
+    ? await generateStructuredWithRetry(
+        {
+          model: gateway("anthropic/claude-sonnet-4-6"),
+          schema: FinalChapterSchema,
+          system: WRITER_SYSTEM,
+          prompt: basePrompt,
+        },
+        tag,
+      )
+    : await generateStructuredWithRetry(
+        {
+          model: gateway("anthropic/claude-sonnet-4-6"),
+          schema: MidChapterSchema,
+          system: WRITER_SYSTEM,
+          prompt: basePrompt,
+        },
+        tag,
+      );
 
   console.log(
     `${tag} done title="${object.chapterTitle}" content=${object.content.length} choices=${object.choices.length} situation="${object.situation.slice(0, 40)}"`,

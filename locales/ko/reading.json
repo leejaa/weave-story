@@ -10,7 +10,9 @@
     "orInput": "또는 직접 입력",
     "inputPlaceholder": "원하는 행동을 직접 입력하세요…",
     "continue": "이야기 계속하기",
-    "yourChoice": "당신의 선택"
+    "yourChoice": "당신의 선택",
+    "entryKicker": "선택의 순간",
+    "openChoice": "선택하러 가기"
   },
   "generating": {
     "title": "당신의 책을 펼치고 있어요",

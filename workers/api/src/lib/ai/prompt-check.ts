@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { z } from 'zod';
 
 const PromptCheckSchema = z.object({
@@ -24,11 +24,11 @@ insufficient인 경우: 누락된 요소를 채울 수 있는 한국어 질문�
 
 export async function checkPromptSpecificity(prompt: string, apiKey: string): Promise<PromptCheckResult> {
   const gateway = createGateway({ apiKey });
-  const { object } = await generateObject({
+  const { output } = await generateText({
     model: gateway('anthropic/claude-haiku-4-5-20251001'),
-    schema: PromptCheckSchema,
+    output: Output.object({ schema: PromptCheckSchema }),
     system: SYSTEM,
     prompt: `다음 이야기 프롬프트를 평가해주세요:\n\n"${prompt}"`,
   });
-  return object;
+  return output;
 }

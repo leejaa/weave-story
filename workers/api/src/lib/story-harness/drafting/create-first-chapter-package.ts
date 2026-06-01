@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import type { SetupContext } from '../../ai/story-generation';
 import { FirstChapterPackageSchema, type FirstChapterPackage } from './first-chapter-package-schema';
 import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
@@ -50,15 +50,15 @@ function buildPrompt({ genCtx, attempt, previousIssues }: Params): string {
 
 export async function createFirstChapterPackage(params: Params): Promise<GenerateResult> {
   const gateway = createGateway({ apiKey: params.apiKey });
-  const result = await generateObject({
+  const result = await generateText({
     model: gateway(FIRST_CHAPTER_HARNESS_MODEL),
-    schema: FirstChapterPackageSchema,
+    output: Output.object({ schema: FirstChapterPackageSchema }),
     system: FIRST_CHAPTER_SYSTEM,
     prompt: buildPrompt(params),
   });
 
   return {
-    firstChapterPackage: result.object,
+    firstChapterPackage: result.output,
     usage: result.usage,
   };
 }

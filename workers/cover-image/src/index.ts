@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { createGateway } from '@ai-sdk/gateway';
-import { experimental_generateImage as generateImage } from 'ai';
+import { generateImage } from 'ai';
 
 export interface Env {
   COVER_IMAGES: R2Bucket;

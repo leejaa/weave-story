@@ -1,5 +1,5 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateObject, generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { z } from 'zod';
 
 const FirstChapterSchema = z.object({
@@ -56,18 +56,27 @@ export type ContinuationContext = SetupContext & {
 const WRITER_SYSTEM =
   '당신은 한국 문학 소설 작가입니다. 독자가 선택한 설정을 바탕으로 인터랙티브 소설 챕터를 한국어로 작성합니다. 문학적이고 감각적인 문체로, 생동감 있는 장면과 감정을 담아 작성하세요.';
 
-async function generateObjectWithRetry<T extends z.ZodTypeAny>(
-  params: Parameters<typeof generateObject<T>>[0],
+async function generateStructuredWithRetry<T extends z.ZodTypeAny>(
+  params: Parameters<typeof generateText>[0] & { schema: T },
   tag: string,
   attempt = 1,
-): Promise<Awaited<ReturnType<typeof generateObject<T>>>> {
+): Promise<z.infer<T>> {
   try {
-    return await generateObject(params);
+    const { schema, ...generateParams } = params;
+    const result = await generateText({
+      ...generateParams,
+      output: Output.object({ schema }),
+    });
+    return result.output;
   } catch (err) {
-    const isSchemaFailure = err instanceof Error && err.message.includes('response did not match schema');
+    const isSchemaFailure =
+      err instanceof Error &&
+      (err.message.includes('response did not match schema') ||
+        err.message.includes('No output generated') ||
+        err.message.includes('No object generated'));
     if (attempt < 2 && isSchemaFailure) {
       console.warn(`${tag} schema validation failed (attempt ${attempt}/2), retrying…`);
-      return generateObjectWithRetry(params, tag, attempt + 1);
+      return generateStructuredWithRetry(params, tag, attempt + 1);
     }
     throw err;
   }
@@ -93,7 +102,7 @@ export async function generateFirstChapter(ctx: SetupContext, apiKey: string): P
   const tag = `[gen] chapter=1`;
   console.log(`${tag} start prompt_len=${ctx.prompt.length} estimated=${ctx.estimatedChapters}`);
 
-  const { object } = await generateObjectWithRetry({
+  const object = await generateStructuredWithRetry({
     model: gateway('anthropic/claude-sonnet-4-6'),
     schema: FirstChapterSchema,
     system: WRITER_SYSTEM,
@@ -115,11 +124,19 @@ export async function generateNextChapter(ctx: ContinuationContext, apiKey: stri
 
   const basePrompt = `이야기 설정: "${ctx.prompt}"\n전체 챕터 수: ${ctx.estimatedChapters}챕터\n\n${summariesSection}[챕터 ${ctx.previousChapterNumber} 내용]\n${ctx.previousChapterContent}\n\n독자의 선택: "${ctx.chosenOption}"\n\n현재 챕터 번호: ${ctx.nextChapterNumber} / ${ctx.estimatedChapters}\n${isFinal ? '\n이것이 마지막 챕터입니다. choices는 반드시 빈 배열 []로 반환하세요.' : ''}\n\n【반드시 지킬 것】\n- content: 반드시 2000자 이상 써주세요.\n- situation: 1-2문장(60자 이내)으로만 요약하세요.`;
 
-  const genParams = isFinal
-    ? { model: gateway('anthropic/claude-sonnet-4-6'), schema: FinalChapterSchema, system: WRITER_SYSTEM, prompt: basePrompt }
-    : { model: gateway('anthropic/claude-sonnet-4-6'), schema: MidChapterSchema, system: WRITER_SYSTEM, prompt: basePrompt };
-
-  const { object } = await generateObjectWithRetry(genParams, tag);
+  const object = isFinal
+    ? await generateStructuredWithRetry({
+        model: gateway('anthropic/claude-sonnet-4-6'),
+        schema: FinalChapterSchema,
+        system: WRITER_SYSTEM,
+        prompt: basePrompt,
+      }, tag)
+    : await generateStructuredWithRetry({
+        model: gateway('anthropic/claude-sonnet-4-6'),
+        schema: MidChapterSchema,
+        system: WRITER_SYSTEM,
+        prompt: basePrompt,
+      }, tag);
   validateChapterResult({ threadId: ctx.threadId, chapterNumber: ctx.nextChapterNumber, isFinal }, object);
   return object as NextChapterResult;
 }

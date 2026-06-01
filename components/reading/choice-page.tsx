@@ -5,6 +5,7 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  Platform,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
@@ -14,6 +15,7 @@ import { ChoiceTile } from '@/components/choice-tile';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { ChapterOption } from '@/lib/api/types';
+import { useChoiceInputScroll } from './use-choice-input-scroll';
 
 type Props = {
   options: ChapterOption[];
@@ -31,6 +33,7 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
   const c = usePalette();
   const { t } = useTranslation('reading');
   const insets = useSafeAreaInsets();
+  const { scrollRef, inputWrapRef, scrollInputIntoView } = useChoiceInputScroll();
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [customInput, setCustomInput] = useState('');
 
@@ -57,72 +60,77 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
 
   return (
     <ScrollView
+      ref={scrollRef}
       style={styles.page}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}
       showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+      nestedScrollEnabled>
 
-      <View style={styles.top}>
-        {situation ? (
-          <Text style={[styles.situation, { color: c.inkSoft }]}>{situation}</Text>
-        ) : null}
-        <Text style={[styles.headline, { color: c.ink }]}>
-          {question || t('choice.defaultQuestion')}
-        </Text>
-      </View>
-
-      <View style={styles.choices}>
-        {options.map(opt => (
-          <ChoiceTile
-            key={opt.index}
-            marker={String.fromCharCode(65 + opt.index)}
-            text={opt.text}
-            selected={selectedChoice === opt.index}
-            faded={selectedChoice !== null && selectedChoice !== opt.index}
-            onPress={() => handleChoiceSelect(opt.index)}
-          />
-        ))}
-      </View>
-
-      <View style={styles.dividerRow}>
-        <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
-        <Text style={[styles.dividerLabel, { color: c.inkFaint }]}>{t('choice.orInput')}</Text>
-        <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
-      </View>
-
-      <View
-        style={[
-          styles.inputWrap,
-          {
-            borderColor: customInput.trim() ? c.thread : c.rule,
-            backgroundColor: c.paperRaised,
-          },
-        ]}>
-        <TextInput
-          style={[styles.input, { color: c.ink }]}
-          placeholder={t('choice.inputPlaceholder')}
-          placeholderTextColor={c.inkFaint}
-          value={customInput}
-          onChangeText={handleCustomChange}
-          multiline
-          textAlignVertical="top"
-          returnKeyType="default"
-          blurOnSubmit={false}
-        />
-      </View>
-
-      <Pressable
-        onPress={handleConfirm}
-        disabled={!canConfirm || choosing}
-        style={[styles.cta, { backgroundColor: canConfirm ? c.thread : c.paperSunk }]}>
-        {choosing ? (
-          <ActivityIndicator color={c.paper} size="small" />
-        ) : (
-          <Text style={[styles.ctaLabel, { color: canConfirm ? c.paper : c.inkFaint }]}>
-            {t('choice.continue')}
+        <View style={styles.top}>
+          {situation ? (
+            <Text style={[styles.situation, { color: c.inkSoft }]}>{situation}</Text>
+          ) : null}
+          <Text style={[styles.headline, { color: c.ink }]}>
+            {question || t('choice.defaultQuestion')}
           </Text>
-        )}
-      </Pressable>
+        </View>
+
+        <View style={styles.choices}>
+          {options.map(opt => (
+            <ChoiceTile
+              key={opt.index}
+              marker={String.fromCharCode(65 + opt.index)}
+              text={opt.text}
+              selected={selectedChoice === opt.index}
+              faded={selectedChoice !== null && selectedChoice !== opt.index}
+              onPress={() => handleChoiceSelect(opt.index)}
+            />
+          ))}
+        </View>
+
+        <View style={styles.dividerRow}>
+          <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
+          <Text style={[styles.dividerLabel, { color: c.inkFaint }]}>{t('choice.orInput')}</Text>
+          <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
+        </View>
+
+        <View
+          ref={inputWrapRef}
+          style={[
+            styles.inputWrap,
+            {
+              borderColor: customInput.trim() ? c.thread : c.rule,
+              backgroundColor: c.paperRaised,
+            },
+          ]}>
+          <TextInput
+            style={[styles.input, { color: c.ink }]}
+            placeholder={t('choice.inputPlaceholder')}
+            placeholderTextColor={c.inkFaint}
+            value={customInput}
+            onChangeText={handleCustomChange}
+            onFocus={scrollInputIntoView}
+            multiline
+            textAlignVertical="top"
+            returnKeyType="default"
+            blurOnSubmit={false}
+          />
+        </View>
+
+        <Pressable
+          onPress={handleConfirm}
+          disabled={!canConfirm || choosing}
+          style={[styles.cta, { backgroundColor: canConfirm ? c.thread : c.paperSunk }]}>
+          {choosing ? (
+            <ActivityIndicator color={c.paper} size="small" />
+          ) : (
+            <Text style={[styles.ctaLabel, { color: canConfirm ? c.paper : c.inkFaint }]}>
+              {t('choice.continue')}
+            </Text>
+          )}
+        </Pressable>
     </ScrollView>
   );
 }

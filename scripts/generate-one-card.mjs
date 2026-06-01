@@ -10,7 +10,7 @@ import { readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { createGateway } from '@ai-sdk/gateway';
-import { experimental_generateImage as generateImage } from 'ai';
+import { generateImage } from 'ai';
 import { neon } from '@neondatabase/serverless';
 
 const envPath = resolve(process.cwd(), '.env.local');

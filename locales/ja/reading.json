@@ -10,7 +10,9 @@
     "orInput": "または自分で入力",
     "inputPlaceholder": "したい行動を入力してください…",
     "continue": "物語を続ける",
-    "yourChoice": "あなたの選択"
+    "yourChoice": "あなたの選択",
+    "entryKicker": "選択の瞬間",
+    "openChoice": "次の行動を選ぶ"
   },
   "generating": {
     "title": "あなたの本を開いています",

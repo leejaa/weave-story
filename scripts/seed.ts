@@ -11,11 +11,11 @@
 
 import * as dotenv from 'dotenv';
 import { execSync } from 'child_process';
-import { writeFileSync, unlinkSync, mkdirSync } from 'fs';
+import { writeFileSync, unlinkSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { createGateway } from '@ai-sdk/gateway';
-import { experimental_generateImage as generateImage } from 'ai';
+import { generateImage } from 'ai';
 import { neon } from '@neondatabase/serverless';
 
 dotenv.config({ path: '.env.local' });
