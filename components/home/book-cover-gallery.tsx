@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
   stage: {
     flex: 1,
     overflow: 'hidden',
-    backgroundColor: '#f0cf9d',
+    backgroundColor: '#f5f0e8',
   },
   backdropWash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255,245,226,0.10)',
+    backgroundColor: 'rgba(245,240,232,0.08)',
   },
   lightPool: {
     position: 'absolute',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     top: 58,
     height: 240,
     borderRadius: 180,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: 'rgba(255,255,255,0.10)',
     transform: [{ scaleX: 1.18 }],
   },
   header: {
@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.display,
     fontSize: SIZES['3xl'],
     lineHeight: 44,
-    color: 'rgba(45,36,23,0.88)',
-    textShadowColor: 'rgba(255,248,232,0.42)',
+    color: 'rgba(45,42,36,0.82)',
+    textShadowColor: 'rgba(255,255,255,0.42)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
@@ -114,6 +114,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 112,
-    backgroundColor: 'rgba(98,58,18,0.06)',
+    backgroundColor: 'rgba(58,52,42,0.06)',
   },
 });

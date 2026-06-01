@@ -18,7 +18,7 @@ export default function CreateScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#f3d8ad',
+    backgroundColor: '#f5f0e8',
   },
   inner: {
     flex: 1,
