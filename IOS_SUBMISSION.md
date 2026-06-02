@@ -15,10 +15,13 @@ Last updated: 2026-06-02
   - ✅ DB: `accounts.apple_refresh_token` 컬럼 추가
   - ⬜ **(사용자)** Apple Sign In 키(.p8) 발급 + 워커 시크릿 3종 설정 → 토큰 폐기 활성화
   - ⬜ **(사용자)** 앱 리로드/리빌드 (회원탈퇴 UI·authorizationCode 캡처는 JS 변경)
-- ⬜ **2. AI 생성물 신고/모더레이션** — Apple 1.2 (UGC)
-  - ⬜ 챕터 신고 UI + 신고 엔드포인트 + `content_reports` 테이블
-  - ⬜ 시스템 프롬프트 안전 가드레일
-  - ⬜ (권장) 입력 프롬프트 안전 필터
+- 🟦 **2. AI 생성물 신고/모더레이션** — Apple 1.2 (UGC) *(신고 기능 완료·배포 f69601fe)*
+  - ✅ 챕터 신고 UI (reading 리본의 🚩 → 사유 선택 시트)
+  - ✅ `POST /api/reports` + `content_reports` 테이블 + `chapters.moderation_status`(신고 시 'reported')
+  - ✅ i18n (ko/en/ja, 사유 5종: 성적/폭력/혐오/불법/기타)
+  - ⏭️ 시스템 프롬프트 안전 가드레일 — *사용자 결정으로 보류*
+  - ⏭️ 입력 프롬프트 안전 필터 — *사용자 결정으로 보류*
+  - ⬜ **(사용자)** 앱 리빌드 후 실기기에서 신고 동작 검증
 - ⬜ **3. 약관(EULA)·개인정보처리방침 작동 링크** — IAP 3.1.2 / 5.1.1
   - ⬜ 약관/방침 페이지 호스팅
   - ⬜ login + paywall에 실제 링크
@@ -40,6 +43,10 @@ Last updated: 2026-06-02
 - ✅ 번들ID/버전/아이콘/스플래시
 
 ---
+
+## 빌드 이력
+
+- **2026-06-02 · build 33** — TestFlight 제출 완료 (커밋 `a44c615`). 포함: IAP 수정·스토리 생성 2단계 견고화·품질 게이트 정리·reading 에러 UI·회원탈퇴 UI. → Apple 처리 후 실기기 검증 예정.
 
 ## 작업 메모
 

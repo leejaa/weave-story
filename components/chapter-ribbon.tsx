@@ -11,9 +11,10 @@ type Props = {
   chapter: number;
   totalChapters: number;
   onBack?: () => void;
+  onReport?: () => void;
 };
 
-export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) {
+export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
 
@@ -34,6 +35,15 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) 
             읽고 있는 장
           </Text>
         </View>
+
+        {onReport ? (
+          <Pressable
+            onPress={onReport}
+            hitSlop={8}
+            style={[styles.reportButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
+            <Icon name="flag" size={15} color={c.inkFaint} />
+          </Pressable>
+        ) : null}
 
         <ChapterBookmarkLabel chapter={chapter} totalChapters={totalChapters} colors={c} />
       </View>
@@ -56,6 +66,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportButton: {
     width: 32,
     height: 32,
     borderRadius: 999,

@@ -6,6 +6,7 @@ import { storiesRouter } from './routes/stories';
 import { threadsRouter } from './routes/threads';
 import { sampleCardsRouter } from './routes/sample-cards';
 import { purchasesRouter } from './routes/purchases';
+import { reportsRouter } from './routes/reports';
 import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
 import type { StoryGenerationJob } from './lib/queue/story-generation-jobs';
 import type { AppEnv, WorkerEnv } from './types';
@@ -20,6 +21,7 @@ app.route('/api/stories', storiesRouter);
 app.route('/api/threads', threadsRouter);
 app.route('/api/sample-cards', sampleCardsRouter);
 app.route('/api/purchases', purchasesRouter);
+app.route('/api/reports', reportsRouter);
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 

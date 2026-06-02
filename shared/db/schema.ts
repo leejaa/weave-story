@@ -109,6 +109,7 @@ export const chapters = pgTable('chapters', {
   question: text('question'),
   summary: text('summary'),
   status: text('status').notNull().default('ready'), // 'generating' | 'ready' | 'failed'
+  moderationStatus: text('moderation_status').notNull().default('ok'), // 'ok' | 'reported' | 'hidden'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -138,6 +139,17 @@ export const interventions = pgTable('interventions', {
   type: text('type').notNull(), // 'choice' | 'free_input'
   choiceIndex: integer('choice_index'),
   freeText: text('free_text'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+// User reports of objectionable AI-generated content (Apple Guideline 1.2 / UGC).
+export const contentReports = pgTable('content_reports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  reporterUserId: uuid('reporter_user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  chapterId: uuid('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+  reason: text('reason').notNull(), // 'sexual' | 'violence' | 'hate' | 'illegal' | 'other'
+  detail: text('detail'),
+  status: text('status').notNull().default('pending'), // 'pending' | 'reviewed' | 'actioned'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

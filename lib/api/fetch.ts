@@ -59,6 +59,21 @@ export type CheckPromptResult = {
   questions: string[];
 };
 
+export type ReportReason = 'sexual' | 'violence' | 'hate' | 'illegal' | 'other';
+
+export async function postReport(params: {
+  chapterId: string;
+  reason: ReportReason;
+  detail?: string;
+}): Promise<void> {
+  const res = await authFetch('/api/reports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  await throwIfError(res);
+}
+
 export async function postRetryFirstChapter(threadId: string): Promise<{ ok: true }> {
   const res = await authFetch(`/api/threads/${threadId}/retry-first-chapter`, { method: 'POST' });
   await throwIfError(res);

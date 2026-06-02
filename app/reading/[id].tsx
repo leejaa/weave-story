@@ -3,6 +3,7 @@ import {
   View,
   FlatList,
   Text,
+  Alert,
   StyleSheet,
   useWindowDimensions,
   type LayoutChangeEvent,
@@ -15,7 +16,9 @@ import { ChoiceEntryPage } from '@/components/reading/choice-entry-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
 import { InterventionPage } from '@/components/reading/intervention-page';
 import { ChapterErrorPage } from '@/components/reading/chapter-error-page';
+import { ReportSheet } from '@/components/reading/report-sheet';
 import { PaywallModal } from '@/components/ui/paywall-modal';
+import { postReport, type ReportReason } from '@/lib/api/fetch';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingPosition } from '@/hooks/use-reading-position';
@@ -34,6 +37,8 @@ export default function ReadingScreen() {
   const { data, isLoading, choosing, isInsufficientCredits, clearChooseError, retryFirstChapter, retrying } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
   const [listHeight, setListHeight] = useState(0);
+  const [reportVisible, setReportVisible] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
 
   const onListLayout = useCallback((e: LayoutChangeEvent) => {
     setListHeight(e.nativeEvent.layout.height);
@@ -124,6 +129,25 @@ export default function ReadingScreen() {
     );
   }
 
+  // The currently visible, readable chapter — the target of a content report.
+  const reportTarget = data.chapters.find(
+    ch => ch.chapterNumber === visibleChapter && ch.status === 'ready' && !!ch.content,
+  );
+
+  const submitReport = async (reason: ReportReason) => {
+    if (!reportTarget) return;
+    setReportSubmitting(true);
+    try {
+      await postReport({ chapterId: reportTarget.id, reason });
+      setReportVisible(false);
+      Alert.alert(t('report.successTitle'), t('report.success'));
+    } catch {
+      Alert.alert(t('report.errorTitle'), t('report.error'));
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: c.paper }]}>
       <PaywallModal
@@ -131,11 +155,18 @@ export default function ReadingScreen() {
         onClose={clearChooseError}
         onSuccess={clearChooseError}
       />
+      <ReportSheet
+        visible={reportVisible}
+        submitting={reportSubmitting}
+        onClose={() => setReportVisible(false)}
+        onSubmit={submitReport}
+      />
       <ChapterRibbon
         title={title ?? ''}
         chapter={visibleChapter}
         totalChapters={estimatedChapters}
         onBack={() => router.back()}
+        onReport={reportTarget ? () => setReportVisible(true) : undefined}
       />
 
       <FlatList

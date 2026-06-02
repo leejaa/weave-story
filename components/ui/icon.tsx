@@ -19,6 +19,7 @@ export type IconName =
   | 'alert'
   | 'wifi-off'
   | 'refresh'
+  | 'flag'
   | 'feather'
   | 'close-circle';
 
@@ -44,6 +45,7 @@ const ICON_MAP: Record<IconName, IconDef> = {
   alert: { source: 'ionicons', outline: 'alert-circle-outline', filled: 'alert-circle' },
   'wifi-off': { source: 'ionicons', outline: 'cloud-offline-outline', filled: 'cloud-offline' },
   refresh: { source: 'ionicons', outline: 'refresh-outline', filled: 'refresh' },
+  flag: { source: 'ionicons', outline: 'flag-outline', filled: 'flag' },
   feather: { source: 'feather', name: 'feather' },
   'close-circle': { source: 'ionicons', outline: 'close-circle-outline', filled: 'close-circle' },
 };

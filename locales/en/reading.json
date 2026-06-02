@@ -18,5 +18,20 @@
     "title": "Opening your storybook",
     "body": "The first scene is settling onto the page.",
     "estimate": "About 1–2 minutes"
+  },
+  "report": {
+    "title": "Report",
+    "subtitle": "What's wrong with this chapter?",
+    "reasons": {
+      "sexual": "Sexual or explicit content",
+      "violence": "Violent or graphic content",
+      "hate": "Hate or harassment",
+      "illegal": "Illegal content",
+      "other": "Other"
+    },
+    "successTitle": "Report received",
+    "success": "Thanks — we'll review this content.",
+    "errorTitle": "Report failed",
+    "error": "Please try again in a moment."
   }
 }
