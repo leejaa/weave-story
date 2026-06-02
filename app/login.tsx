@@ -1,11 +1,12 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Redirect } from 'expo-router';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { FONTS, SIZES } from '@/constants/colors';
 import { useAuth } from '@/lib/auth/client/context';
+import { PRIVACY_URL, TERMS_URL } from '@/lib/legal';
 
 const BG = '#0D0B10';
 const TEXT_PRIMARY = '#EDE8F0';
@@ -96,7 +97,15 @@ export default function LoginScreen() {
         </Pressable>
 
         <Text style={[styles.legal, { color: TEXT_FAINT }]}>
-          By continuing, you agree to our Terms of Service and Privacy Policy.
+          By continuing, you agree to our{' '}
+          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(TERMS_URL)}>
+            Terms of Service
+          </Text>
+          {' '}and{' '}
+          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(PRIVACY_URL)}>
+            Privacy Policy
+          </Text>
+          .
         </Text>
       </View>
     </View>
@@ -191,5 +200,9 @@ const styles = StyleSheet.create({
     lineHeight: SIZES['2xs'] * 1.7,
     marginTop: 4,
     paddingHorizontal: 16,
+  },
+  legalLink: {
+    fontFamily: FONTS.sansMedium,
+    textDecorationLine: 'underline',
   },
 });

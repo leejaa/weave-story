@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Modal,
   Pressable,
   StyleSheet,
@@ -14,6 +15,7 @@ import { usePurchases } from '@/lib/purchases/context';
 import { CREDITS_PER_PRODUCT, PRODUCT_IDS } from '@/lib/purchases/config';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
+import { PRIVACY_URL, TERMS_URL } from '@/lib/legal';
 import { ErrorCode } from 'expo-iap';
 
 type Props = {
@@ -26,8 +28,9 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
-  const { products, isLoading, purchaseProduct } = usePurchases();
+  const { products, isLoading, purchaseProduct, restorePurchases } = usePurchases();
   const [loading, setLoading] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
 
   const creditProducts = products.filter(p => CREDITS_PER_PRODUCT[p.id] != null);
 
@@ -46,6 +49,19 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
       setLoading(null);
     }
   }, [purchaseProduct, onSuccess]);
+
+  const handleRestore = useCallback(async () => {
+    setRestoring(true);
+    try {
+      await restorePurchases();
+      Alert.alert('구매 복원', '구매 내역을 확인했습니다.');
+    } catch (err) {
+      console.error('[paywall] restore error', err);
+      Alert.alert('복원 오류', '구매 복원 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setRestoring(false);
+    }
+  }, [restorePurchases]);
 
   const sheetStyle = [
     styles.sheet,
@@ -111,6 +127,20 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
               );
             })}
           </View>
+
+          <Pressable onPress={handleRestore} disabled={restoring} style={styles.restoreBtn} hitSlop={6}>
+            {restoring
+              ? <ActivityIndicator color={c.inkFaint} size="small" />
+              : <Text style={[styles.restoreText, { color: c.inkSoft, fontFamily: FONTS.sans }]}>구매 복원</Text>}
+          </Pressable>
+
+          <Text style={[styles.legal, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
+            구매 시{' '}
+            <Text style={styles.legalLink} onPress={() => Linking.openURL(TERMS_URL)}>이용약관</Text>
+            {' '}및{' '}
+            <Text style={styles.legalLink} onPress={() => Linking.openURL(PRIVACY_URL)}>개인정보처리방침</Text>
+            에 동의하게 됩니다.
+          </Text>
         </View>
       </View>
     </Modal>
@@ -170,4 +200,8 @@ const styles = StyleSheet.create({
   buyBtnText: { color: '#fff', fontSize: SIZES.sm },
   loadingIndicator: { paddingVertical: 20 },
   emptyText: { fontSize: SIZES.sm, textAlign: 'center', paddingVertical: 16, lineHeight: 20 },
+  restoreBtn: { alignSelf: 'center', paddingVertical: 12, marginTop: 4 },
+  restoreText: { fontSize: SIZES.sm, textDecorationLine: 'underline' },
+  legal: { fontSize: SIZES.xs, textAlign: 'center', lineHeight: 18, marginTop: 2, paddingHorizontal: 8 },
+  legalLink: { textDecorationLine: 'underline' },
 });

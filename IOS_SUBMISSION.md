@@ -22,10 +22,11 @@ Last updated: 2026-06-02
   - ⏭️ 시스템 프롬프트 안전 가드레일 — *사용자 결정으로 보류*
   - ⏭️ 입력 프롬프트 안전 필터 — *사용자 결정으로 보류*
   - ⬜ **(사용자)** 앱 리빌드 후 실기기에서 신고 동작 검증
-- ⬜ **3. 약관(EULA)·개인정보처리방침 작동 링크** — IAP 3.1.2 / 5.1.1
-  - ⬜ 약관/방침 페이지 호스팅
-  - ⬜ login + paywall에 실제 링크
-- ⬜ **4. 구매 복원(Restore Purchases) 버튼** — paywall 또는 profile
+- ✅ **3. 약관·개인정보처리방침 작동 링크** — IAP 3.1.2 / 5.1.1 *(배포 40aff549)*
+  - ✅ worker가 `/privacy`·`/terms` HTML 서빙 (지원 이메일 leejahun0@gmail.com)
+  - ✅ login + paywall에 탭 가능한 링크
+  - App Store Connect 입력값: 개인정보 URL `https://weave-story-api.leejahun0.workers.dev/privacy`, 지원 URL/이메일 `leejahun0@gmail.com`
+- ✅ **4. 구매 복원(Restore Purchases) 버튼** — paywall 하단 "구매 복원" 추가
 
 ## 🟡 확인/보완
 
@@ -46,7 +47,8 @@ Last updated: 2026-06-02
 
 ## 빌드 이력
 
-- **2026-06-02 · build 33** — TestFlight 제출 완료 (커밋 `a44c615`). 포함: IAP 수정·스토리 생성 2단계 견고화·품질 게이트 정리·reading 에러 UI·회원탈퇴 UI. → Apple 처리 후 실기기 검증 예정.
+- **2026-06-02 · build 33** — TestFlight 제출 완료 (커밋 `a44c615`). 포함: IAP 수정·스토리 생성 2단계 견고화·품질 게이트 정리·reading 에러 UI·회원탈퇴 UI.
+- **2026-06-02 · OTA(production, iOS)** — 빌드 33에 신고 기능 + 회원탈퇴 반영 (커밋 `3536cdd`, update `7f40ba51`). 리빌드 없이 적용. ⚠️ 최종 App Store 심사 제출은 클린 빌드 권장(OTA 의존 X).
 
 ## 작업 메모
 

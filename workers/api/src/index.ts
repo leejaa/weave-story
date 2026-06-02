@@ -7,6 +7,7 @@ import { threadsRouter } from './routes/threads';
 import { sampleCardsRouter } from './routes/sample-cards';
 import { purchasesRouter } from './routes/purchases';
 import { reportsRouter } from './routes/reports';
+import { privacyPage, termsPage } from './routes/legal';
 import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
 import type { StoryGenerationJob } from './lib/queue/story-generation-jobs';
 import type { AppEnv, WorkerEnv } from './types';
@@ -24,6 +25,10 @@ app.route('/api/purchases', purchasesRouter);
 app.route('/api/reports', reportsRouter);
 
 app.get('/api/health', (c) => c.json({ ok: true }));
+
+// Public legal pages (linked from the app and App Store Connect).
+app.get('/privacy', (c) => c.html(privacyPage()));
+app.get('/terms', (c) => c.html(termsPage()));
 
 export default {
   fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
