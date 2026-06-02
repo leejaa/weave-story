@@ -11,11 +11,12 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation, Trans } from 'react-i18next';
 import { usePurchases } from '@/lib/purchases/context';
 import { CREDITS_PER_PRODUCT, PRODUCT_IDS } from '@/lib/purchases/config';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
-import { PRIVACY_URL, TERMS_URL } from '@/lib/legal';
+import { privacyUrl, termsUrl } from '@/lib/legal';
 import { ErrorCode } from 'expo-iap';
 
 type Props = {
@@ -27,6 +28,7 @@ type Props = {
 export function PaywallModal({ visible, onClose, onSuccess }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('purchases');
   const { height: screenHeight } = useWindowDimensions();
   const { products, isLoading, purchaseProduct, restorePurchases } = usePurchases();
   const [loading, setLoading] = useState<string | null>(null);
@@ -44,24 +46,24 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
       const code = (err as { code?: string }).code;
       if (code === ErrorCode.UserCancelled) return;
       console.error('[paywall] purchase error', err);
-      Alert.alert('구매 오류', '구매 중 문제가 발생했습니다. 다시 시도해 주세요.');
+      Alert.alert(t('purchaseErrorTitle'), t('purchaseError'));
     } finally {
       setLoading(null);
     }
-  }, [purchaseProduct, onSuccess]);
+  }, [purchaseProduct, onSuccess, t]);
 
   const handleRestore = useCallback(async () => {
     setRestoring(true);
     try {
       await restorePurchases();
-      Alert.alert('구매 복원', '구매 내역을 확인했습니다.');
+      Alert.alert(t('restoreDoneTitle'), t('restoreDone'));
     } catch (err) {
       console.error('[paywall] restore error', err);
-      Alert.alert('복원 오류', '구매 복원 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      Alert.alert(t('restoreErrorTitle'), t('restoreError'));
     } finally {
       setRestoring(false);
     }
-  }, [restorePurchases]);
+  }, [restorePurchases, t]);
 
   const sheetStyle = [
     styles.sheet,
@@ -82,17 +84,17 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
         </Pressable>
         <View style={styles.content}>
           <Text style={[styles.title, { color: c.ink, fontFamily: FONTS.display }]}>
-            크레딧 충전
+            {t('title')}
           </Text>
           <Text style={[styles.subtitle, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
-            크레딧으로 새 이야기를 시작하거나 다음 챕터를 열어보세요.
+            {t('subtitle')}
           </Text>
           <View style={styles.options}>
             {isLoading ? (
               <ActivityIndicator color={c.thread} style={styles.loadingIndicator} />
             ) : creditProducts.length === 0 ? (
               <Text style={[styles.emptyText, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
-                상품을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.
+                {t('empty')}
               </Text>
             ) : creditProducts.map(product => {
               const credits = CREDITS_PER_PRODUCT[product.id] ?? 0;
@@ -105,11 +107,11 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
                   <View style={styles.rowLeft}>
                     {isPopular ? (
                       <Text style={[styles.badge, { color: c.thread, fontFamily: FONTS.sansMedium }]}>
-                        인기
+                        {t('popular')}
                       </Text>
                     ) : null}
                     <Text style={[styles.creditLabel, { color: c.ink, fontFamily: FONTS.serifSemibold }]}>
-                      {credits}크레딧
+                      {t('creditsLabel', { count: credits })}
                     </Text>
                     <Text style={[styles.priceLabel, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
                       {product.displayPrice}
@@ -121,7 +123,7 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
                     disabled={!!loading}>
                     {isThisLoading
                       ? <ActivityIndicator color="#fff" size="small" />
-                      : <Text style={[styles.buyBtnText, { fontFamily: FONTS.sansSemibold }]}>구매하기</Text>}
+                      : <Text style={[styles.buyBtnText, { fontFamily: FONTS.sansSemibold }]}>{t('buy')}</Text>}
                   </Pressable>
                 </View>
               );
@@ -131,15 +133,18 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
           <Pressable onPress={handleRestore} disabled={restoring} style={styles.restoreBtn} hitSlop={6}>
             {restoring
               ? <ActivityIndicator color={c.inkFaint} size="small" />
-              : <Text style={[styles.restoreText, { color: c.inkSoft, fontFamily: FONTS.sans }]}>구매 복원</Text>}
+              : <Text style={[styles.restoreText, { color: c.inkSoft, fontFamily: FONTS.sans }]}>{t('restore')}</Text>}
           </Pressable>
 
           <Text style={[styles.legal, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
-            구매 시{' '}
-            <Text style={styles.legalLink} onPress={() => Linking.openURL(TERMS_URL)}>이용약관</Text>
-            {' '}및{' '}
-            <Text style={styles.legalLink} onPress={() => Linking.openURL(PRIVACY_URL)}>개인정보처리방침</Text>
-            에 동의하게 됩니다.
+            <Trans
+              ns="purchases"
+              i18nKey="legalConsent"
+              components={{
+                terms: <Text style={styles.legalLink} onPress={() => Linking.openURL(termsUrl())} />,
+                privacy: <Text style={styles.legalLink} onPress={() => Linking.openURL(privacyUrl())} />,
+              }}
+            />
           </Text>
         </View>
       </View>

@@ -6,7 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { FONTS, SIZES } from '@/constants/colors';
 import { useAuth } from '@/lib/auth/client/context';
-import { PRIVACY_URL, TERMS_URL } from '@/lib/legal';
+import { privacyUrl, termsUrl } from '@/lib/legal';
 
 const BG = '#0D0B10';
 const TEXT_PRIMARY = '#EDE8F0';
@@ -98,11 +98,11 @@ export default function LoginScreen() {
 
         <Text style={[styles.legal, { color: TEXT_FAINT }]}>
           By continuing, you agree to our{' '}
-          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(TERMS_URL)}>
+          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(termsUrl())}>
             Terms of Service
           </Text>
           {' '}and{' '}
-          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(PRIVACY_URL)}>
+          <Text style={[styles.legalLink, { color: TEXT_SECONDARY }]} onPress={() => Linking.openURL(privacyUrl())}>
             Privacy Policy
           </Text>
           .

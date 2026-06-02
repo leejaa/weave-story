@@ -1,0 +1,16 @@
+{
+  "title": "クレジットを購入",
+  "subtitle": "クレジットで新しい物語を始めたり、次のチャプターを開けます。",
+  "empty": "商品を読み込めませんでした。しばらくしてからお試しください。",
+  "popular": "人気",
+  "creditsLabel": "{{count}}クレジット",
+  "buy": "購入する",
+  "restore": "購入を復元",
+  "purchaseErrorTitle": "購入エラー",
+  "purchaseError": "購入中に問題が発生しました。もう一度お試しください。",
+  "restoreDoneTitle": "購入を復元",
+  "restoreDone": "購入履歴を確認しました。",
+  "restoreErrorTitle": "復元エラー",
+  "restoreError": "購入の復元中に問題が発生しました。しばらくしてからお試しください。",
+  "legalConsent": "購入により<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。"
+}

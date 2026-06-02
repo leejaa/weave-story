@@ -1,0 +1,17 @@
+{
+  "title": "Get credits",
+  "subtitle": "Use credits to start a new story or unlock the next chapter.",
+  "empty": "Couldn't load products. Please try again in a moment.",
+  "popular": "Popular",
+  "creditsLabel": "{{count}} credits",
+  "creditsLabel_one": "{{count}} credit",
+  "buy": "Buy",
+  "restore": "Restore Purchases",
+  "purchaseErrorTitle": "Purchase error",
+  "purchaseError": "Something went wrong during purchase. Please try again.",
+  "restoreDoneTitle": "Restore Purchases",
+  "restoreDone": "We've checked your purchases.",
+  "restoreErrorTitle": "Restore error",
+  "restoreError": "Something went wrong restoring purchases. Please try again in a moment.",
+  "legalConsent": "By purchasing, you agree to our <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>."
+}

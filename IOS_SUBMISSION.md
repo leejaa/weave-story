@@ -48,7 +48,9 @@ Last updated: 2026-06-02
 ## 빌드 이력
 
 - **2026-06-02 · build 33** — TestFlight 제출 완료 (커밋 `a44c615`). 포함: IAP 수정·스토리 생성 2단계 견고화·품질 게이트 정리·reading 에러 UI·회원탈퇴 UI.
-- **2026-06-02 · OTA(production, iOS)** — 빌드 33에 신고 기능 + 회원탈퇴 반영 (커밋 `3536cdd`, update `7f40ba51`). 리빌드 없이 적용. ⚠️ 최종 App Store 심사 제출은 클린 빌드 권장(OTA 의존 X).
+- **2026-06-02 · OTA(production, iOS)** — 빌드 33에 신고 기능 + 회원탈퇴 반영 (커밋 `3536cdd`, update `7f40ba51`). 리빌드 없이 적용.
+- **2026-06-02 · OTA(production, iOS)** — 약관/방침 링크 + 구매 복원 (커밋 `60bea7f`, update `e6cc925e`).
+- ⚠️ **최종 App Store 심사 제출은 클린 빌드 권장**(OTA 의존 X) — 모든 블로커가 바이너리에 포함되도록.
 
 ## 작업 메모
 

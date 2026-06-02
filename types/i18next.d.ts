@@ -5,6 +5,7 @@ import type library from '@/locales/en/library.json';
 import type weave from '@/locales/en/weave.json';
 import type reading from '@/locales/en/reading.json';
 import type you from '@/locales/en/you.json';
+import type purchases from '@/locales/en/purchases.json';
 
 declare module 'i18next' {
   interface CustomTypeOptions {
@@ -16,6 +17,7 @@ declare module 'i18next' {
       weave: typeof weave;
       reading: typeof reading;
       you: typeof you;
+      purchases: typeof purchases;
     };
   }
 }
