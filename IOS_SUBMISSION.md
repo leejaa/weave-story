@@ -35,6 +35,12 @@ Last updated: 2026-06-02
 - ⬜ 서버 로그아웃/토큰 폐기 엔드포인트 (현재 로컬 토큰만 삭제)
 - ⬜ `eas.json`에 `appleTeamId` 명시 (사소)
 
+## 🎨 앱 아이콘
+
+- ✅ **플레이스홀더(작도선 박힌 기본 아이콘) → 브랜드 미니멀 아이콘 교체** — "갈래길/이야기 나무"(선택→분기) 컨셉, 톤다운 인디고 마크 + 웜 오프화이트(#FEF9F1) 배경, gpt-image-2 생성.
+  - `icon.png`(iOS, 1024 불투명), `splash-icon.png`, Android `adaptiveIcon`(foreground/monochrome/backgroundColor), 스플래시 배경색까지 일괄 적용.
+  - ⚠️ 아이콘은 **OTA 반영 불가** → 다음 **클린 빌드**에서 적용됨 (CNG: prebuild가 app.json에서 자동 생성).
+
 ## 🟢 이미 양호
 
 - ✅ Sign in with Apple (구현 + entitlement)
@@ -50,6 +56,7 @@ Last updated: 2026-06-02
 - **2026-06-02 · build 33** — TestFlight 제출 완료 (커밋 `a44c615`). 포함: IAP 수정·스토리 생성 2단계 견고화·품질 게이트 정리·reading 에러 UI·회원탈퇴 UI.
 - **2026-06-02 · OTA(production, iOS)** — 빌드 33에 신고 기능 + 회원탈퇴 반영 (커밋 `3536cdd`, update `7f40ba51`). 리빌드 없이 적용.
 - **2026-06-02 · OTA(production, iOS)** — 약관/방침 링크 + 구매 복원 (커밋 `60bea7f`, update `e6cc925e`).
+- **2026-06-02 · OTA(production, iOS)** — paywall 다국어(i18n) + 법적 페이지 ko/en/ja (커밋 `d39d3cd`, update `36513d95`).
 - ⚠️ **최종 App Store 심사 제출은 클린 빌드 권장**(OTA 의존 X) — 모든 블로커가 바이너리에 포함되도록.
 
 ## 작업 메모
