@@ -19,16 +19,55 @@ const HighImpactChoiceSchema = z.object({
   consequence: z.string().min(4).max(300),
 });
 
+// ─── Two-step generation schemas ─────────────────────────────────────────────
+// A single model call can't reliably produce a long `content` AND precise short
+// fields together: whichever sits last in the JSON gets neglected (overflowing
+// neighbours when content is in the middle, or a too-short body when content is
+// last). So we split generation into two focused calls, each with one job.
+
+// Step 1 — write the chapter body. The only long field; nothing competes with it.
+// content min is aligned with the quality gate's 2000-char floor so a too-short body
+// is caught here by the cheap per-step repair, not after a full two-step re-run.
+export const ChapterDraftSchema = z.object({
+  title: z.string().min(2).max(80),
+  genre: z.string().min(2).max(80),
+  chapterTitle: z.string().min(2).max(80),
+  content: z.string().min(2000).max(8000),
+});
+
+// Step 2 — derive the story bible + decision UI FROM the finished body. All short
+// fields, so structured output is reliable here. The length maxes are deliberately
+// LOOSE (and choices allows 2+): cosmetic over-length and extra choices are clamped
+// in code afterward instead of hard-failing the whole generation. Only genuine
+// structural problems (e.g. fewer than 2 choices) fall through to a repair retry.
+export const ChapterStructureSchema = z.object({
+  bible: StoryBibleLiteSchema,
+  situation: z.string().min(4).max(600),
+  question: z.string().min(4).max(400),
+  choices: z
+    .array(
+      z.object({
+        text: z.string().min(4).max(300),
+        consequence: z.string().min(4).max(600),
+      }),
+    )
+    .min(2)
+    .max(6),
+});
+
+export type ChapterDraft = z.infer<typeof ChapterDraftSchema>;
+export type ChapterStructure = z.infer<typeof ChapterStructureSchema>;
+
 export const FirstChapterPackageSchema = z.object({
   bible: StoryBibleLiteSchema,
   story: z.object({
     title: z.string().min(2).max(80),
     genre: z.string().min(2).max(80),
     chapterTitle: z.string().min(2).max(80),
-    content: z.string().min(600).max(8000),
     situation: z.string().min(4).max(300),
     question: z.string().min(4).max(180),
     choices: z.array(HighImpactChoiceSchema).length(2),
+    content: z.string().min(600).max(8000),
   }),
 });
 

@@ -12,8 +12,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePurchases } from '@/lib/purchases/context';
 import { CREDITS_PER_PRODUCT, PRODUCT_IDS } from '@/lib/purchases/config';
-import { postGrantCredits } from '@/lib/api/fetch';
-import { useQueryClient } from '@tanstack/react-query';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 import { ErrorCode } from 'expo-iap';
@@ -28,8 +26,7 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
-  const { products, isLoading, purchaseProduct, finishTransaction } = usePurchases();
-  const queryClient = useQueryClient();
+  const { products, isLoading, purchaseProduct } = usePurchases();
   const [loading, setLoading] = useState<string | null>(null);
 
   const creditProducts = products.filter(p => CREDITS_PER_PRODUCT[p.id] != null);
@@ -37,13 +34,8 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
   const handlePurchase = useCallback(async (productId: string) => {
     setLoading(productId);
     try {
-      const purchase = await purchaseProduct(productId);
-      const transactionId = purchase.transactionId;
-      if (!transactionId) throw new Error('Missing transactionId');
-
-      await postGrantCredits({ productId, transactionId });
-      await finishTransaction(purchase);
-      await queryClient.invalidateQueries({ queryKey: ['me'] });
+      // The provider grants credits and finishes the transaction on delivery.
+      await purchaseProduct(productId);
       onSuccess();
     } catch (err: unknown) {
       const code = (err as { code?: string }).code;
@@ -53,7 +45,7 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
     } finally {
       setLoading(null);
     }
-  }, [purchaseProduct, finishTransaction, queryClient, onSuccess]);
+  }, [purchaseProduct, onSuccess]);
 
   const sheetStyle = [
     styles.sheet,

@@ -9,6 +9,7 @@ import {
 import { createFirstChapterPackage } from '../drafting/create-first-chapter-package';
 import { validateFirstChapterQuality } from '../validation/validate-first-chapter-quality';
 import { startGenerationRun, finishGenerationRun } from '../logging/generation-run-logger';
+import { serializeGenerationError as serializeError } from '../logging/serialize-error';
 import { saveStoryBible } from '../memory/save-story-bible';
 import {
   FIRST_CHAPTER_HARNESS_MODEL,
@@ -24,17 +25,6 @@ type Params = {
   chapterId: string;
   genCtx: SetupContext;
 };
-
-function serializeError(err: unknown): Record<string, unknown> {
-  if (err instanceof Error) {
-    return {
-      name: err.name,
-      message: err.message,
-      stack: err.stack,
-    };
-  }
-  return { message: String(err) };
-}
 
 function getOutputSnapshot(firstChapterPackage: FirstChapterPackage, usage: unknown): unknown {
   return {

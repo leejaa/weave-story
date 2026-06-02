@@ -14,6 +14,7 @@ import { TextPage } from '@/components/reading/text-page';
 import { ChoiceEntryPage } from '@/components/reading/choice-entry-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
 import { InterventionPage } from '@/components/reading/intervention-page';
+import { ChapterErrorPage } from '@/components/reading/chapter-error-page';
 import { PaywallModal } from '@/components/ui/paywall-modal';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
@@ -30,7 +31,7 @@ export default function ReadingScreen() {
   const flatRef = useRef<FlatList>(null);
 
   const { t } = useTranslation('reading');
-  const { data, isLoading, choosing, isInsufficientCredits, clearChooseError } = useThreadDetail(id);
+  const { data, isLoading, choosing, isInsufficientCredits, clearChooseError, retryFirstChapter, retrying } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
   const [listHeight, setListHeight] = useState(0);
 
@@ -98,6 +99,27 @@ export default function ReadingScreen() {
     return (
       <View style={[styles.centered, { backgroundColor: c.paper }]}>
         <Text style={[styles.errorText, { color: c.inkSoft }]}>{t('notFound')}</Text>
+      </View>
+    );
+  }
+
+  // First-chapter generation failed → buildPages can't render anything (no previous
+  // chapter to fall back to), so show a friendly retry screen instead of a blank page.
+  const currentChapterRow = data.chapters.find(ch => ch.chapterNumber === currentChapter);
+  if (currentChapter === 1 && currentChapterRow?.status === 'failed') {
+    return (
+      <View style={[styles.container, { backgroundColor: c.paper }]}>
+        <ChapterRibbon
+          title={title ?? ''}
+          chapter={1}
+          totalChapters={estimatedChapters}
+          onBack={() => router.back()}
+        />
+        <ChapterErrorPage
+          onRetry={retryFirstChapter}
+          onBack={() => router.back()}
+          retrying={retrying}
+        />
       </View>
     );
   }

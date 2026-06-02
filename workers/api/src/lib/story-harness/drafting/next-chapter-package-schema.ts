@@ -17,6 +17,33 @@ export const NextChapterPackageSchema = z.object({
 
 export type NextChapterPackage = z.infer<typeof NextChapterPackageSchema>;
 
+// ─── Two-step generation schemas (mirrors the first-chapter harness) ──────────
+// Step 1 writes the chapter body (the only long field); content min aligns with the
+// quality gate's 2000-char floor so shortness is caught by the cheap per-step repair.
+export const NextChapterDraftSchema = z.object({
+  chapterTitle: z.string().min(2).max(80),
+  content: z.string().min(2000).max(8000),
+});
+
+// Step 2 derives the decision UI from the finished body (non-final chapters only).
+// Loose maxes + 2+ choices; cosmetic over-length and extra choices are clamped in code.
+export const NextChapterStructureSchema = z.object({
+  situation: z.string().min(4).max(600),
+  question: z.string().min(4).max(400),
+  choices: z
+    .array(
+      z.object({
+        text: z.string().min(4).max(300),
+        consequence: z.string().min(4).max(600),
+      }),
+    )
+    .min(2)
+    .max(6),
+});
+
+export type NextChapterDraft = z.infer<typeof NextChapterDraftSchema>;
+export type NextChapterStructure = z.infer<typeof NextChapterStructureSchema>;
+
 export function toNextChapterResult(
   nextChapterPackage: NextChapterPackage,
   qualityScores: NextChapterQualityScores,

@@ -4,7 +4,7 @@ import { makeDb } from '../lib/db';
 import { threads, stories, chapters, interventions, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter-context';
-import { createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
+import { createFirstChapterGenerationJob, createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import type { AppEnv } from '../types';
 
@@ -105,6 +105,63 @@ threadsRouter.get('/:id', async (c) => {
   ]);
 
   return c.json({ ...row, chapters: allChapters, interventions: allInterventions });
+});
+
+// Re-run a failed first-chapter generation for an existing thread. No credit charge —
+// the credit was already spent when the story was created.
+threadsRouter.post('/:id/retry-first-chapter', async (c) => {
+  const userId = c.get('userId');
+  const threadId = c.req.param('id');
+  const db = makeDb(c.env.DATABASE_URL);
+
+  const [row] = await db
+    .select({
+      storyId: stories.id,
+      estimatedChapters: stories.estimatedChapters,
+      setupAnswers: stories.setupAnswers,
+    })
+    .from(threads)
+    .innerJoin(stories, eq(threads.storyId, stories.id))
+    .where(and(eq(threads.id, threadId), eq(threads.userId, userId)));
+
+  if (!row) return c.json({ error: 'Not found' }, 404);
+
+  const [ch1] = await db
+    .select({ id: chapters.id, status: chapters.status })
+    .from(chapters)
+    .where(and(eq(chapters.threadId, threadId), eq(chapters.chapterNumber, 1)));
+
+  if (!ch1) return c.json({ error: 'Chapter not found' }, 404);
+  if (ch1.status !== 'failed') return c.json({ error: 'Chapter not in failed state' }, 409);
+
+  const answers = row.setupAnswers as { prompt?: string };
+  const prompt = (answers.prompt ?? '').trim();
+  if (!prompt) return c.json({ error: 'Missing prompt' }, 400);
+
+  await Promise.all([
+    db.update(chapters)
+      .set({ status: 'generating', content: null, title: null, options: null, situation: null, question: null, summary: null })
+      .where(eq(chapters.id, ch1.id)),
+    db.update(stories).set({ status: 'generating' }).where(eq(stories.id, row.storyId)),
+  ]);
+
+  try {
+    await enqueueStoryGenerationJob(
+      c.env.STORY_GENERATION_QUEUE,
+      createFirstChapterGenerationJob({
+        storyId: row.storyId,
+        threadId,
+        chapterId: ch1.id,
+        genCtx: { prompt, estimatedChapters: row.estimatedChapters },
+      }),
+    );
+  } catch (err) {
+    console.error(`[threads] retry first-chapter enqueue failed thread=${threadId}`, err);
+    await db.update(chapters).set({ status: 'failed' }).where(eq(chapters.id, ch1.id));
+    return c.json({ error: 'generation enqueue failed' }, 503);
+  }
+
+  return c.json({ ok: true });
 });
 
 threadsRouter.post('/:id/choose', async (c) => {

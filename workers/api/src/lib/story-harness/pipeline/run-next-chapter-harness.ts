@@ -11,6 +11,7 @@ import {
 import { createNextChapterPackage } from '../drafting/create-next-chapter-package';
 import { validateNextChapterQuality } from '../validation/validate-next-chapter-quality';
 import { startGenerationRun, finishGenerationRun } from '../logging/generation-run-logger';
+import { serializeGenerationError as serializeError } from '../logging/serialize-error';
 import { loadStoryBible, type StoryBibleSnapshot } from '../memory/load-story-bible';
 import {
   NEXT_CHAPTER_HARNESS_MODEL,
@@ -29,17 +30,6 @@ type ChapterIdentity = {
   storyId: string;
   threadId: string;
 };
-
-function serializeError(err: unknown): Record<string, unknown> {
-  if (err instanceof Error) {
-    return {
-      name: err.name,
-      message: err.message,
-      stack: err.stack,
-    };
-  }
-  return { message: String(err) };
-}
 
 async function loadChapterIdentity(db: DB, chapterId: string): Promise<ChapterIdentity> {
   const [row] = await db

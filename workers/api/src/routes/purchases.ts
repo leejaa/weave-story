@@ -82,14 +82,19 @@ async function verifyAppleTransaction(
       headers: { Authorization: `Bearer ${jwt}` },
     });
 
-    if (res.status === 404) continue;
+    // A sandbox transaction queried against the production endpoint returns
+    // 404 (TransactionIdNotFound) or 401 (production API not yet available
+    // because the app has no production release). In either case, fall through
+    // to the next environment instead of failing outright.
     if (!res.ok) {
-      console.error(`[apple-verify] HTTP ${res.status} from ${baseUrl}`);
-      return false;
+      console.warn(`[apple-verify] HTTP ${res.status} from ${baseUrl}, trying next environment`);
+      continue;
     }
 
-    const { signedTransaction } = await res.json() as { signedTransaction: string };
-    const payload = decodeJWSPayload(signedTransaction);
+    // App Store Server API "Get Transaction Info" returns the JWS in
+    // `signedTransactionInfo` (NOT `signedTransaction`).
+    const { signedTransactionInfo } = await res.json() as { signedTransactionInfo: string };
+    const payload = decodeJWSPayload(signedTransactionInfo);
 
     const valid =
       payload.bundleId === BUNDLE_ID &&
@@ -103,6 +108,7 @@ async function verifyAppleTransaction(
     return valid;
   }
 
+  console.error(`[apple-verify] transaction not found in any environment transactionId=${transactionId}`);
   return false;
 }
 

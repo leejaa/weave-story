@@ -59,6 +59,12 @@ export type CheckPromptResult = {
   questions: string[];
 };
 
+export async function postRetryFirstChapter(threadId: string): Promise<{ ok: true }> {
+  const res = await authFetch(`/api/threads/${threadId}/retry-first-chapter`, { method: 'POST' });
+  await throwIfError(res);
+  return res.json();
+}
+
 export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult> {
   const res = await authFetch('/api/stories/check-prompt', {
     method: 'POST',
