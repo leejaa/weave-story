@@ -5,5 +5,9 @@
   "cancel": "취소",
   "plan": "요금제",
   "unlimitedStories": "무제한 스토리 이용 중",
-  "creditsRemaining": "크레딧 {{count}}개 남음"
+  "creditsRemaining": "크레딧 {{count}}개 남음",
+  "deleteAccount": "회원 탈퇴",
+  "deleteAccountConfirm": "계정과 모든 데이터(스토리, 남은 크레딧 포함)가 영구적으로 삭제되며 되돌릴 수 없습니다. 정말 탈퇴하시겠어요?",
+  "deleteAccountErrorTitle": "탈퇴 실패",
+  "deleteAccountError": "문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
 }

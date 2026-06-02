@@ -10,6 +10,11 @@ export type WorkerEnv = {
   APPLE_IAP_KEY_ID: string;
   APPLE_IAP_ISSUER_ID: string;
   APPLE_IAP_PRIVATE_KEY: string;
+  // Sign in with Apple key — used to revoke tokens on account deletion. Optional:
+  // when unset, revocation is skipped (account deletion still works).
+  APPLE_SIGNIN_TEAM_ID?: string;
+  APPLE_SIGNIN_KEY_ID?: string;
+  APPLE_SIGNIN_PRIVATE_KEY?: string;
   GOOGLE_IOS_CLIENT_ID: string;
   GOOGLE_WEB_CLIENT_ID: string;
 };

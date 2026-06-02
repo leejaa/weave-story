@@ -92,8 +92,18 @@ export async function authFetch(input: string, init: RequestInit = {}): Promise<
   return res;
 }
 
+export async function deleteAccount(): Promise<void> {
+  const res = await authFetch('/api/me', { method: 'DELETE' });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error ?? 'Account deletion failed');
+  }
+  await tokenStorage.clear();
+}
+
 export async function signInWithApple(params: {
   identityToken: string;
+  authorizationCode?: string | null;
   fullName?: { givenName?: string | null; familyName?: string | null } | null;
 }): Promise<void> {
   const res = await fetch(`${BASE_URL}/api/auth/apple`, {

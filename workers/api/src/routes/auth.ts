@@ -3,6 +3,7 @@ import { eq, and, gt } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
 import { users, accounts, sessions } from '../lib/schema';
 import { verifyAppleIdentityToken } from '../lib/auth/apple';
+import { exchangeAppleAuthCode } from '../lib/auth/apple-oauth';
 import { verifyGoogleIdToken } from '../lib/auth/google';
 import { signAccessToken, generateRefreshToken, hashRefreshToken, REFRESH_TOKEN_TTL_MS } from '../lib/tokens';
 import type { AppEnv } from '../types';
@@ -10,7 +11,7 @@ import type { AppEnv } from '../types';
 export const authRouter = new Hono<AppEnv>();
 
 authRouter.post('/apple', async (c) => {
-  const { identityToken, fullName } = await c.req.json();
+  const { identityToken, fullName, authorizationCode } = await c.req.json();
   if (!identityToken) return c.json({ error: 'identityToken required' }, 400);
 
   const applePayload = await verifyAppleIdentityToken(identityToken).catch(() => null);
@@ -35,6 +36,17 @@ authRouter.post('/apple', async (c) => {
     const [newUser] = await db.insert(users).values({ email: email ?? null, name }).returning({ id: users.id });
     await db.insert(accounts).values({ userId: newUser.id, provider: 'apple', providerSub: appleSub });
     userId = newUser.id;
+  }
+
+  // Capture an Apple refresh token (best-effort) so we can revoke it on account
+  // deletion. No-ops if the Sign in with Apple key isn't configured.
+  if (typeof authorizationCode === 'string' && authorizationCode) {
+    const appleRefreshToken = await exchangeAppleAuthCode(authorizationCode, c.env);
+    if (appleRefreshToken) {
+      await db.update(accounts)
+        .set({ appleRefreshToken })
+        .where(and(eq(accounts.provider, 'apple'), eq(accounts.providerSub, appleSub)));
+    }
   }
 
   const rawRefreshToken = generateRefreshToken();

@@ -1,6 +1,6 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { signInWithApple, signInWithGoogle, setSignedOutCallback } from './api';
+import { signInWithApple, signInWithGoogle, setSignedOutCallback, deleteAccount } from './api';
 import { clearStaleTokensOnFreshInstall } from './install-guard';
 import { tokenStorage } from './storage';
 
@@ -11,6 +11,7 @@ interface AuthContextValue {
   signInWithApple: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     await signInWithApple({
       identityToken: credential.identityToken,
+      authorizationCode: credential.authorizationCode,
       fullName: credential.fullName,
     });
 
@@ -53,9 +55,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState('unauthenticated');
   }, []);
 
+  const handleDeleteAccount = useCallback(async () => {
+    await deleteAccount();
+    setState('unauthenticated');
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ state, signInWithApple: handleAppleSignIn, signInWithGoogle: handleGoogleSignIn, signOut }}>
+      value={{ state, signInWithApple: handleAppleSignIn, signInWithGoogle: handleGoogleSignIn, signOut, deleteAccount: handleDeleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,5 +6,9 @@
   "plan": "Plan",
   "unlimitedStories": "Unlimited stories",
   "creditsRemaining": "{{count}} credit remaining",
-  "creditsRemaining_other": "{{count}} credits remaining"
+  "creditsRemaining_other": "{{count}} credits remaining",
+  "deleteAccount": "Delete account",
+  "deleteAccountConfirm": "Your account and all data, including stories and remaining credits, will be permanently deleted. This cannot be undone. Delete your account?",
+  "deleteAccountErrorTitle": "Deletion failed",
+  "deleteAccountError": "Something went wrong. Please try again in a moment."
 }

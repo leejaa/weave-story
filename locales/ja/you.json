@@ -5,5 +5,9 @@
   "cancel": "キャンセル",
   "plan": "プラン",
   "unlimitedStories": "ストーリー無制限",
-  "creditsRemaining": "クレジット残り{{count}}個"
+  "creditsRemaining": "クレジット残り{{count}}個",
+  "deleteAccount": "アカウントを削除",
+  "deleteAccountConfirm": "アカウントとすべてのデータ（ストーリー、残りのクレジットを含む）が完全に削除され、元に戻せません。本当に削除しますか？",
+  "deleteAccountErrorTitle": "削除に失敗しました",
+  "deleteAccountError": "問題が発生しました。しばらくしてからもう一度お試しください。"
 }

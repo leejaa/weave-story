@@ -16,7 +16,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { t } = useTranslation('you');
   const { locale, setLocale, supportedLocales, localeLabels } = useLocale();
-  const { signOut } = useAuth();
+  const { signOut, deleteAccount } = useAuth();
   const { data: me } = useMe();
   const handleSignOut = () => {
     Alert.alert(t('signOut'), t('signOutConfirm'), [
@@ -27,6 +27,24 @@ export default function ProfileScreen() {
         onPress: async () => {
           await signOut();
           router.replace('/login');
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(t('deleteAccount'), t('deleteAccountConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
+      {
+        text: t('deleteAccount'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteAccount();
+            router.replace('/login');
+          } catch {
+            Alert.alert(t('deleteAccountErrorTitle'), t('deleteAccountError'));
+          }
         },
       },
     ]);
@@ -99,6 +117,11 @@ export default function ProfileScreen() {
         <Text style={[styles.signOutText, { color: c.ember }]}>{t('signOut')}</Text>
       </Pressable>
 
+      {/* Delete account */}
+      <Pressable onPress={handleDeleteAccount} style={styles.deleteBtn} hitSlop={8}>
+        <Text style={[styles.deleteText, { color: c.inkFaint }]}>{t('deleteAccount')}</Text>
+      </Pressable>
+
     </View>
   );
 }
@@ -148,4 +171,6 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: FONTS.sansMedium, fontSize: SIZES.sm },
   signOutBtn: { marginTop: 28 },
   signOutText: { fontFamily: FONTS.sans, fontSize: SIZES.md },
+  deleteBtn: { marginTop: 18 },
+  deleteText: { fontFamily: FONTS.sans, fontSize: SIZES.sm, textDecorationLine: 'underline' },
 });

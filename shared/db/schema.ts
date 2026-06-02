@@ -43,6 +43,9 @@ export const accounts = pgTable('accounts', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   provider: text('provider').notNull(), // 'apple' | 'google'
   providerSub: text('provider_sub').notNull(),
+  // Apple refresh token, captured at sign-in so we can revoke it on account deletion
+  // (Apple Guideline 5.1.1(v)). Nullable: only set for Apple sign-ins when configured.
+  appleRefreshToken: text('apple_refresh_token'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
