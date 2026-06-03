@@ -106,6 +106,8 @@ export async function postCreateStory(params: {
 export async function postGrantCredits(params: {
   productId: string;
   transactionId: string;
+  purchaseToken?: string;
+  platform?: 'ios' | 'android';
 }): Promise<{ credits: number; alreadyGranted?: boolean }> {
   const res = await authFetch('/api/purchases/grant', {
     method: 'POST',

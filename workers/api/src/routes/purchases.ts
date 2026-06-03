@@ -3,6 +3,7 @@ import { eq, and, sql } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
 import { users, purchaseGrants } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
+import { verifyGooglePurchase } from '../lib/google-play';
 import type { AppEnv, WorkerEnv } from '../types';
 
 const BUNDLE_ID = 'com.leejahun.weavestory';
@@ -18,15 +19,32 @@ purchasesRouter.use(requireAuth);
 
 purchasesRouter.post('/grant', async (c) => {
   const userId = c.get('userId');
-  const body = await c.req.json() as { productId?: unknown; transactionId?: unknown };
-  const { productId, transactionId } = body;
+  const body = await c.req.json() as {
+    productId?: unknown;
+    transactionId?: unknown;
+    purchaseToken?: unknown;
+    platform?: unknown;
+  };
 
-  if (typeof productId !== 'string' || typeof transactionId !== 'string') {
-    return c.json({ error: 'productId and transactionId required' }, 400);
-  }
+  const productId = typeof body.productId === 'string' ? body.productId : null;
+  const transactionId = typeof body.transactionId === 'string' ? body.transactionId : null;
+  const purchaseToken = typeof body.purchaseToken === 'string' ? body.purchaseToken : null;
+  // Default to ios so already-shipped clients (which don't send `platform`) keep
+  // verifying against Apple.
+  const platform = body.platform === 'android' ? 'android' : 'ios';
+
+  if (!productId) return c.json({ error: 'productId required' }, 400);
 
   const creditsToGrant = CREDITS_PER_PRODUCT[productId];
   if (!creditsToGrant) return c.json({ error: 'Unknown product' }, 400);
+
+  // Unique key we dedupe + record grants on (stored in rc_purchase_date_ms):
+  // Apple transactionId or Android purchaseToken.
+  const grantKey = platform === 'android' ? purchaseToken : transactionId;
+  if (!grantKey) {
+    const field = platform === 'android' ? 'purchaseToken' : 'transactionId';
+    return c.json({ error: `${field} required` }, 400);
+  }
 
   const db = makeDb(c.env.DATABASE_URL);
 
@@ -36,7 +54,7 @@ purchasesRouter.post('/grant', async (c) => {
     .where(and(
       eq(purchaseGrants.userId, userId),
       eq(purchaseGrants.productId, productId),
-      eq(purchaseGrants.rcPurchaseDateMs, transactionId),
+      eq(purchaseGrants.rcPurchaseDateMs, grantKey),
     ));
 
   if (alreadyGranted.length > 0) {
@@ -44,9 +62,12 @@ purchasesRouter.post('/grant', async (c) => {
     return c.json({ credits: user.credits, alreadyGranted: true });
   }
 
-  const isValid = await verifyAppleTransaction(transactionId, productId, c.env);
+  const isValid = platform === 'android'
+    ? await verifyGooglePurchase(grantKey, productId, c.env)
+    : await verifyAppleTransaction(grantKey, productId, c.env);
+
   if (!isValid) {
-    console.error(`[grant] Apple verification failed transactionId=${transactionId} product=${productId}`);
+    console.error(`[grant] ${platform} verification failed product=${productId}`);
     return c.json({ error: 'Purchase verification failed' }, 402);
   }
 
@@ -59,11 +80,11 @@ purchasesRouter.post('/grant', async (c) => {
   await db.insert(purchaseGrants).values({
     userId,
     productId,
-    rcPurchaseDateMs: transactionId,
+    rcPurchaseDateMs: grantKey,
     creditsGranted: creditsToGrant,
   });
 
-  console.log(`[grant] granted userId=${userId} product=${productId} credits=${creditsToGrant} total=${updated.credits}`);
+  console.log(`[grant] granted userId=${userId} platform=${platform} product=${productId} credits=${creditsToGrant} total=${updated.credits}`);
   return c.json({ credits: updated.credits });
 });
 

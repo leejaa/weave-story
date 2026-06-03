@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import { useIAP } from 'expo-iap';
 import type { Product, Purchase, PurchaseError } from 'expo-iap';
 import * as Sentry from '@sentry/react-native';
@@ -60,7 +61,9 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   // started from the paywall button. Gating this behind a pending button tap would
   // strand re-delivered transactions forever (they never get granted or finished).
   const processPurchase = useCallback(async (purchase: Purchase) => {
-    const txId = purchase.transactionId;
+    // Apple delivers a transactionId; Google Play may only carry a purchaseToken.
+    // Use whichever uniquely identifies this purchase as the de-dupe key.
+    const txId = purchase.transactionId || purchase.purchaseToken;
 
     if (!txId || !isCreditProduct(purchase.productId)) {
       pendingRef.current?.resolve(purchase);
@@ -115,9 +118,14 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   const purchaseProduct = useCallback((sku: string): Promise<Purchase> => {
     return new Promise((resolve, reject) => {
       pendingRef.current = { resolve, reject };
+      // Apple takes a single `sku`; Google Play Billing takes a `skus` array.
+      const request =
+        Platform.OS === 'android'
+          ? { google: { skus: [sku] } }
+          : { apple: { sku } };
       requestPurchase({
         type: 'in-app',
-        request: { apple: { sku } },
+        request,
       }).catch((err: unknown) => {
         pendingRef.current = null;
         reject(err instanceof Error ? err : new Error(String(err)));

@@ -19,6 +19,11 @@ export type WorkerEnv = {
   GOOGLE_WEB_CLIENT_ID: string;
   // Review-only demo login code. When unset, /api/auth/demo is disabled.
   DEMO_LOGIN_CODE?: string;
+  // Google Play service account (Android Publisher API) used to verify
+  // Google Play Billing purchases. When unset, Android purchase grants are
+  // rejected. Sourced from the play-publisher service-account JSON key.
+  GOOGLE_PLAY_SA_CLIENT_EMAIL?: string;
+  GOOGLE_PLAY_SA_PRIVATE_KEY?: string;
 };
 
 export type AppEnv = {
