@@ -122,6 +122,25 @@ export async function signInWithApple(params: {
   await tokenStorage.setRefreshToken(refreshToken);
 }
 
+// Review-only: sign in with a code (no OAuth) so store reviewers can access
+// the app. Calls the code-gated /api/auth/demo endpoint.
+export async function signInWithDemo(code: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/auth/demo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error ?? 'Demo sign-in failed');
+  }
+
+  const { accessToken, refreshToken } = await res.json();
+  await tokenStorage.setAccessToken(accessToken);
+  await tokenStorage.setRefreshToken(refreshToken);
+}
+
 export async function signInWithGoogle(): Promise<void> {
   await GoogleSignin.hasPlayServices();
   const { data } = await GoogleSignin.signIn();

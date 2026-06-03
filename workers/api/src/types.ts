@@ -17,6 +17,8 @@ export type WorkerEnv = {
   APPLE_SIGNIN_PRIVATE_KEY?: string;
   GOOGLE_IOS_CLIENT_ID: string;
   GOOGLE_WEB_CLIENT_ID: string;
+  // Review-only demo login code. When unset, /api/auth/demo is disabled.
+  DEMO_LOGIN_CODE?: string;
 };
 
 export type AppEnv = {

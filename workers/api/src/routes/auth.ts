@@ -94,6 +94,45 @@ authRouter.post('/google', async (c) => {
   return c.json({ accessToken, refreshToken: rawRefreshToken });
 });
 
+// Review-only demo login. Store reviewers (e.g. Google Play) may not sign in
+// with their own accounts, and this app only supports OAuth — so we expose a
+// code-gated path that signs the reviewer into a dedicated demo account. The
+// code is a server secret (DEMO_LOGIN_CODE) shared out-of-band via the store's
+// App Access instructions; without it this endpoint does nothing.
+authRouter.post('/demo', async (c) => {
+  const { code } = await c.req.json().catch(() => ({}));
+  const expected = c.env.DEMO_LOGIN_CODE;
+  if (!expected || typeof code !== 'string' || code !== expected) {
+    return c.json({ error: 'Invalid demo code' }, 401);
+  }
+
+  const db = makeDb(c.env.DATABASE_URL);
+  const DEMO_SUB = 'reviewer';
+
+  const existingAccount = await db.query.accounts.findFirst({
+    where: and(eq(accounts.provider, 'demo'), eq(accounts.providerSub, DEMO_SUB)),
+  });
+
+  let userId: string;
+  if (existingAccount) {
+    userId = existingAccount.userId;
+    await db.update(users).set({ credits: 50 }).where(eq(users.id, userId));
+  } else {
+    const [newUser] = await db.insert(users)
+      .values({ email: 'reviewer@weave.story', name: 'Reviewer', credits: 50 })
+      .returning({ id: users.id });
+    await db.insert(accounts).values({ userId: newUser.id, provider: 'demo', providerSub: DEMO_SUB });
+    userId = newUser.id;
+  }
+
+  const rawRefreshToken = generateRefreshToken();
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+  await db.insert(sessions).values({ userId, refreshTokenHash: await hashRefreshToken(rawRefreshToken), expiresAt });
+
+  const accessToken = await signAccessToken(userId, c.env.JWT_SECRET);
+  return c.json({ accessToken, refreshToken: rawRefreshToken });
+});
+
 authRouter.post('/refresh', async (c) => {
   const { refreshToken } = await c.req.json();
   if (!refreshToken) return c.json({ error: 'refreshToken required' }, 400);

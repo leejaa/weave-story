@@ -4,6 +4,11 @@ Last updated: 2026-06-02
 
 상태 범례: ⬜ 미착수 · 🟦 진행 중 · ✅ 완료 · ⏭️ 보류/후속
 
+> ## 🚀 2026-06-03 · **App Store 심사 정식 제출 완료** (상태: "1.0 심사 대기 중")
+> 빌드 34 + 메타데이터/스크린샷(iPhone 6.5" 5장 + iPad 5장) 전부 포함. 심사 최대 48시간, 완료 시 이메일. 출시=수동.
+> 제출 막판 추가 처리: 가격=무료(175개 지역), iPad 스크린샷 필수라 생성·업로드. 신규 ASC API 키 "Screenshot Upload"(TN83PW567A) 발급해 fastlane deliver로 업로드.
+> 후속(선택): Apple Sign In 키 설정, 워커 /support 커밋, 한국어(ko) 현지화, 불필요 시 ASC API 키 폐기.
+
 ## 🔴 심사 탈락 확정급 (블로커)
 
 - ✅ **1. 인앱 계정 삭제(회원 탈퇴)** — Apple 5.1.1(v) *(코드 완료·배포 68a7197b)*
@@ -30,7 +35,29 @@ Last updated: 2026-06-02
 
 ## 🟡 확인/보완
 
-- ⬜ App Store Connect: 개인정보처리방침 URL, 지원 URL, App 개인정보 설문, 연령 등급, 스크린샷, 설명, 심사 노트(샌드박스 IAP + AI 콘텐츠 안내)
+- 🟦 App Store Connect 메타데이터 (leejahun0 브라우저, 앱 정보 페이지 저장 완료)
+  - ✅ 부제목 "Weave your own AI story", 카테고리 도서(Books)
+  - ✅ 콘텐츠 권한: 타사 콘텐츠 없음(아니요)
+  - ✅ 연령 등급: **13+** (자동 계산, 재정의 안 함 — 사용자 결정). 한국 12+, 브라질 A14, 173개국 13+. *(새 ASC 체계엔 17+ 없음 → 16+/18+만 상향 가능했으나 13+ 유지 선택)*
+  - ✅ 개인정보처리방침 URL: `https://weave-story-api.leejahun0.workers.dev/privacy`
+  - ✅ **App 개인정보 설문 게시 완료** — 7개 데이터 유형, 모두 추적(Tracking) 없음:
+    - 연결됨(앱 기능): 이름, 이메일, 기타 사용자 콘텐츠, 사용자 ID, 구입 내역
+    - 미연결(앱 기능): 충돌 데이터, 실적 데이터 *(Sentry — setUser/sendDefaultPii 미설정 확인)*
+  - ✅ 버전 정보 입력 완료(영어): 프로모션 텍스트, 설명, 키워드, 저작권(2026 Jahun Lee)
+  - ✅ 빌드 34 선택(새 트리 아이콘 확인됨)
+  - ✅ 심사 노트(영어): SIWA/Google 로그인 안내(데모계정 불요), IAP 샌드박스, AI UGC 신고/모더레이션, 회원탈퇴
+  - ✅ 심사 연락처: Lee Jahun / leejahun0@gmail.com — ⬜ **전화번호(필수, 사용자 입력 필요)**
+  - ✅ "로그인 필요" 해제(OAuth 전용이라 데모 username/pw 없음)
+  - ✅ 출시 방법: **수동 출시** 선택(사용자 결정) *(전화번호 입력 후 저장 시 확정)*
+  - ✅ **지원 URL**: 워커 `/support` 페이지 배포 완료(ko/en/ja, 200 확인) → `https://weave-story-api.leejahun0.workers.dev/support` 입력 *(전화번호 입력 후 저장 시 확정)*
+  - ✅ **전화번호** 입력 완료(+82 10 3441 4148) → 지원URL·수동출시 포함 **전체 저장 성공**
+  - ✅ IAP 첫 심사 동봉: **Credits Starter 3 + Credits Value 10**(소모품) 버전에 추가됨. *(Premium Monthly 자동갱신 구독은 앱 미구현 추정 → 제외. 추후 정리 권장)*
+  - ✅ **스크린샷 업로드 완료** (iPhone 6.5" 슬롯, en-US, 5장): gpt-image-2 아트 + 또렷한 앱 UI 오버레이 + Fraunces 캡션, 1284×2778.
+    - 순서: ①Every choice writes your story ②You decide what happens next ③Chapters written as you read ④A shelf of stories only you have read ⑤Start from a single spark
+    - 업로드 경로: `fastlane deliver`(ASC API). 브라우저 file_upload는 사용자 첨부 파일만 허용해 불가 → API로 처리.
+    - **신규 ASC API 키 발급**: 이름 "Screenshot Upload", Key ID `TN83PW567A`, 역할 앱 관리(App Manager), Issuer `095b3013-…`. .p8: `~/Downloads/AuthKey_TN83PW567A.p8`. 불필요 시 ASC 통합에서 폐기 가능.
+    - 스크립트 /tmp/build-shots.js · 아트 /tmp/art/ · 6.5" 리사이즈 /tmp/upload/shot-1..5.png
+  - ⬜ **최종 "심사에 추가" 제출**: 스크린샷 후 사용자가 직접 클릭(또는 승인). 출시=수동.
 - ⬜ 권한 문자열: `expo-video` 카메라 사용 여부 확인 (미사용이면 OK)
 - ⬜ 서버 로그아웃/토큰 폐기 엔드포인트 (현재 로컬 토큰만 삭제)
 - ⬜ `eas.json`에 `appleTeamId` 명시 (사소)
@@ -58,6 +85,7 @@ Last updated: 2026-06-02
 - **2026-06-02 · OTA(production, iOS)** — 약관/방침 링크 + 구매 복원 (커밋 `60bea7f`, update `e6cc925e`).
 - **2026-06-02 · OTA(production, iOS)** — paywall 다국어(i18n) + 법적 페이지 ko/en/ja (커밋 `d39d3cd`, update `36513d95`).
 - ⚠️ **최종 App Store 심사 제출은 클린 빌드 권장**(OTA 의존 X) — 모든 블로커가 바이너리에 포함되도록.
+- **2026-06-03 · build 34** — 클린 빌드 + TestFlight 제출 완료 (커밋 `ee99543`). 바이너리 포함: **새 앱 아이콘** + 회원탈퇴 + 신고 + 약관/방침 링크 + 구매복원 + paywall 다국어. → Apple 처리 후 실기기 검증 + 심사 제출 준비.
 
 ## 작업 메모
 

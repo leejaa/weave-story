@@ -1,6 +1,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Redirect } from 'expo-router';
-import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -35,8 +36,20 @@ function LoginBackground() {
 }
 
 export default function LoginScreen() {
-  const { state, signInWithApple, signInWithGoogle } = useAuth();
+  const { state, signInWithApple, signInWithGoogle, signInWithDemo } = useAuth();
   const insets = useSafeAreaInsets();
+  const [reviewerMode, setReviewerMode] = useState(false);
+  const [code, setCode] = useState('');
+  const [reviewerError, setReviewerError] = useState<string | null>(null);
+
+  const submitReviewerCode = async () => {
+    setReviewerError(null);
+    try {
+      await signInWithDemo(code.trim());
+    } catch {
+      setReviewerError('Invalid code');
+    }
+  };
 
   if (state === 'loading') {
     return (
@@ -107,6 +120,34 @@ export default function LoginScreen() {
           </Text>
           .
         </Text>
+
+        {reviewerMode ? (
+          <View style={styles.reviewerBox}>
+            <TextInput
+              value={code}
+              onChangeText={setCode}
+              placeholder="Reviewer access code"
+              placeholderTextColor={TEXT_FAINT}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={styles.reviewerInput}
+              onSubmitEditing={submitReviewerCode}
+              returnKeyType="go"
+            />
+            <Pressable onPress={submitReviewerCode} style={styles.reviewerSubmit}>
+              <Text style={[styles.googleLabel, { color: TEXT_PRIMARY }]}>Enter</Text>
+            </Pressable>
+            {reviewerError ? (
+              <Text style={[styles.reviewerError]}>{reviewerError}</Text>
+            ) : null}
+          </View>
+        ) : (
+          <Text
+            style={[styles.reviewerLink, { color: TEXT_FAINT }]}
+            onPress={() => setReviewerMode(true)}>
+            Reviewer access
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -204,5 +245,45 @@ const styles = StyleSheet.create({
   legalLink: {
     fontFamily: FONTS.sansMedium,
     textDecorationLine: 'underline',
+  },
+  reviewerLink: {
+    fontFamily: FONTS.sans,
+    fontSize: SIZES['2xs'],
+    textAlign: 'center',
+    marginTop: 8,
+    textDecorationLine: 'underline',
+  },
+  reviewerBox: {
+    width: '100%',
+    gap: 10,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  reviewerInput: {
+    width: '100%',
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(237,232,240,0.25)',
+    backgroundColor: 'rgba(237,232,240,0.06)',
+    paddingHorizontal: 16,
+    color: TEXT_PRIMARY,
+    fontFamily: FONTS.sans,
+    fontSize: SIZES.md,
+  },
+  reviewerSubmit: {
+    height: 48,
+    width: '100%',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(237,232,240,0.25)',
+    backgroundColor: 'rgba(237,232,240,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reviewerError: {
+    fontFamily: FONTS.sans,
+    fontSize: SIZES['2xs'],
+    color: '#d97768',
   },
 });

@@ -243,10 +243,59 @@ const TERMS: Record<LegalLang, { title: string; body: string }> = {
   },
 };
 
+const SUPPORT: Record<LegalLang, { title: string; body: string }> = {
+  ko: {
+    title: '고객 지원',
+    body: `<h1>${APP_NAME} 고객 지원</h1>
+<p class="meta">AI 기반 인터랙티브 소설 앱</p>
+<p>도움이 필요하시면 아래 내용을 확인하시거나 <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> 로 문의해 주세요. 보통 2영업일 이내에 답변드립니다.</p>
+<h2>자주 묻는 질문</h2>
+<ul>
+  <li><b>이야기는 어떻게 만드나요?</b> 장르·분위기·설정을 입력하면 AI가 첫 챕터를 생성하고, 선택지를 고르면 다음 챕터가 이어집니다.</li>
+  <li><b>크레딧이란?</b> 이야기 생성에 사용되는 인앱 재화입니다. 앱 내 결제로 충전하며, 결제·환불은 Apple App Store 정책을 따릅니다.</li>
+  <li><b>구매가 반영되지 않아요.</b> 결제 화면의 <b>구매 복원</b>을 눌러 주세요. 그래도 해결되지 않으면 위 이메일로 문의해 주세요.</li>
+  <li><b>부적절한 내용을 봤어요.</b> 챕터 화면의 신고(🚩) 버튼으로 신고하면 검토 후 조치합니다.</li>
+  <li><b>회원 탈퇴는 어떻게 하나요?</b> 프로필 화면의 <b>회원 탈퇴</b>에서 계정과 모든 데이터를 즉시 영구 삭제할 수 있습니다.</li>
+</ul>`,
+  },
+  en: {
+    title: 'Support',
+    body: `<h1>${APP_NAME} Support</h1>
+<p class="meta">AI-powered interactive fiction app</p>
+<p>Need help? Check the answers below or email <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>. We usually reply within two business days.</p>
+<h2>Frequently asked questions</h2>
+<ul>
+  <li><b>How do I create a story?</b> Enter a genre, mood, and premise; the AI generates the first chapter, and each choice you make continues the next.</li>
+  <li><b>What are credits?</b> An in-app currency used to generate stories. Buy them via in-app purchase; payments and refunds follow Apple App Store policies.</li>
+  <li><b>My purchase didn't apply.</b> Tap <b>Restore Purchases</b> on the paywall. If that doesn't help, email us at the address above.</li>
+  <li><b>I saw inappropriate content.</b> Use the report (🚩) button on the chapter screen; we review and act on reports.</li>
+  <li><b>How do I delete my account?</b> Use <b>Delete account</b> on the profile screen to permanently remove your account and all data immediately.</li>
+</ul>`,
+  },
+  ja: {
+    title: 'サポート',
+    body: `<h1>${APP_NAME} サポート</h1>
+<p class="meta">AIを活用したインタラクティブ小説アプリ</p>
+<p>お困りの際は、以下をご確認いただくか <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> までご連絡ください。通常2営業日以内に返信します。</p>
+<h2>よくある質問</h2>
+<ul>
+  <li><b>物語の作り方は？</b> ジャンル・雰囲気・設定を入力するとAIが最初のチャプターを生成し、選択肢を選ぶと次のチャプターが続きます。</li>
+  <li><b>クレジットとは？</b> 物語の生成に使うアプリ内通貨です。アプリ内課金で購入でき、決済・返金はApple App Storeのポリシーに従います。</li>
+  <li><b>購入が反映されません。</b> 課金画面の<b>購入の復元</b>をタップしてください。解決しない場合は上記メールへご連絡ください。</li>
+  <li><b>不適切な内容を見ました。</b> チャプター画面の報告（🚩）ボタンから報告してください。確認のうえ対応します。</li>
+  <li><b>アカウント削除の方法は？</b> プロフィール画面の<b>アカウント削除</b>から、アカウントとすべてのデータを直ちに完全に削除できます。</li>
+</ul>`,
+  },
+};
+
 export function privacyPage(lang: LegalLang): string {
   return page(lang, PRIVACY[lang].title, PRIVACY[lang].body);
 }
 
 export function termsPage(lang: LegalLang): string {
   return page(lang, TERMS[lang].title, TERMS[lang].body);
+}
+
+export function supportPage(lang: LegalLang): string {
+  return page(lang, SUPPORT[lang].title, SUPPORT[lang].body);
 }
