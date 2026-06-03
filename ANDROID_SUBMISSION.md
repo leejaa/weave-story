@@ -78,7 +78,14 @@ Last updated: 2026-06-03
     | `com.leejahun.weavestory.credits_starter_3` | credits-starter-3 | Starter Pack | 3 | ~$2.87-2.99 | **₩4,400** |
     | `com.leejahun.weavestory.credits_value_10` | credits-value-10 | Value Pack | 10 | ~$7.83-7.99 | **₩12,000** |
     - KRW 기준 입력(한국은 iOS와 정확히 동일), 타 지역은 Google 자동 환산.
-- 🟦 **Android AAB 리빌드**(결제 코드 vc9, autoIncrement) → alpha 트랙 업로드 → 클로즈드 테스트에서 샌드박스 결제 검증
+- ✅ **Android AAB(vc9, 결제 코드) 빌드 완료** — EAS build `9c3744ae`, versionCode 9, AAB `khQfkJxUpW53b9sjrxhov7.aab` (로컬 `/tmp/weave-story-vc9.aab`)
+- 🚫 **(사용자 필수·블로커) 한국 개발자 추가 정보** — 유료 인앱 상품 생성으로 **전자상거래법 준수 정보**가 필요해짐. Play Console > 개발자 계정 > 계정 세부정보 > "한국 개발자의 경우 추가 정보 필요"에 입력:
+    - **사업자 등록 번호** (사업자등록증)
+    - **전자상거래 라이선스 번호** (통신판매업 신고번호)
+    - **전자상거래 라이선스 대행사** (신고 수리 기관/지자체)
+    - ⚠️ 이게 없으면 **vc9(유료 결제 포함) 업로드가 API에서 차단됨** (`supply` 에러: "To comply with Korean law, developers in Korea must provide additional information"). Claude 입력 불가(실제 법적 등록번호). 사업자등록·통신판매업 신고가 없으면 먼저 발급 필요.
+    - **현재 vc8(리뷰어 로그인, 결제 없음)은 클로즈드 테스트에 이미 라이브** — 앱 테스트는 가능, 결제(vc9)만 블로킹됨.
+- ⬜ 위 해결 후: vc9 alpha 업로드 → 클로즈드 테스트에서 샌드박스 결제 검증
 
 ## 5. 출시
 - ✅ 국가/지역 선택(177개국 전체), 무료
