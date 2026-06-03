@@ -69,9 +69,16 @@ Last updated: 2026-06-03
 - **→ 앱 설정 진행률: 앱 콘텐츠 9/11 (남음: 앱 카테고리·연락처, 스토어 등록정보 최종)**
 
 ## 4. 결제 (Google Play Billing)
-- ⚠️ **IAP 재구현 필요**: 현재 iOS는 expo-iap(StoreKit). Android는 **Google Play Billing** 상품을 Play Console에 별도 등록 + 서버 영수증 검증(Google Play Developer API) 필요. iOS 크레딧 상품과 별개로 구성해야 함.
-- ⬜ 인앱 상품(크레딧) Play Console 등록 + 가격
-- ⬜ 서버: Google Play 구매 검증 로직 추가 (현재 워커는 Apple 검증만)
+- ✅ **서버 검증 구현·배포·검증 완료** — `workers/api/src/lib/google-play.ts`(SA OAuth RS256 → Play Developer API), `/purchases/grant` 플랫폼 분기. 워커 시크릿 `GOOGLE_PLAY_SA_CLIENT_EMAIL`·`GOOGLE_PLAY_SA_PRIVATE_KEY` 설정 + 배포(ver ddc3e212). 스모크 테스트: 가짜 토큰 → `[google-verify] HTTP 400 Invalid Value`(=OAuth·권한 정상, 토큰 값만 거부) → 402. **실 구매 토큰이면 검증 성공 구조.**
+- ✅ **앱 코드** — Android `requestPurchase({google:{skus}})`, `purchaseToken`+`platform` 서버 전송 (`context.tsx`/`grant-purchase.ts`/`fetch.ts`). iOS 영향 없음. 커밋 e56c696.
+- 🚫 **(사용자 필수·블로커) Google Payments 결제 프로필 생성** — Play Console > 설정 > 결제 프로필 > "결제 프로필 만들기". 사업자/개인 정보 + **세금 정보 + 정산 은행 계좌** 입력 필요(금융 온보딩, Claude 입력 불가). **이게 없으면 "일회성 제품"(인앱 상품) 페이지 자체가 잠김.** 완료 후 아래 상품 생성 가능.
+- 🟦 **인앱 상품 Play Console 등록** — iOS 가격/이름 확인 완료(아래), 결제 프로필 생성 후 Play Console에서 생성 예정:
+    | 상품 ID | 이름(en/ko) | 설명 | 크레딧 | USD | KRW(한국) |
+    |---|---|---|---|---|---|
+    | `com.leejahun.weavestory.credits_starter_3` | Starter Pack / 스타터 팩 | 3 story credits / 스토리 크레딧 3개 | 3 | $2.99 | **₩4,400** |
+    | `com.leejahun.weavestory.credits_value_10` | Value Pack / 밸류 팩 | 10 story credits / 스토리 크레딧 10개 | 10 | $7.99 | **₩12,000** |
+    - 소모성 상품(consumable). iOS App Store Connect IAP와 동일 가격(Apple 티어 매핑 검증).
+- ⬜ **Android AAB 리빌드**(결제 코드 vc9) → alpha 트랙 업로드 → 클로즈드 테스트에서 샌드박스 결제 검증
 
 ## 5. 출시
 - ✅ 국가/지역 선택(177개국 전체), 무료
