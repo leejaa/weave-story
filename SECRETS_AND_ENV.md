@@ -18,6 +18,7 @@ Last updated: 2026-06-04
   rotating, not permanent loss.
 - Keep the irreplaceable **key files** (`.p8`, Play SA `.json`) in a password
   manager / secure vault as well.
+- A **private R2 backup** of the key files + `.env.local` also exists (§F).
 
 ---
 
@@ -105,3 +106,25 @@ EAS build/runtime env is managed separately via `eas env` (profile `development`
 4. Worker secrets already live on Cloudflare — re-set only if rotated:
    `cd workers/api && npx wrangler secret put <NAME>`.
 5. Deploy: `cd workers/api && npx wrangler deploy`. Client OTA: `eas update --branch production --platform ios|android`.
+
+---
+
+## F. Private R2 backup of key files (`weave-story-secrets-backup`)
+
+A **private** R2 bucket (no public domain — do **not** make it public) holds plaintext
+copies of the local-only credentials, so they survive a lost laptop. Created 2026-06-04.
+
+| Key in bucket | What |
+|---|---|
+| `env/.env.local` | Local dev env (incl. `JWT_SECRET`, `DATABASE_URL`, API keys) |
+| `asc-keys/AuthKey_<KEYID>.p8` | App Store Connect API keys (L4FDH4F6HZ, TN83PW567A in active use; others archived) |
+| `play/weave-story-498307-7037201e6747.json` | Google Play service-account JSON |
+| `README.txt` | Manifest |
+
+**Restore a file:**
+```bash
+cd workers/api
+npx wrangler r2 object get weave-story-secrets-backup/<key> --file <dest> --remote
+# e.g. ...get weave-story-secrets-backup/env/.env.local --file ../../.env.local --remote
+```
+**List / manage:** Cloudflare dashboard → R2 → `weave-story-secrets-backup` (account-private).
