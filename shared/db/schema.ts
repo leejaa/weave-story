@@ -57,6 +57,17 @@ export const sessions = pgTable('sessions', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Expo push tokens, one row per device. Used to notify a user when a chapter
+// finishes generating while they're away from the app.
+export const pushTokens = pgTable('push_tokens', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  token: text('token').notNull().unique(),
+  platform: text('platform'), // 'ios' | 'android'
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
 // Each story is created by a user via setup questions, no shared global stories.
 export const stories = pgTable('stories', {
   id: uuid('id').defaultRandom().primaryKey(),

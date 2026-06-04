@@ -3,6 +3,7 @@ import '@/lib/i18n';
 import * as Sentry from '@sentry/react-native';
 import { AuthProvider } from '@/lib/auth/client/context';
 import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
+import { NotificationsBridge } from '@/components/notifications-bridge';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { queryClient, persistOptions } from '@/lib/query-client';
 import { Stack } from 'expo-router';
@@ -80,6 +81,7 @@ function RootLayout() {
     <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
     <AuthProvider>
     <PurchasesProviderWrapper>
+      <NotificationsBridge />
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: colors.paper },

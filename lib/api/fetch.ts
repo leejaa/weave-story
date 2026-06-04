@@ -104,6 +104,15 @@ export async function postCreateStory(params: {
   return res.json();
 }
 
+export async function postRegisterPushToken(token: string, platform: 'ios' | 'android'): Promise<void> {
+  const res = await authFetch('/api/push/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, platform }),
+  });
+  await throwIfError(res);
+}
+
 export async function postGrantCredits(params: {
   productId: string;
   transactionId: string;

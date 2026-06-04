@@ -1,8 +1,9 @@
 import { and, eq } from 'drizzle-orm';
-import { chapters } from '../schema';
+import { chapters, stories, threads } from '../schema';
 import { generateNextChapter, generateChapterSummary, generateFirstChapter } from '../ai/story-generation';
 import type { ContinuationContext, SetupContext } from '../ai/story-generation';
 import type { DB } from '../db';
+import { sendChapterReadyPush } from '../push';
 import { runFirstChapterHarness } from '../story-harness/pipeline/run-first-chapter-harness';
 import { runNextChapterHarness } from '../story-harness/pipeline/run-next-chapter-harness';
 
@@ -66,6 +67,22 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
   } catch (err) {
     console.error(`${tag} summary failed non_critical elapsed=${Date.now() - startMs}ms`, err);
   }
+
+  // Notify the user (best-effort) that the next chapter is ready.
+  if (threadId !== '?') {
+    try {
+      const [row] = await db
+        .select({ userId: threads.userId, title: stories.title })
+        .from(threads)
+        .innerJoin(stories, eq(threads.storyId, stories.id))
+        .where(eq(threads.id, threadId));
+      if (row) {
+        await sendChapterReadyPush({ db, userId: row.userId, threadId, storyTitle: row.title, language: genCtx.language, kind: 'next' });
+      }
+    } catch (err) {
+      console.error(`${tag} push failed non_critical`, err);
+    }
+  }
 }
 
 /**
@@ -75,7 +92,6 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
 export async function generateFirstChapterBackground({
   storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey, useHarness = true,
 }: GenerateFirstParams): Promise<void> {
-  const { stories } = await import('../schema');
   const tag = `[bg] story=${storyId}`;
   const startMs = Date.now();
 
@@ -121,5 +137,15 @@ export async function generateFirstChapterBackground({
     });
   } catch (err) {
     console.error(`${tag} cover enqueue failed non_critical elapsed=${Date.now() - startMs}ms`, err);
+  }
+
+  // Notify the user (best-effort) that their story's first chapter is ready.
+  try {
+    const [s] = await db.select({ userId: stories.userId }).from(stories).where(eq(stories.id, storyId));
+    if (s) {
+      await sendChapterReadyPush({ db, userId: s.userId, threadId, storyTitle: generated.title, language: genCtx.language, kind: 'first' });
+    }
+  } catch (err) {
+    console.error(`${tag} push failed non_critical`, err);
   }
 }
