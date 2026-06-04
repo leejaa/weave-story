@@ -1,6 +1,8 @@
 # Google Play 출시 체크리스트 (Weave Story / Android)
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
+
+> **2026-06-04 다국어:** **en-US/ja-JP/ko-KR** 스토어 등록정보(제목·짧은/긴 설명) + **폰 스크린샷 5장씩** 추가 후 커밋(라이브). 모두 Android Publisher API로 처리. 카피=`store-assets/store-copy.json`, 시크릿/식별자=`SECRETS_AND_ENV.md`.
 개발자 계정: **LEE JAHUN** (개인 계정, ID 8687266146434394437, leejahun9@gmail.com)
 패키지명: `com.leejahun.weavestory` (app.json와 일치)
 앱 ID(Play): `4975060960175249342`

@@ -1,6 +1,27 @@
 # Weave Story Handoff
 
-Last updated: 2026-06-02
+Last updated: 2026-06-04
+
+> **Secrets / env / credentials:** see [`SECRETS_AND_ENV.md`](./SECRETS_AND_ENV.md)
+> for the full inventory, locations, and regeneration runbook. All required
+> Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
+
+## 2026-06-04 — Multilingual launch (en / ja / ko)
+
+English is the **primary** language; the app supports **en / ja / ko**.
+
+- **Store listings (both stores) localized to en/ja/ko** via API:
+  - **Google Play**: en-US / ja-JP / ko-KR listings + 5 phone screenshots each — committed (live).
+  - **App Store**: pulled v1.0 from review, added ja/ko name·subtitle·description·keywords·promo·privacy·support, uploaded en/ja/ko **6.7″** screenshots (removed old 6.5″), **resubmitted** (WAITING_FOR_REVIEW). iPad 12.9″ set kept on en (ja/ko inherit).
+  - Copy source of truth: `store-assets/store-copy.json`.
+- **Screenshots are generated**, not hand-made: `store-assets/screenshots/` (`build.mjs` → `render.sh`, headless Chrome). 30 PNGs = iOS+Android × en/ja/ko × 5. Generated binaries are gitignored; re-run to recreate.
+- **Story generation now follows the user's locale** (was hardcoded Korean). Language flows client → `/api/stories` → `stories.language` (new column) → prompts. Per-language guides for direct generation + the story harness (KO unchanged); `prompt-check` returns questions in the locale. Code split for role separation: `lib/ai/story-lang.ts`, `chapter-prompt-guides.ts`, `chapter-schemas.ts`, `prompt-check-prompts.ts`, `story-harness/drafting/harness-prompts/{ko,en,ja}.ts`.
+- **Hardcoded Korean UI strings localized**: `lib/api/errors.ts`, `chapter-ribbon`, `chapter-error-page`, `error-box` → i18n keys (`common.errors/actions`, `reading.nowReading/chapterError`).
+- **Deployed**: DB migration (`stories.language`, existing rows backfilled `ko`) → EAS OTA (iOS+Android, channel `production`) → `wrangler deploy`.
+- **Dead code flagged for removal**: `components/setup-step.tsx`, `hooks/use-setup.ts`, `components/home/shelf-stage.tsx` (legacy setup flow, no importers).
+
+### Verify still pending
+- Create one **English** story in-app (after OTA applies) and confirm the chapter text is English (server defaults to `en` when no locale sent; old rows backfilled `ko`).
 
 ## Project
 
@@ -24,33 +45,15 @@ The app has recently gone through a large UX and story-generation iteration:
 
 ## Current Git State
 
-As of the latest check:
+`main` HEAD is `5d6296d` ("i18n: multilingual story generation + localize UI strings"),
+pushed to `origin/main`. IAP (iOS + Android) and the multilingual launch are done and
+deployed; see the 2026-06-04 section above.
 
-```bash
-git status --short
-```
+Note: `build/app.ipa` is a tracked build artifact that often shows as modified — it is
+intentionally left out of feature commits. `.secrets/` and `*.p8` are gitignored.
+`store-assets/` generated binaries (screenshots/covers/fonts/pages) are gitignored.
 
-shows only:
-
-```text
- M lib/purchases/context.tsx
-```
-
-That change updates `expo-iap` product fetching from the old/incorrect type string:
-
-```ts
-fetchProducts({ skus: CREDIT_SKUS, type: 'inapp' })
-```
-
-to:
-
-```ts
-fetchProducts({ skus: CREDIT_SKUS, type: 'in-app' })
-```
-
-and adds `fetchProducts` to the effect dependency list.
-
-Do not assume the working tree is otherwise clean in future sessions. Always run `git status --short` before editing. Do not revert user changes unless explicitly asked.
+Always run `git status --short` before editing. Do not revert user changes unless explicitly asked.
 
 ## Key App Store / IAP Status
 
