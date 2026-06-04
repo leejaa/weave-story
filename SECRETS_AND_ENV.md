@@ -39,9 +39,12 @@ Set via `cd workers/api && npx wrangler secret put <NAME>`. List names with
 | `DEMO_LOGIN_CODE` | Review-only demo login (`/api/auth/demo`) | Any chosen code; rotate freely |
 | `REVENUECAT_SECRET_KEY` | RevenueCat REST API | RevenueCat dashboard → API keys |
 
-**Optional / not set** (feature is skipped when unset): `APPLE_SIGNIN_TEAM_ID`,
-`APPLE_SIGNIN_KEY_ID`, `APPLE_SIGNIN_PRIVATE_KEY` — only needed to revoke Apple
-tokens on account deletion.
+**Sign in with Apple revocation** (set 2026-06-04): `APPLE_SIGNIN_TEAM_ID` =
+`UYGG4AXKH5`, `APPLE_SIGNIN_KEY_ID` = `GTT3835T92`, `APPLE_SIGNIN_PRIVATE_KEY` =
+contents of the "Sign in with Apple" key `~/Downloads/AuthKey_GTT3835T92.p8`
+(also in R2 backup `asc-keys/`). Used to revoke Apple tokens on account deletion
+(Guideline 5.1.1(v)). Regenerate: developer.apple.com → Keys → new key with
+Sign in with Apple enabled for App ID `com.leejahun.weavestory`.
 
 **Non-secret Worker vars** (`workers/api/wrangler.toml [vars]`): `USE_STORY_HARNESS="true"`.
 

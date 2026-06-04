@@ -20,8 +20,8 @@ Last updated: 2026-06-04
   - ✅ i18n (ko/en/ja)
   - ✅ 삭제 후 로그인 화면 이동
   - ✅ DB: `accounts.apple_refresh_token` 컬럼 추가
-  - ⬜ **(사용자)** Apple Sign In 키(.p8) 발급 + 워커 시크릿 3종 설정 → 토큰 폐기 활성화
-  - ⬜ **(사용자)** 앱 리로드/리빌드 (회원탈퇴 UI·authorizationCode 캡처는 JS 변경)
+  - ✅ **(2026-06-04) 토큰 폐기 활성화 완료** — 기존 "Sign in with Apple" 키 **GTT3835T92**(Team `UYGG4AXKH5`, App ID `com.leejahun.weavestory`) 재사용. 워커 시크릿 `APPLE_SIGNIN_TEAM_ID/KEY_ID/PRIVATE_KEY` 설정 → 자동 재배포. 코드(클라 authorizationCode 캡처 → 서버 exchange→`accounts.apple_refresh_token` 저장 → 계정삭제 시 `/auth/revoke`)는 기존 구현+배포 완료 상태였음. .p8는 `~/Downloads/AuthKey_GTT3835T92.p8` + R2 백업(`asc-keys/`).
+  - ⏭️ 검증(선택): Apple로 신규 로그인 → `apple_refresh_token` 채워짐 확인 → 계정삭제 → revoke 200. (심사관 신규가입 플로우에선 자동 적용)
 - 🟦 **2. AI 생성물 신고/모더레이션** — Apple 1.2 (UGC) *(신고 기능 완료·배포 f69601fe)*
   - ✅ 챕터 신고 UI (reading 리본의 🚩 → 사유 선택 시트)
   - ✅ `POST /api/reports` + `content_reports` 테이블 + `chapters.moderation_status`(신고 시 'reported')
