@@ -58,6 +58,7 @@ Sign in with Apple enabled for App ID `com.leejahun.weavestory`.
 | `~/Downloads/AuthKey_TN83PW567A.p8` | ASC API key **TN83PW567A** (App Manager, "Screenshot Upload") | same |
 | `~/Downloads/weave-story-498307-7037201e6747.json` | Play **service-account** JSON key (Android Publisher) | GCP → SA → new key |
 | `.secrets/fcm-v1-service-account.json` | **FCM V1** service-account key (Firebase `weave-story-app`) — Android push; uploaded to EAS | Firebase console → `weave-story-app` → Project settings → Service accounts → Generate new private key |
+| `.secrets/AuthKey_D7J7X6ZD28.p8` | **APNs** auth key **D7J7X6ZD28** (Sandbox & Production, Team Scoped) — iOS push; uploaded to EAS push key | developer.apple.com → Keys → new key with APNs (downloadable once); max 2 APNs keys/account |
 | `google-services.json` (repo root, **committed**) | Firebase Android config (sender id) — embedded in build via `android.googleServicesFile` | `firebase apps:sdkconfig ANDROID <appId> --project weave-story-app` |
 | `.env.local` | Local dev env (see §C) | Recreate from this doc + consoles |
 
@@ -98,7 +99,7 @@ EAS build/runtime env is managed separately via `eas env` (profile `development`
 | GCP OAuth project | `weave-story-496101` (number `857705716385`) |
 | Android OAuth client SHA-1 (Play app signing) | `D4:2C:84:5B:0C:79:B1:BE:92:F3:EE:DE:4F:64:45:3C:71:83:8E:AD` |
 | Firebase project (Android push / FCM V1) | `weave-story-app` (project number `56897545987`), owner **leejahun0@gmail.com**. Android app id `1:56897545987:android:e6f8508ca3a80c0b54eb36`. |
-| iOS Push (APNs) | Bundle id `com.leejahun.weavestory` has **Push Notifications** capability enabled (bundleId res `WD7G98ZV7A`). APNs **auth key** managed by EAS (`eas credentials -p ios` → Push Notifications). |
+| iOS Push (APNs) | Bundle id `com.leejahun.weavestory` has **Push Notifications** capability enabled (bundleId res `WD7G98ZV7A`); provisioning profile regenerated → `J5S8462XRC`. APNs **auth key D7J7X6ZD28** (Sandbox & Production) uploaded as the EAS push key. |
 | EAS push credentials | Android **FCM V1** SA key uploaded (`eas credentials -p android` → Google Service Account → FCM V1). iOS APNs key via EAS. Expo project `bb0fb2c3-b94d-4ac0-80ba-fac5164c72fa`. |
 | Neon project / prod branch | `cold-water-79857133` (`weavy-story`) / `br-cool-butterfly-aow77oep` |
 | Cloudflare Worker | `weave-story-api` (`https://weave-story-api.leejahun0.workers.dev`) |
@@ -131,6 +132,7 @@ copies of the local-only credentials, so they survive a lost laptop. Created 202
 | `play/weave-story-498307-7037201e6747.json` | Google Play service-account JSON |
 | `push/fcm-v1-service-account.json` | Firebase **FCM V1** service-account key (Android push) |
 | `push/google-services.json` | Firebase Android config (also committed in repo) |
+| `push/AuthKey_D7J7X6ZD28.p8` | **APNs** auth key (iOS push) |
 | `README.txt` | Manifest |
 
 **Restore a file:**
