@@ -4,6 +4,7 @@ import { makeDb } from '../lib/db';
 import { threads, stories, chapters, interventions, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter-context';
+import { normalizeStoryLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob, createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import type { AppEnv } from '../types';
@@ -119,6 +120,7 @@ threadsRouter.post('/:id/retry-first-chapter', async (c) => {
       storyId: stories.id,
       estimatedChapters: stories.estimatedChapters,
       setupAnswers: stories.setupAnswers,
+      language: stories.language,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))
@@ -152,7 +154,7 @@ threadsRouter.post('/:id/retry-first-chapter', async (c) => {
         storyId: row.storyId,
         threadId,
         chapterId: ch1.id,
-        genCtx: { prompt, estimatedChapters: row.estimatedChapters },
+        genCtx: { prompt, estimatedChapters: row.estimatedChapters, language: normalizeStoryLang(row.language) },
       }),
     );
   } catch (err) {
@@ -183,6 +185,7 @@ threadsRouter.post('/:id/choose', async (c) => {
       estimatedChapters: stories.estimatedChapters,
       setupAnswers: stories.setupAnswers,
       storyId: threads.storyId,
+      language: stories.language,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))
@@ -234,6 +237,7 @@ threadsRouter.post('/:id/choose', async (c) => {
     threadId,
     prompt: answers.prompt ?? '',
     estimatedChapters: threadRow.estimatedChapters,
+    language: normalizeStoryLang(threadRow.language),
     previousChapterNumber: chapterNumber,
     previousChapterContent: currentChapter?.content ?? '',
     previousChaptersSummaries,

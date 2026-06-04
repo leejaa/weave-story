@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { Icon } from '@/components/ui/icon';
 import { ChapterBookmarkLabel } from '@/components/reading/chapter-bookmark-label';
@@ -17,6 +18,7 @@ type Props = {
 export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('reading');
 
   return (
     <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule, paddingTop: insets.top + 10 }]}>
@@ -32,7 +34,7 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport 
             {title}
           </Text>
           <Text style={[styles.position, { color: c.inkFaint }]}>
-            읽고 있는 장
+            {t('nowReading')}
           </Text>
         </View>
 

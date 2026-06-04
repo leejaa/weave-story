@@ -7,7 +7,7 @@ import { threadsRouter } from './routes/threads';
 import { sampleCardsRouter } from './routes/sample-cards';
 import { purchasesRouter } from './routes/purchases';
 import { reportsRouter } from './routes/reports';
-import { privacyPage, termsPage, supportPage, normalizeLang } from './routes/legal';
+import { privacyPage, termsPage, supportPage, mandarinPrivacyPage, normalizeLang } from './routes/legal';
 import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
 import type { StoryGenerationJob } from './lib/queue/story-generation-jobs';
 import type { AppEnv, WorkerEnv } from './types';
@@ -33,6 +33,7 @@ const pickLang = (c: { req: { query: (k: string) => string | undefined; header: 
 app.get('/privacy', (c) => c.html(privacyPage(pickLang(c))));
 app.get('/terms', (c) => c.html(termsPage(pickLang(c))));
 app.get('/support', (c) => c.html(supportPage(pickLang(c))));
+app.get('/mandarin/privacy', (c) => c.html(mandarinPrivacyPage()));
 
 export default {
   fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {

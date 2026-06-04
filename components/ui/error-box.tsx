@@ -1,4 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -12,6 +13,7 @@ type Props = {
 
 export function ErrorBox({ error, originalError, onRetry }: Props) {
   const c = usePalette();
+  const { t } = useTranslation('common');
   const isNetwork = originalError !== undefined && isNetworkError(originalError);
 
   return (
@@ -23,7 +25,7 @@ export function ErrorBox({ error, originalError, onRetry }: Props) {
       {onRetry && (
         <Pressable onPress={onRetry} style={[styles.retryBtn, { borderColor: c.rule }]}>
           <Icon name="refresh" size={14} color={c.inkSoft} />
-          <Text style={[styles.retryLabel, { color: c.inkSoft }]}>다시 시도</Text>
+          <Text style={[styles.retryLabel, { color: c.inkSoft }]}>{t('actions.retry')}</Text>
         </Pressable>
       )}
     </View>

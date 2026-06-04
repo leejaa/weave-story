@@ -1,0 +1,5 @@
+# Generated / derived binaries (reproducible from the scripts) — keep the repo lean.
+screenshots/out/
+screenshots/covers/
+screenshots/fonts/
+screenshots/pages/

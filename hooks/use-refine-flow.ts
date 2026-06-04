@@ -46,8 +46,10 @@ export function useRefineFlow(originalPrompt: string, questions: string[]) {
       .filter(Boolean)
       .join('\n');
 
+    // Neutral English label so it doesn't bias the generation language;
+    // the model still writes in the user's locale per the server system prompt.
     const finalPrompt = qaPairs
-      ? `${originalPrompt}\n\n추가 정보:\n${qaPairs}`
+      ? `${originalPrompt}\n\nAdditional details:\n${qaPairs}`
       : originalPrompt;
 
     mutation.mutate(finalPrompt);

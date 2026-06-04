@@ -299,3 +299,49 @@ export function termsPage(lang: LegalLang): string {
 export function supportPage(lang: LegalLang): string {
   return page(lang, SUPPORT[lang].title, SUPPORT[lang].body);
 }
+
+export function mandarinPrivacyPage(): string {
+  const appName = 'Mandarin Academic Coach';
+  const contactEmail = 'mandarin.coach.kr@outlook.com';
+  const effectiveDate = '2026-06-03';
+
+  return `<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Privacy Policy · ${appName}</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Hiragino Sans","Segoe UI",sans-serif;line-height:1.7;color:#1f2421;max-width:760px;margin:0 auto;padding:32px 20px 80px;}
+  h1{font-size:1.6rem;margin-bottom:4px;} h2{font-size:1.1rem;margin-top:28px;}
+  .meta{color:#6b726c;font-size:.9rem;margin-bottom:24px;}
+  a{color:#2f6f4e;} ul{padding-left:18px;} li{margin:4px 0;}
+</style></head><body>
+<h1>Privacy Policy</h1>
+<p class="meta">${appName} · Effective ${effectiveDate}</p>
+<p>${appName} uses Meta and Instagram platform access only to manage owned social media content, review account/page connection status, and publish educational marketing content for Mandarin tutoring services.</p>
+
+<h2>Information We May Access</h2>
+<ul>
+  <li>Facebook Page and connected Instagram professional account identifiers.</li>
+  <li>Basic page/account metadata needed to confirm ownership and connection.</li>
+  <li>Published media metadata required for content publishing workflows.</li>
+</ul>
+
+<h2>How We Use Information</h2>
+<p>We use this information only to:</p>
+<ul>
+  <li>confirm that the Facebook Page is connected to the correct Instagram account;</li>
+  <li>publish approved Instagram content through Meta APIs;</li>
+  <li>maintain social media operations for ${appName}.</li>
+</ul>
+<p>We do not sell personal information. We do not use accessed information for unrelated advertising, profiling, or resale.</p>
+
+<h2>Data Storage</h2>
+<p>Access tokens and API credentials are stored only in private local environment files or approved secure infrastructure. They are not committed to public repositories.</p>
+
+<h2>Data Deletion</h2>
+<p>To request deletion of data related to this app, contact <a href="mailto:${contactEmail}">${contactEmail}</a>. We will remove locally stored tokens, identifiers, and operational data associated with the request when technically possible.</p>
+
+<h2>Contact</h2>
+<p>For questions about this policy, contact <a href="mailto:${contactEmail}">${contactEmail}</a>.</p>
+</body></html>`;
+}

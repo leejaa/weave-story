@@ -33,5 +33,10 @@
     "success": "Thanks — we'll review this content.",
     "errorTitle": "Report failed",
     "error": "Please try again in a moment."
+  },
+  "nowReading": "Now reading",
+  "chapterError": {
+    "title": "We couldn't open your story",
+    "body": "Something went wrong while writing the first chapter.\nYour credit is intact — please try again."
   }
 }

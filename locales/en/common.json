@@ -20,7 +20,14 @@
     "long": "12+ ch"
   },
   "errors": {
-    "threadSnagged": "The thread snagged. Try that choice again?"
+    "threadSnagged": "The thread snagged. Try that choice again?",
+    "sessionExpired": "Your session has expired. Please restart the app.",
+    "forbidden": "You don't have permission to do that.",
+    "tooManyRequests": "Too many requests. Please try again in a moment.",
+    "server": "A temporary server error occurred. Please try again shortly.",
+    "requestFailed": "We couldn't complete your request. Please try again.",
+    "network": "Please check your internet connection and try again.",
+    "unknown": "An unknown error occurred. Please try again."
   },
   "status": {
     "ongoing": "In progress",
@@ -48,5 +55,9 @@
       "restoreSuccess": "Subscription restored!",
       "restoreNone": "No active subscription found."
     }
+  },
+  "actions": {
+    "retry": "Try again",
+    "back": "Back"
   }
 }

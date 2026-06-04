@@ -1,4 +1,5 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 
@@ -10,16 +11,17 @@ type Props = {
 
 export function ChapterErrorPage({ onRetry, onBack, retrying }: Props) {
   const c = usePalette();
+  const { t } = useTranslation(['reading', 'common']);
 
   return (
     <View style={[styles.container, { backgroundColor: c.paper }]}>
       <View style={styles.content}>
         <Text style={[styles.mark, { color: c.inkFaint, fontFamily: FONTS.mono }]}>· · ·</Text>
         <Text style={[styles.title, { color: c.ink, fontFamily: FONTS.display }]}>
-          이야기를 펼치지 못했어요
+          {t('chapterError.title')}
         </Text>
         <Text style={[styles.body, { color: c.inkSoft, fontFamily: FONTS.sans }]}>
-          첫 장을 짓는 도중 문제가 생겼어요.{'\n'}크레딧은 그대로 있으니 다시 시도해 주세요.
+          {t('chapterError.body')}
         </Text>
 
         <Pressable
@@ -28,12 +30,12 @@ export function ChapterErrorPage({ onRetry, onBack, retrying }: Props) {
           disabled={retrying}>
           {retrying
             ? <ActivityIndicator color="#fff" size="small" />
-            : <Text style={[styles.primaryText, { fontFamily: FONTS.sansSemibold }]}>다시 시도</Text>}
+            : <Text style={[styles.primaryText, { fontFamily: FONTS.sansSemibold }]}>{t('common:actions.retry')}</Text>}
         </Pressable>
 
         <Pressable style={styles.secondaryBtn} onPress={onBack} disabled={retrying}>
           <Text style={[styles.secondaryText, { color: c.inkFaint, fontFamily: FONTS.sans }]}>
-            돌아가기
+            {t('common:actions.back')}
           </Text>
         </Pressable>
       </View>

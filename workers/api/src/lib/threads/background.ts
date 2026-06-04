@@ -60,7 +60,7 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
   console.log(`${tag} chapter saved elapsed=${Date.now() - startMs}ms`);
 
   try {
-    const summary = await generateChapterSummary(generated.content, nextChapterNumber, threadId, apiKey);
+    const summary = await generateChapterSummary(generated.content, nextChapterNumber, threadId, apiKey, genCtx.language);
     await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
     console.log(`${tag} summary saved elapsed=${Date.now() - startMs}ms`);
   } catch (err) {
@@ -105,7 +105,7 @@ export async function generateFirstChapterBackground({
   console.log(`${tag} done title="${generated.title}" elapsed=${Date.now() - startMs}ms`);
 
   try {
-    const summary = await generateChapterSummary(generated.content, 1, threadId, apiKey);
+    const summary = await generateChapterSummary(generated.content, 1, threadId, apiKey, genCtx.language);
     await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
     console.log(`${tag} summary saved elapsed=${Date.now() - startMs}ms`);
   } catch (err) {

@@ -79,4 +79,11 @@ i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
 });
 
+/** The locale a newly created story should be generated in. The server re-validates. */
+export function storyLanguage(): SupportedLocale {
+  return (SUPPORTED_LOCALES as readonly string[]).includes(i18n.language)
+    ? (i18n.language as SupportedLocale)
+    : 'en';
+}
+
 export default i18n;

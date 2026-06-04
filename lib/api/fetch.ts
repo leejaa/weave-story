@@ -1,5 +1,6 @@
 import { authFetch } from '@/lib/auth/client/api';
 import { throwIfError } from '@/lib/api/errors';
+import { storyLanguage } from '@/lib/i18n';
 import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter, Intervention } from '@/lib/api/types';
 
 export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null; credits: number };
@@ -84,7 +85,7 @@ export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult
   const res = await authFetch('/api/stories/check-prompt', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, language: storyLanguage() }),
   });
   await throwIfError(res);
   return res.json();
@@ -97,7 +98,7 @@ export async function postCreateStory(params: {
   const res = await authFetch('/api/stories', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
+    body: JSON.stringify({ ...params, language: storyLanguage() }),
   });
   await throwIfError(res);
   return res.json();

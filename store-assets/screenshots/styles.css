@@ -1,0 +1,329 @@
+/* ============================================================
+   Weave Story — App Store / Play marketing screenshots
+   Fonts, palette and component styles mirror the real Expo app
+   (constants/colors.ts + the screen components 1:1).
+   ============================================================ */
+
+@font-face { font-family: "BlackHanSans"; src: url("fonts/BlackHanSans_400Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Jua";          src: url("fonts/Jua_400Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Fraunces";      src: url("fonts/Fraunces_400Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "FrauncesItalic";src: url("fonts/Fraunces_400Regular_Italic.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "FrauncesSemi";  src: url("fonts/Fraunces_600SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "Jakarta";       src: url("fonts/PlusJakartaSans_400Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "JakartaMed";    src: url("fonts/PlusJakartaSans_500Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "JakartaSemi";   src: url("fonts/PlusJakartaSans_600SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "DMMono";        src: url("fonts/DMMono_400Regular.ttf"); font-weight: 400; }
+
+:root {
+  /* palette.light — constants/colors.ts */
+  --paper:#f5f0e8; --paperSunk:#ede7db; --paperRaised:#faf7f2;
+  --ink:#1c1c17; --inkSoft:#4c4c3e; --inkFaint:#8c8c78;
+  --rule:#ddd7cb; --ruleStrong:#c4bcae;
+  --thread:#2d5a3d; --threadHover:#3a7050; --threadSoft:#c2d9c9; --threadFaint:#e2ede5;
+  --ember:#b54b3c; --emberSoft:#f7e4e0;
+  --moss:#7a6a3c; --mossSoft:#ede5cd;
+  --amber:#b6862a; --amberSoft:#f3e8cd;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+html,body { margin:0; padding:0; }
+
+/* ---------- Marketing canvas ---------- */
+.canvas {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(168deg, #f8f3eb 0%, #f1e8d9 52%, #e7dac6 100%);
+}
+/* faint paper grain / vignette */
+.canvas::before {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%),
+    radial-gradient(130% 90% at 50% 115%, rgba(45,90,61,0.10), rgba(45,90,61,0) 55%);
+}
+/* hairline thread accent at very top */
+.canvas .topline {
+  position:absolute; left:0; right:0; top:0; height:6px;
+  background: linear-gradient(90deg, var(--thread), var(--amber) 60%, var(--ember));
+  opacity:.85;
+}
+
+.copy { position: relative; z-index: 2; }
+.eyebrow {
+  font-family:"DMMono"; color:var(--thread);
+  text-transform:uppercase;
+}
+.headline { font-family:"BlackHanSans"; color:var(--ink); letter-spacing:-0.5px; }
+.headline .accent { color: var(--thread); }
+.subline { font-family:"FrauncesItalic"; font-style:italic; color:var(--inkSoft); }
+
+/* ---------- Device frame ---------- */
+.device {
+  position:relative; flex:none; margin:0 auto;
+  background:#14140f;
+  box-shadow:
+    0 2px 0 2px #2a2a22 inset,
+    0 40px 90px rgba(20,14,8,0.42),
+    0 12px 28px rgba(20,14,8,0.28);
+}
+.device .screen { position:relative; overflow:hidden; background:var(--paper); }
+.device .island {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  background:#000; z-index:50;
+}
+
+/* app content is authored at 390pt logical width, then scaled to fill the screen */
+.app-scaler { transform-origin: top left; }
+.app {
+  width:390px; height:844px; overflow:hidden;
+  background:var(--paper); color:var(--ink);
+  font-family:"Jakarta"; position:relative;
+}
+
+/* ---------- iOS status bar (decorative, faithful-ish) ---------- */
+.statusbar {
+  height:50px; padding:14px 30px 0; display:flex; align-items:flex-start;
+  justify-content:space-between; font-family:"JakartaSemi"; color:var(--ink);
+}
+.statusbar .time { font-size:15px; letter-spacing:.5px; margin-top:1px; }
+.statusbar .right { display:flex; align-items:center; gap:7px; margin-top:3px; }
+.sb-signal { display:flex; align-items:flex-end; gap:2px; height:12px; }
+.sb-signal i { width:3px; background:var(--ink); border-radius:1px; }
+.sb-signal i:nth-child(1){height:5px;} .sb-signal i:nth-child(2){height:7px;}
+.sb-signal i:nth-child(3){height:9px;} .sb-signal i:nth-child(4){height:12px;}
+.sb-wifi { width:16px; height:12px; border-radius:0 0 8px 8px;
+  background:radial-gradient(circle at 50% 100%, var(--ink) 0 30%, transparent 31%),
+            conic-gradient(from 225deg at 50% 100%, var(--ink) 0 90deg, transparent 0);
+  -webkit-mask:radial-gradient(circle at 50% 100%, #000 0 100%); }
+.sb-batt { width:25px; height:12px; border:1.5px solid var(--ink); border-radius:3px;
+  position:relative; padding:1.5px; }
+.sb-batt::after{content:"";position:absolute;right:-3px;top:3px;width:2px;height:6px;
+  background:var(--ink);border-radius:0 2px 2px 0;}
+.sb-batt i{display:block;height:100%;width:75%;background:var(--ink);border-radius:1px;}
+
+/* ============================================================
+   READING — choice screen  (reading-choice-screen.tsx + choice-page.tsx)
+   ============================================================ */
+.rc-header {
+  min-height:72px; border-bottom:1px solid var(--rule);
+  padding:12px 16px 12px; display:flex; align-items:center; gap:12px;
+}
+.rc-close {
+  width:34px; height:34px; border-radius:17px; border:1px solid var(--rule);
+  background:var(--paperRaised); display:flex; align-items:center; justify-content:center;
+  color:var(--inkSoft); flex:none;
+}
+.rc-htext { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.rc-title { font-family:"FrauncesSemi"; font-size:13px; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rc-sub { font-family:"DMMono"; font-size:10px; letter-spacing:0.8px;
+  text-transform:uppercase; color:var(--inkFaint); }
+
+.cp-content { padding:40px 24px 24px; display:flex; flex-direction:column; gap:16px; }
+.cp-top { display:flex; flex-direction:column; gap:10px; margin-bottom:8px; }
+.cp-situation { font-family:"FrauncesItalic"; font-style:italic; font-size:15px;
+  line-height:26px; color:var(--inkSoft); }
+.cp-headline { font-family:"FrauncesSemi"; font-size:24px; line-height:32px;
+  letter-spacing:-0.3px; color:var(--ink); }
+
+.cp-choices { display:flex; flex-direction:column; gap:8px; }
+.tile {
+  display:flex; flex-direction:row; align-items:flex-start; gap:14px;
+  padding:14px; padding-left:15px; border-radius:12px;
+  border:1px solid var(--rule); background:var(--paper);
+}
+.tile.sel { border-color:var(--thread); border-left-width:2px;
+  background:var(--threadSoft); padding-left:14px; }
+.tile.faded { opacity:.5; }
+.tile .marker {
+  padding:3px 6px; border-radius:4px; flex:none; margin-top:2px;
+  background:var(--paperSunk); font-family:"DMMono"; font-size:11px; color:var(--inkFaint);
+}
+.tile.sel .marker { background:var(--thread); color:#fff; }
+.tile .ttext { flex:1; font-family:"Fraunces"; font-size:17px; line-height:24px; color:var(--ink); }
+
+.cp-divider { display:flex; flex-direction:row; align-items:center; gap:8px; }
+.cp-divider .line { flex:1; height:1px; background:var(--rule); }
+.cp-divider .lbl { font-family:"DMMono"; font-size:9px; letter-spacing:1px;
+  text-transform:uppercase; color:var(--inkFaint); }
+
+.cp-input {
+  border:1px solid var(--rule); border-radius:12px; padding:12px 14px; min-height:100px;
+  background:var(--paperRaised);
+}
+.cp-input .ph { font-family:"Jakarta"; font-size:13px; line-height:22px; color:var(--inkFaint); }
+
+.cp-cta { border-radius:14px; padding:16px; text-align:center; background:var(--thread);
+  margin-top:4px; }
+.cp-cta span { font-family:"JakartaSemi"; font-size:15px; letter-spacing:0.2px; color:var(--paper); }
+
+/* ============================================================
+   READING — text page  (chapter-ribbon.tsx + text-page.tsx)
+   ============================================================ */
+.ribbon { padding:10px 16px 10px; border-bottom:1px solid var(--rule);
+  display:flex; flex-direction:column; gap:12px; }
+.ribbon .row { display:flex; flex-direction:row; align-items:center; gap:10px; }
+.ribbon .back { width:32px; height:32px; border-radius:999px; border:1px solid var(--rule);
+  background:var(--paperRaised); display:flex; align-items:center; justify-content:center;
+  color:var(--inkSoft); flex:none; }
+.ribbon .tblock { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.ribbon .title { font-family:"FrauncesSemi"; font-size:13px; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ribbon .pos { font-family:"DMMono"; font-size:10px; color:var(--inkFaint); }
+.ribbon .bookmark { font-family:"DMMono"; font-size:11px; color:var(--inkFaint);
+  border:1px solid var(--rule); border-radius:8px; padding:4px 8px; background:var(--paperRaised); }
+.ribbon .report { width:32px; height:32px; border-radius:999px; border:1px solid var(--rule);
+  background:var(--paperRaised); display:flex; align-items:center; justify-content:center;
+  color:var(--inkFaint); flex:none; }
+.progress { height:3px; border-radius:2px; background:var(--rule); overflow:hidden; }
+.progress i { display:block; height:100%; background:var(--thread); border-radius:2px; }
+
+.tp-page { padding:20px 24px 24px; display:flex; flex-direction:column; height:100%; }
+.tp-chapter { font-family:"FrauncesItalic"; font-style:italic; font-size:13px;
+  letter-spacing:0.5px; text-transform:uppercase; color:var(--inkSoft); margin-bottom:16px; }
+.tp-prose { flex:1; }
+.tp-prose p { font-family:"Fraunces"; font-size:18px; line-height:30px; color:var(--ink);
+  margin-bottom:16px; }
+.tp-prose p.drop::first-letter { font-family:"FrauncesSemi"; font-size:54px; float:left;
+  line-height:44px; padding:2px 8px 0 0; color:var(--thread); }
+.tp-num { font-family:"DMMono"; font-size:10px; letter-spacing:1px; text-align:center;
+  color:var(--inkFaint); margin-top:8px; }
+
+/* ============================================================
+   SETUP — story prompt  (story-prompt-screen.tsx)
+   ============================================================ */
+.sp { height:100%; display:flex; flex-direction:column; position:relative; }
+.sp-bg { position:absolute; inset:0; background:
+   radial-gradient(90% 60% at 80% 0%, rgba(182,134,42,0.10), transparent 60%),
+   radial-gradient(80% 50% at 0% 100%, rgba(45,90,61,0.08), transparent 60%); }
+.sp-head { padding:14px 18px 8px; position:relative; }
+.sp-back { width:44px; height:44px; border-radius:22px;
+  border:0.5px solid rgba(70,53,34,0.18); background:rgba(255,250,240,0.74);
+  display:flex; align-items:center; justify-content:center; color:#463522; }
+.sp-content { padding:4px 22px 0; position:relative; }
+.sp-headline { font-family:"BlackHanSans"; font-size:32px; line-height:48px; color:var(--ink); }
+.sp-subtext { margin-top:8px; font-family:"FrauncesItalic"; font-style:italic;
+  font-size:15px; line-height:23px; color:var(--inkSoft); }
+.sp-group { padding:0 8px; margin-top:28px; }
+.sp-field { border:1px solid var(--rule); border-radius:16px; background:var(--paperRaised);
+  padding:16px; min-height:150px; position:relative; }
+.sp-field .ph { font-family:"Jakarta"; font-size:15px; line-height:24px; color:var(--ink); }
+.sp-field .cursor { display:inline-block; width:2px; height:20px; background:var(--thread);
+  vertical-align:-3px; margin-left:1px; }
+.sp-hint { margin-top:8px; margin-bottom:18px; font-family:"Jakarta"; font-size:13px;
+  line-height:20px; color:var(--inkSoft); }
+.sp-submit { border-radius:16px; padding:17px; text-align:center; background:var(--thread); }
+.sp-submit span { font-family:"JakartaSemi"; font-size:16px; color:var(--paper); }
+
+/* ============================================================
+   HOME — bookshelf  (book-shelf.tsx + sample-book-cover.tsx)
+   ============================================================ */
+.home { height:100%; display:flex; flex-direction:column; }
+.home-head { padding:18px 22px 6px; }
+.home-greet { font-family:"FrauncesItalic"; font-style:italic; font-size:15px; color:var(--inkSoft); }
+.home-hero { font-family:"BlackHanSans"; font-size:30px; line-height:42px; color:var(--ink);
+  margin-top:6px; letter-spacing:-0.5px; }
+.home-sec { font-family:"DMMono"; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--inkFaint); padding:0 22px; margin-top:18px; display:flex; justify-content:space-between; }
+.shelf { display:flex; gap:18px; padding:18px 22px 0; overflow:hidden; }
+
+.book { width:176px; height:286px; border-radius:10px; display:flex; flex-direction:row;
+  box-shadow:0 18px 30px rgba(18,13,8,0.34); flex:none; position:relative; }
+.book .cover { flex:1; overflow:hidden; border-radius:10px 0 0 10px; position:relative; }
+.book .cover .img { position:absolute; inset:0; background-size:cover; background-position:center top; background-repeat:no-repeat; }
+.book .cover .tshade { position:absolute; left:0; right:0; bottom:0; height:48%;
+  background:rgba(4,3,3,0.34); }
+.book .cover .spine { position:absolute; left:0; top:0; bottom:0; width:24px;
+  background:rgba(0,0,0,0.38); border-right:0.5px solid rgba(255,240,204,0.22); }
+.book .cover .rim { position:absolute; left:10px; right:10px; top:10px; bottom:10px;
+  border-radius:5px; border:1px solid rgba(255,235,190,0.48); }
+.book .cover .pill { position:absolute; top:18px; left:24px; max-width:106px; min-height:24px;
+  padding:0 10px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:rgba(8,7,6,0.54); border:0.5px solid rgba(255,239,210,0.38);
+  font-family:"DMMono"; font-size:8px; letter-spacing:0.8px; color:rgba(255,246,230,0.92);
+  text-shadow:0 1px 5px rgba(0,0,0,0.54); }
+.book .cover .ctitle { position:absolute; left:22px; right:12px; bottom:22px;
+  transform:rotate(-1deg); font-family:"Jua"; font-size:23px; line-height:30px; color:#fffaf0;
+  text-shadow:0 4px 8px rgba(0,0,0,0.82); white-space:pre-line; }
+.book .pages { width:14px; border-radius:0 8px 8px 0; overflow:hidden; background:#eadfc7;
+  border-left:0.5px solid rgba(74,54,27,0.24); position:relative; }
+.book .pages i { position:absolute; left:1px; right:0; height:1px; background:#8b7d60; }
+.book .glow { position:absolute; left:10px; right:4px; top:20px; bottom:20px; border-radius:14px;
+  background:rgba(220,174,85,0.28); box-shadow:0 0 26px 6px rgba(220,174,85,0.55);
+  opacity:.4; z-index:-1; }
+
+/* ============================================================
+   LIBRARY — thread rows (stories tab)
+   ============================================================ */
+.lib { height:100%; display:flex; flex-direction:column; }
+.lib-head { padding:18px 22px 8px; }
+.lib-eyebrow { font-family:"DMMono"; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--inkFaint); }
+.lib-title { font-family:"BlackHanSans"; font-size:30px; color:var(--ink); margin-top:6px; }
+/* thread-row.tsx: gap14 padding14 radius14, paperRaised, soft shadow */
+.row { display:flex; flex-direction:row; gap:14px; padding:14px; border-radius:14px;
+  background:var(--paperRaised); margin:10px 22px 0;
+  box-shadow:0 1px 3px rgba(28,28,23,0.05); }
+.row .mini { width:56px; aspect-ratio:3/4; border-radius:8px; flex:none; overflow:hidden;
+  background-size:cover; background-position:center; background-repeat:no-repeat; }
+.row .meta { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between; }
+.row .mrow { display:flex; flex-direction:row; align-items:center; gap:8px; }
+.row .mrow .g  { font-family:"DMMono"; font-size:10px; letter-spacing:0.5px; color:var(--inkFaint); }
+.row .mrow .ch { font-family:"DMMono"; font-size:10px; letter-spacing:0.5px; color:var(--inkFaint); }
+.row .mrow .done { font-family:"JakartaMed"; font-size:10px; letter-spacing:0.5px; color:var(--thread); }
+.row .meta .t { font-family:"FrauncesSemi"; font-size:15px; color:var(--ink); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.row .prow { display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:8px; }
+.row .prow .bar { flex:1; height:2px; border-radius:1px; background:var(--rule); overflow:hidden; }
+.row .prow .bar i { display:block; height:100%; background:var(--thread); border-radius:1px; }
+.row .prow .pct { font-family:"DMMono"; font-size:10px; color:var(--inkFaint); }
+
+/* ============================================================
+   Japanese fallback — Black Han Sans / Jua / Fraunces have NO
+   Japanese glyphs, so the OS substitutes a Japanese system font.
+   This mirrors how the real app renders on a JA device.
+   ============================================================ */
+html[lang="ja"] .headline,
+html[lang="ja"] .sp-headline,
+html[lang="ja"] .home-hero,
+html[lang="ja"] .lib-title {
+  font-family:"BlackHanSans","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+}
+html[lang="ja"] .ctitle,
+html[lang="ja"] .pill {
+  font-family:"Jua","Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif;
+}
+html[lang="ja"] .subline,
+html[lang="ja"] .cp-situation,
+html[lang="ja"] .cp-headline,
+html[lang="ja"] .tile .ttext,
+html[lang="ja"] .rc-title,
+html[lang="ja"] .ribbon .title,
+html[lang="ja"] .tp-chapter,
+html[lang="ja"] .tp-prose p,
+html[lang="ja"] .home-greet,
+html[lang="ja"] .row .meta .t {
+  font-family:"Fraunces","Hiragino Mincho ProN","YuMincho",serif;
+}
+html[lang="ja"] .eyebrow,
+html[lang="ja"] .rc-sub,
+html[lang="ja"] .cp-divider .lbl,
+html[lang="ja"] .ribbon .pos,
+html[lang="ja"] .home-sec,
+html[lang="ja"] .mrow .g,
+html[lang="ja"] .mrow .ch,
+html[lang="ja"] .pct {
+  font-family:"DMMono","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+}
+html[lang="ja"] .cp-input .ph,
+html[lang="ja"] .cp-cta span,
+html[lang="ja"] .sp-subtext,
+html[lang="ja"] .sp-field .ph,
+html[lang="ja"] .sp-hint,
+html[lang="ja"] .sp-submit span,
+html[lang="ja"] .mrow .done {
+  font-family:"Jakarta","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+}
