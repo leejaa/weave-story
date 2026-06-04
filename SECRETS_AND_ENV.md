@@ -57,6 +57,7 @@ Sign in with Apple enabled for App ID `com.leejahun.weavestory`.
 | `.secrets/AuthKey_L4FDH4F6HZ.p8` | ASC API key **L4FDH4F6HZ** (App Manager) — used by store-listing scripts & EAS | Regenerate in ASC → Integrations; revoke old |
 | `~/Downloads/AuthKey_TN83PW567A.p8` | ASC API key **TN83PW567A** (App Manager, "Screenshot Upload") | same |
 | `~/Downloads/weave-story-498307-7037201e6747.json` | Play **service-account** JSON key (Android Publisher) | GCP → SA → new key |
+| `.secrets/play-sa.json` | Same Play service-account key — referenced by `eas.json` submit profile (`eas submit -p android` → `alpha` track) | copy of the above |
 | `.secrets/fcm-v1-service-account.json` | **FCM V1** service-account key (Firebase `weave-story-app`) — Android push; uploaded to EAS | Firebase console → `weave-story-app` → Project settings → Service accounts → Generate new private key |
 | `.secrets/AuthKey_D7J7X6ZD28.p8` | **APNs** auth key **D7J7X6ZD28** (Sandbox & Production, Team Scoped) — iOS push; uploaded to EAS push key | developer.apple.com → Keys → new key with APNs (downloadable once); max 2 APNs keys/account |
 | `google-services.json` (repo root, **committed**) | Firebase Android config (sender id) — embedded in build via `android.googleServicesFile` | `firebase apps:sdkconfig ANDROID <appId> --project weave-story-app` |
