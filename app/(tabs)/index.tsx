@@ -7,7 +7,7 @@ export default function CreateScreen() {
   const { t } = useTranslation('home');
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles.root} edges={['top']}>
       <View style={styles.inner}>
         <BookShelf headline={t('hero.headline')} />
       </View>

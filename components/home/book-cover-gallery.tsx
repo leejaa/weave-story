@@ -1,11 +1,13 @@
+import { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useFocusEffect } from 'expo-router';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { SampleCardData } from '@/lib/api/types';
 import { SampleBookCover } from './sample-book-cover';
 import type { BookOrigin } from './use-book-selection';
 
-const BOOKSTORE_DISPLAY = require('@/assets/images/home/bookstore-bestseller-display.png');
+const HOME_BG = require('@/assets/videos/home-bg.mp4');
 
 type Props = {
   headline: string;
@@ -16,11 +18,33 @@ type Props = {
 };
 
 export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, onBookPress }: Props) {
+  const player = useVideoPlayer(HOME_BG, (p) => {
+    p.loop = true;
+    p.muted = true;
+    p.play();
+  });
+
+  // Pause the loop while the user is on another tab (saves battery/GPU),
+  // resume when the home tab regains focus.
+  useFocusEffect(
+    useCallback(() => {
+      player.play();
+      return () => player.pause();
+    }, [player]),
+  );
+
   return (
     <View style={styles.stage}>
-      <Image source={BOOKSTORE_DISPLAY} style={StyleSheet.absoluteFill} contentFit="cover" />
-      <View style={styles.backdropWash} pointerEvents="none" />
-      <View style={styles.lightPool} pointerEvents="none" />
+      <VideoView
+        player={player}
+        style={StyleSheet.absoluteFill}
+        contentFit="cover"
+        nativeControls={false}
+      />
+      {/* Scrim: darkens the busy video so the headline + book covers stay legible. */}
+      <View style={styles.scrim} pointerEvents="none" />
+      <View style={styles.floorShade} pointerEvents="none" />
+
       <View style={styles.header} pointerEvents="none">
         <Text style={styles.headline} allowFontScaling={false}>
           {headline}
@@ -29,7 +53,7 @@ export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, o
 
       {isLoading ? (
         <View style={styles.loading}>
-          <ActivityIndicator color="#7b5a2c" />
+          <ActivityIndicator color="rgba(245,240,232,0.75)" />
         </View>
       ) : (
         <ScrollView
@@ -50,7 +74,6 @@ export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, o
           ))}
         </ScrollView>
       )}
-      <View style={styles.floorShade} pointerEvents="none" />
     </View>
   );
 }
@@ -59,21 +82,19 @@ const styles = StyleSheet.create({
   stage: {
     flex: 1,
     overflow: 'hidden',
-    backgroundColor: '#f5f0e8',
+    backgroundColor: '#0d0b10', // shown briefly before the video first paints
   },
-  backdropWash: {
+  scrim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(245,240,232,0.08)',
+    backgroundColor: 'rgba(10,8,12,0.42)',
   },
-  lightPool: {
+  floorShade: {
     position: 'absolute',
-    left: -80,
-    right: -80,
-    top: 58,
-    height: 240,
-    borderRadius: 180,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    transform: [{ scaleX: 1.18 }],
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 160,
+    backgroundColor: 'rgba(6,5,8,0.5)',
   },
   header: {
     position: 'absolute',
@@ -87,10 +108,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.display,
     fontSize: SIZES['3xl'],
     lineHeight: 44,
-    color: 'rgba(45,42,36,0.82)',
-    textShadowColor: 'rgba(255,255,255,0.42)',
+    color: 'rgba(245,240,232,0.96)',
+    textShadowColor: 'rgba(0,0,0,0.6)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 8,
   },
   loading: {
     flex: 1,
@@ -107,13 +128,5 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 34,
     alignItems: 'center',
-  },
-  floorShade: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 112,
-    backgroundColor: 'rgba(58,52,42,0.06)',
   },
 });
