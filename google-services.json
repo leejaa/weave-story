@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56897545987",
+    "project_id": "weave-story-app",
+    "storage_bucket": "weave-story-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56897545987:android:e6f8508ca3a80c0b54eb36",
+        "android_client_info": {
+          "package_name": "com.leejahun.weavestory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAX4Sh0NNcYowG-RJYnptON2ht3Ms3aHJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

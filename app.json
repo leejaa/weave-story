@@ -28,6 +28,7 @@
     },
     "android": {
       "package": "com.leejahun.weavestory",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#FEF9F1",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
