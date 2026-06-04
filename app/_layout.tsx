@@ -3,8 +3,8 @@ import '@/lib/i18n';
 import * as Sentry from '@sentry/react-native';
 import { AuthProvider } from '@/lib/auth/client/context';
 import { PurchasesProviderWrapper } from '@/lib/purchases/provider-wrapper';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/lib/query-client';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { queryClient, persistOptions } from '@/lib/query-client';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -77,7 +77,7 @@ function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
     <AuthProvider>
     <PurchasesProviderWrapper>
       <Stack
@@ -101,7 +101,7 @@ function RootLayout() {
       />
     </PurchasesProviderWrapper>
     </AuthProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
     </SafeAreaProvider>
     </GestureHandlerRootView>
   );
