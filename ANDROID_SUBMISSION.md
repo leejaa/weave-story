@@ -7,6 +7,23 @@ Last updated: 2026-06-04
 패키지명: `com.leejahun.weavestory` (app.json와 일치)
 앱 ID(Play): `4975060960175249342`
 
+> ## ⚠️ 계정 구조 주의 (2026-06-04 확인)
+> - **활성** Play 개발자 계정 = **`8687266146434394437`** (개인 계정), 소유자 **leejahun9@gmail.com**.
+>   - leejahun9 브라우저는 Google 멀티로그인 상태 → leejahun9 = **계정 인덱스 `/u/2/`**. (leejahun0 = `/u/0/`, jhlee@k-doc.kr = `/u/1/`)
+>   - Play Console 진입: 계정 선택에서 **leejahun9** 선택 후 "LEE JAHUN" 개발자 계정.
+> - leejahun0@gmail.com에는 **동명의 다른 개발자 계정 `8563905342234584322`가 있는데 "계정 해지"**(2026-01-23, 미사용 사유) 상태 → 우리 앱과 무관, 혼동 주의.
+
+> ## 클로즈드 테스트 현황 (2026-06-04)
+> - 트랙 **"Alpha"** (id `4699889486794816408`) = **활성**, 1.0.0 빌드가 선택 테스터에게 제공 중, 177개국.
+> - 테스터 방식 = **이메일 목록 "Weave Story Closed Test"** → **현재 2명** (12명 필요).
+> - **옵트인 링크**(공유용):
+>   - 웹: `https://play.google.com/apps/testing/com.leejahun.weavestory`
+>   - 스토어: `https://play.google.com/store/apps/details?id=com.leejahun.weavestory`
+> - **요건**: 개인 계정이라 **테스터 12명+ × 14일 연속 옵트인** 후 "프로덕션 액세스 신청"(Google 검토). 조직 계정이면 면제지만 전환은 번거로워 권장 안 함.
+> - **모집 계획**: r/GooglePlayTestingExchange 등 **상호 테스트 커뮤니티**(맞테스트 전제). 영문 모집글 초안 준비됨.
+>   - ⚠️ Reddit은 브라우저 자동화에서 **차단**됨 → 게시·이메일 수집은 **사용자가 직접**. 수집된 이메일은 내가 목록에 일괄 등록.
+> - 흐름: 이메일 수집 → 목록 "Weave Story Closed Test"에 추가 → 옵트인 링크로 참여 → 14일 유지.
+
 상태 범례: ⬜ 미착수 · 🟦 진행 중 · ✅ 완료 · ⏭️ 보류/후속 · ⚠️ 주의
 
 > ## 진행 요약 (2026-06-03)

@@ -88,6 +88,8 @@ EAS build/runtime env is managed separately via `eas env` (profile `development`
 | ASC API issuer id | `095b3013-dde2-4c38-aa44-f05c10a33a93` |
 | ASC API keys (role) | `L4FDH4F6HZ` (App Manager), `TN83PW567A` (App Manager), `7FSD2K8YN9` (Admin/EAS), `24TH9PJCKY` & `WRSN9DTHRT` (RevenueCat) |
 | Google Play service account | `play-publisher@weave-story-498307.iam.gserviceaccount.com` (GCP project `weave-story-498307`) |
+| Play **developer** account (active) | `8687266146434394437` (개인/personal), owner **leejahun9@gmail.com** — Chrome account index `/u/2/`. App id `4975060960175249342`. Closed-test track "Alpha" `4699889486794816408`. |
+| Play dev account (terminated, ignore) | `8563905342234584322` owned by `leejahun0@gmail.com` — terminated 2026-01-23, unrelated to this app |
 | GCP OAuth project | `weave-story-496101` (number `857705716385`) |
 | Android OAuth client SHA-1 (Play app signing) | `D4:2C:84:5B:0C:79:B1:BE:92:F3:EE:DE:4F:64:45:3C:71:83:8E:AD` |
 | Neon project / prod branch | `cold-water-79857133` (`weavy-story`) / `br-cool-butterfly-aow77oep` |

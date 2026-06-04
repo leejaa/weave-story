@@ -23,6 +23,12 @@ English is the **primary** language; the app supports **en / ja / ko**.
 ### Verify still pending
 - Create one **English** story in-app (after OTA applies) and confirm the chapter text is English (server defaults to `en` when no locale sent; old rows backfilled `ko`).
 
+## 2026-06-04 — Store submission & testing status
+
+- **App Store**: v1.0 **WAITING_FOR_REVIEW** with en/ja/ko listings + **iPhone 6.7″ and iPad 12.9″** screenshots (all new design). Release is manual after approval. Possible follow-up gap: Apple Sign In token revocation on account deletion (`APPLE_SIGNIN_*` unset) — may be a rejection risk.
+- **Google Play**: en/ja/ko listings live. Closed-test track **"Alpha"** active (build 1.0.0). **Long pole = the 12-tester / 14-day requirement** (personal account). See `ANDROID_SUBMISSION.md` for the closed-test status, opt-in links, and recruitment plan.
+- **⚠️ Play account structure**: the **active** dev account `8687266146434394437` (개인 계정) is owned by **leejahun9@gmail.com** (= Chrome account index `/u/2/` in the leejahun9 browser). `leejahun0@gmail.com` owns a *different, terminated* dev account (`8563905342234584322`) — don't confuse them. Reddit is blocked in browser automation, so tester recruitment is manual.
+
 ## Project
 
 - Path: `/Users/leegibbeum/repos/weave-story`
