@@ -4,7 +4,7 @@ Last updated: 2026-06-04
 
 상태 범례: ⬜ 미착수 · 🟦 진행 중 · ✅ 완료 · ⏭️ 보류/후속
 
-> **2026-06-04 다국어:** v1.0 심사 빼고 **en/ja/ko** 현지화(이름·부제·설명·키워드·프로모·개인정보·지원URL) + **6.7″ 스크린샷 en/ja/ko 5장씩**(옛 6.5″ 제거, iPad 12.9″는 en 유지·ja/ko 상속) 추가 후 **재제출(WAITING_FOR_REVIEW)**. 모두 ASC API로 처리. 카피=`store-assets/store-copy.json`, 시크릿/식별자=`SECRETS_AND_ENV.md`.
+> **2026-06-04 다국어:** v1.0 심사 빼고 **en/ja/ko** 현지화(이름·부제·설명·키워드·프로모·개인정보·지원URL) + 스크린샷 **6.7″ 5장 + iPad 12.9″ 5장**을 en/ja/ko 모두 새 디자인으로 교체(옛 6.5″ 제거) 후 **재제출(WAITING_FOR_REVIEW)**. 모두 ASC API로 처리. 카피=`store-assets/store-copy.json`, 시크릿/식별자=`SECRETS_AND_ENV.md`.
 
 > ## 🚀 2026-06-03 · **App Store 심사 정식 제출 완료** (상태: "1.0 심사 대기 중")
 > 빌드 34 + 메타데이터/스크린샷(iPhone 6.5" 5장 + iPad 5장) 전부 포함. 심사 최대 48시간, 완료 시 이메일. 출시=수동.

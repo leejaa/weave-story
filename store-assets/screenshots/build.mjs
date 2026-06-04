@@ -280,21 +280,27 @@ const SHOTS = [
   { id: 'library', screen: 'library' },
 ];
 
+// deviceRatio = phone width / canvas width; textScale shrinks copy on the
+// wider iPad canvas. iPad keeps the same absolute phone size as iPhone (more
+// breathing room) — a phone mockup on an iPad-sized marketing canvas.
 const platforms = {
   ios:     { w: 1290, h: 2796 },
   android: { w: 1080, h: 2160 },
+  ipad:    { w: 2048, h: 2732, deviceRatio: 0.46, textScale: 0.66 },
 };
 
 function page(p, loc, shot) {
   const { w, h } = p;
+  const ts = p.textScale ?? 1;
+  const dr = p.deviceRatio ?? 0.73;
   const market = loc.market[shot.id];
   const margin = Math.round(w * 0.075);
   const copyTop = Math.round(h * 0.058);
-  const eSize = +(w * 0.0205).toFixed(1);
-  const hSize = +(w * 0.078).toFixed(1);
-  const sSize = +(w * 0.0285).toFixed(1);
-  const bezel = Math.round(w * 0.011);
-  const deviceW = Math.round(w * 0.73);
+  const eSize = +(w * 0.0205 * ts).toFixed(1);
+  const hSize = +(w * 0.078 * ts).toFixed(1);
+  const sSize = +(w * 0.0285 * ts).toFixed(1);
+  const bezel = Math.round(w * 0.011 * dr / 0.73);
+  const deviceW = Math.round(w * dr);
   const screenW = deviceW - bezel * 2;
   const scale = screenW / 390;
   const screenH = Math.round(844 * scale);
