@@ -43,7 +43,10 @@ export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, o
       />
       {/* Scrim: darkens the busy video so the headline + book covers stay legible. */}
       <View style={styles.scrim} pointerEvents="none" />
-      <View style={styles.floorShade} pointerEvents="none" />
+      {/* Two-stop bottom fade so the (transparent) floating tab bar's labels stay
+          readable while the video still shows faintly behind it. */}
+      <View style={styles.floor1} pointerEvents="none" />
+      <View style={styles.floor2} pointerEvents="none" />
 
       <View style={styles.header} pointerEvents="none">
         <Text style={styles.headline} allowFontScaling={false}>
@@ -88,13 +91,21 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(10,8,12,0.42)',
   },
-  floorShade: {
+  floor1: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: 160,
-    backgroundColor: 'rgba(6,5,8,0.5)',
+    height: 220,
+    backgroundColor: 'rgba(8,6,10,0.26)',
+  },
+  floor2: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 96,
+    backgroundColor: 'rgba(4,3,6,0.5)',
   },
   header: {
     position: 'absolute',

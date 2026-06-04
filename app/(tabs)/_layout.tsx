@@ -25,6 +25,20 @@ export default function TabLayout() {
     return <Redirect href="/login" />;
   }
 
+  // Float the tab bar so screens render full-height behind it. The home tab
+  // makes it transparent (the cinematic video shows through to the very bottom);
+  // other tabs keep the opaque cream bar.
+  const tabBarBase = {
+    position: 'absolute' as const,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    elevation: 0,
+    shadowOpacity: 0,
+    height: 49 + insets.bottom,
+    paddingBottom: insets.bottom,
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -32,13 +46,10 @@ export default function TabLayout() {
         tabBarActiveTintColor: c.thread,
         tabBarInactiveTintColor: c.inkFaint,
         tabBarStyle: {
+          ...tabBarBase,
           backgroundColor: c.paper,
           borderTopColor: c.rule,
           borderTopWidth: 1,
-          elevation: 0,
-          shadowOpacity: 0,
-          height: 49 + insets.bottom,
-          paddingBottom: insets.bottom,
         },
         tabBarLabelStyle: {
           fontFamily: FONTS.sansMedium,
@@ -49,6 +60,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t('nav.create'),
+          tabBarStyle: { ...tabBarBase, backgroundColor: 'transparent', borderTopWidth: 0 },
           tabBarIcon: ({ color, focused }) => (
             <Icon name="feather" size={22} color={color} filled={focused} />
           ),
