@@ -18,5 +18,9 @@
   "startBtn": "物語を始める",
   "preparingBtn": "物語を準備しています...",
   "loadingTitle": "物語を書いています",
-  "loadingSubtitle": "少しだけお待ちください。"
+  "loadingSubtitle": "少しだけお待ちください。",
+  "refine_label": "もう少し教えてください",
+  "refine_placeholder": "自由にお答えください（スキップも可能です）",
+  "refine_next": "次へ",
+  "refine_skip": "この質問をスキップ"
 }
