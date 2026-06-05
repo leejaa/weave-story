@@ -9,7 +9,8 @@ const NextChapterChoiceSchema = z.object({
 
 export const NextChapterPackageSchema = z.object({
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(600).max(8000),
+  // No length floor: a short body is grown by the continuation pass, never hard-failed here.
+  content: z.string().min(1).max(8000),
   situation: z.string().min(0).max(300),
   question: z.string().min(0).max(180),
   choices: z.array(NextChapterChoiceSchema).max(2),
@@ -18,13 +19,12 @@ export const NextChapterPackageSchema = z.object({
 export type NextChapterPackage = z.infer<typeof NextChapterPackageSchema>;
 
 // ─── Two-step generation schemas (mirrors the first-chapter harness) ──────────
-// Step 1 writes the chapter body (the only long field). The hard min here is a loose floor
-// (not the real 2000-char quality bar): a draft that lands a bit short still validates and
-// flows to the soft quality gate, which re-runs it with feedback — instead of hard-throwing
-// at the schema and killing the chapter. Genuinely-truncated bodies still fail and retry.
+// Step 1 writes the chapter body. There is intentionally NO length floor here: a short body
+// is grown by the continuation pass (extend-chapter-body), not fixed by failing the schema.
+// min(1) only guards against an empty string.
 export const NextChapterDraftSchema = z.object({
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(1200).max(8000),
+  content: z.string().min(1).max(8000),
 });
 
 // Step 2 derives the decision UI from the finished body (non-final chapters only).

@@ -8,8 +8,12 @@ import {
   type FirstChapterPackage,
 } from './first-chapter-package-schema';
 import { generateStructured, clamp } from './structured-generation';
+import { extendChapterBody } from './extend-chapter-body';
 import { harnessGuide } from './harness-prompts';
 import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
+
+// Bodies under this length get a continuation pass instead of failing/regenerating.
+const EXTEND_TARGET = 2000;
 
 type Params = {
   apiKey: string;
@@ -68,6 +72,20 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
     schema: ChapterDraftSchema,
   });
 
+  // Step 1b — if the body came in short, keep writing the same scene and append, rather than
+  // failing or regenerating the whole chapter (which tends to come back short again).
+  const extended = draft.output.content.length >= EXTEND_TARGET
+    ? { content: draft.output.content, usages: [] as unknown[] }
+    : await extendChapterBody({
+        model,
+        system: g.firstDraftSystem,
+        content: draft.output.content,
+        targetChars: EXTEND_TARGET,
+        buildExtendPrompt: (current, deficitChars) =>
+          g.buildExtend({ currentContent: current, deficitChars, isFinal: false }),
+      });
+  const draftBody = { ...draft.output, content: extended.content };
+
   // Step 2 — derive bible + decision UI from the finished body (all short fields).
   const structure = await generateStructured({
     model,
@@ -75,14 +93,14 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
     prompt: g.buildFirstStructure({
       prompt: params.genCtx.prompt,
       estimatedChapters: params.genCtx.estimatedChapters,
-      content: draft.output.content,
+      content: draftBody.content,
       previousIssues: params.previousIssues,
     }),
     schema: ChapterStructureSchema,
   });
 
   return {
-    firstChapterPackage: assemble(draft.output, structure.output),
-    usage: { draft: draft.usage, structure: structure.usage },
+    firstChapterPackage: assemble(draftBody, structure.output),
+    usage: { draft: draft.usage, extend: extended.usages, structure: structure.usage },
   };
 }

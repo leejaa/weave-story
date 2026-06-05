@@ -10,7 +10,11 @@ import {
   type NextChapterPackage,
 } from './next-chapter-package-schema';
 import { generateStructured, clamp } from './structured-generation';
+import { extendChapterBody } from './extend-chapter-body';
 import { harnessGuide } from './harness-prompts';
+
+// Bodies under this length get a continuation pass instead of failing/regenerating.
+const EXTEND_TARGET = 2000;
 
 type Params = {
   apiKey: string;
@@ -75,11 +79,25 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
     schema: NextChapterDraftSchema,
   });
 
+  // Step 1b — if the body came in short, keep writing the same scene and append, rather than
+  // failing or regenerating the whole chapter (which tends to come back short again).
+  const extended = draft.output.content.length >= EXTEND_TARGET
+    ? { content: draft.output.content, usages: [] as unknown[] }
+    : await extendChapterBody({
+        model,
+        system: g.nextDraftSystem,
+        content: draft.output.content,
+        targetChars: EXTEND_TARGET,
+        buildExtendPrompt: (current, deficitChars) =>
+          g.buildExtend({ currentContent: current, deficitChars, isFinal }),
+      });
+  const draftBody: NextChapterDraft = { ...draft.output, content: extended.content };
+
   // Step 2 — derive the decision UI from the body. Skipped for the final chapter.
   if (isFinal) {
     return {
-      nextChapterPackage: assemble(draft.output, null),
-      usage: { draft: draft.usage },
+      nextChapterPackage: assemble(draftBody, null),
+      usage: { draft: draft.usage, extend: extended.usages },
     };
   }
 
@@ -90,14 +108,14 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
       prompt: params.genCtx.prompt,
       estimatedChapters: params.genCtx.estimatedChapters,
       nextChapterNumber: params.genCtx.nextChapterNumber,
-      content: draft.output.content,
+      content: draftBody.content,
       previousIssues: params.previousIssues,
     }),
     schema: NextChapterStructureSchema,
   });
 
   return {
-    nextChapterPackage: assemble(draft.output, structure.output),
-    usage: { draft: draft.usage, structure: structure.usage },
+    nextChapterPackage: assemble(draftBody, structure.output),
+    usage: { draft: draft.usage, extend: extended.usages, structure: structure.usage },
   };
 }

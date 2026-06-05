@@ -138,4 +138,19 @@ export const EN: HarnessGuide = {
       '- Do not invent new events outside the body.',
     ].join('\n');
   },
+  buildExtend: ({ currentContent, deficitChars, isFinal }) =>
+    [
+      'Below is the chapter body so far. It is too short — keep writing to extend it.',
+      '─────────────',
+      currentContent,
+      '─────────────',
+      '[Continuation rules — very important]',
+      '- Do not start a new chapter. Continue naturally from the last scene of the body above.',
+      '- Do not repeat or re-output anything already written. Output only the new body that follows.',
+      `- Write at least ${Math.max(deficitChars, 600)} more characters. Do not summarize — develop through action, dialogue, and discovery.`,
+      '- Separate each paragraph with a blank line.',
+      isFinal
+        ? '- This is the final chapter. Let the continuation bring the story to a natural close.'
+        : '- End the continuation on a decision moment that demands the next choice.',
+    ].join('\n'),
 };

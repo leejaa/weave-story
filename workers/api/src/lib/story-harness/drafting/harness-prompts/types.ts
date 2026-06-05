@@ -38,6 +38,14 @@ export type NextStructureArgs = {
   previousIssues?: string[];
 };
 
+// Continuation pass: when a draft body is too short, ask the model to keep writing the SAME
+// scene and append the result (used for both first and next chapters).
+export type ExtendArgs = {
+  currentContent: string;
+  deficitChars: number;
+  isFinal: boolean;
+};
+
 export type HarnessGuide = {
   firstDraftSystem: string;
   firstStructureSystem: string;
@@ -47,4 +55,5 @@ export type HarnessGuide = {
   buildFirstStructure: (a: FirstStructureArgs) => string;
   buildNextDraft: (a: NextDraftArgs) => string;
   buildNextStructure: (a: NextStructureArgs) => string;
+  buildExtend: (a: ExtendArgs) => string;
 };

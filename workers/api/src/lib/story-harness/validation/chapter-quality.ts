@@ -1,13 +1,11 @@
 // Shared chapter quality evaluation for the first chapter and every subsequent
 // chapter. Previously this logic was duplicated across two near-identical files.
 //
-// Design principle: only OBJECTIVE, structural problems hard-fail generation —
-// truncated/empty body, wrong paragraph/choice counts, exact-duplicate or passive
-// choices. The "stakes" and "distinctness" scores are still computed for telemetry,
-// but they are NOT gates: literal keyword / char-set matching can't actually judge
-// narrative quality and was false-rejecting genuinely good chapters.
+// Design principle: only OBJECTIVE, structural problems gate generation — wrong
+// paragraph/choice counts, exact-duplicate or passive choices. Body LENGTH is no longer a
+// gate: a short body is grown by the continuation pass (extend-chapter-body), not rejected
+// here. The "stakes"/"distinctness" scores are computed for telemetry but are NOT gates.
 
-const MIN_CONTENT_CHARS = 2000;
 const MIN_PARAGRAPHS = 8;
 
 // Passive/reactive choice phrasings the product explicitly wants to avoid.
@@ -106,10 +104,7 @@ export function evaluateChapterQuality(input: ChapterQualityInput): ChapterQuali
 
   const issues: string[] = [];
 
-  // Objective structural gates only.
-  if (contentChars < MIN_CONTENT_CHARS) {
-    issues.push(`content must be at least ${MIN_CONTENT_CHARS} chars, got ${contentChars}`);
-  }
+  // Objective structural gates only. Body length is handled by the continuation pass, not here.
   if (paragraphCount < MIN_PARAGRAPHS) {
     issues.push(`content needs at least ${MIN_PARAGRAPHS} paragraphs, got ${paragraphCount}`);
   }

@@ -26,14 +26,13 @@ const HighImpactChoiceSchema = z.object({
 // last). So we split generation into two focused calls, each with one job.
 
 // Step 1 — write the chapter body. The only long field; nothing competes with it.
-// The hard min here is a loose floor (not the real 2000-char quality bar): a slightly-short
-// body still validates and flows to the soft quality gate, which re-runs it with feedback —
-// instead of hard-throwing at the schema and killing the chapter. Truncated bodies still fail.
+// No length floor on the body here: a short body is grown by the continuation pass
+// (extend-chapter-body), not fixed by failing the schema. min(1) only guards an empty string.
 export const ChapterDraftSchema = z.object({
   title: z.string().min(2).max(80),
   genre: z.string().min(2).max(80),
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(1200).max(8000),
+  content: z.string().min(1).max(8000),
 });
 
 // Step 2 — derive the story bible + decision UI FROM the finished body. All short
@@ -68,7 +67,8 @@ export const FirstChapterPackageSchema = z.object({
     situation: z.string().min(4).max(300),
     question: z.string().min(4).max(180),
     choices: z.array(HighImpactChoiceSchema).length(2),
-    content: z.string().min(600).max(8000),
+    // No length floor: a short body is grown by the continuation pass, never hard-failed here.
+    content: z.string().min(1).max(8000),
   }),
 });
 
