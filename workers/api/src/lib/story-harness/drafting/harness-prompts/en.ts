@@ -60,6 +60,7 @@ export const EN: HarnessGuide = {
       '- 10–14 paragraphs, each separated by a blank line.',
       '- Each paragraph runs 2–4 sentences. Do not summarize scenes; show them as real events.',
       '- This response writes ONLY the body (content) and the title fields. Choices are made in the next step.',
+      '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
     ].join('\n');
   },
   buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
@@ -123,6 +124,7 @@ export const EN: HarnessGuide = {
       '- content must be between 1000 and 1600 words of English. Under ~600 words is a failure.',
       '- 9–14 paragraphs, each separated by a blank line.',
       '- This response writes ONLY the body (content) and the title. Choices are made in the next step.',
+      '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
     ].join('\n');
   },
   buildNextStructure: ({ prompt, estimatedChapters, nextChapterNumber, content, previousIssues }) => {

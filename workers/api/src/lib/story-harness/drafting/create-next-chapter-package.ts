@@ -11,6 +11,7 @@ import {
 } from './next-chapter-package-schema';
 import { generateStructured, clamp } from './structured-generation';
 import { extendChapterBody } from './extend-chapter-body';
+import { stripTrailingChoiceBlock } from './strip-choice-block';
 import { harnessGuide } from './harness-prompts';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
@@ -72,6 +73,7 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
       previousChapterContent: params.genCtx.previousChapterContent,
       previousChaptersSummaries: params.genCtx.previousChaptersSummaries,
       chosenOption: params.genCtx.chosenOption,
+      choiceKind: params.genCtx.choiceKind,
       attempt: params.attempt,
       previousIssues: params.previousIssues,
       isFinal,
@@ -91,7 +93,10 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
         buildExtendPrompt: (current, deficitChars) =>
           g.buildExtend({ currentContent: current, deficitChars, isFinal }),
       });
-  const draftBody: NextChapterDraft = { ...draft.output, content: extended.content };
+  const draftBody: NextChapterDraft = {
+    ...draft.output,
+    content: stripTrailingChoiceBlock(extended.content),
+  };
 
   // Step 2 — derive the decision UI from the body. Skipped for the final chapter.
   if (isFinal) {

@@ -9,6 +9,7 @@ import {
 } from './first-chapter-package-schema';
 import { generateStructured, clamp } from './structured-generation';
 import { extendChapterBody } from './extend-chapter-body';
+import { stripTrailingChoiceBlock } from './strip-choice-block';
 import { harnessGuide } from './harness-prompts';
 import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
 
@@ -84,7 +85,7 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
         buildExtendPrompt: (current, deficitChars) =>
           g.buildExtend({ currentContent: current, deficitChars, isFinal: false }),
       });
-  const draftBody = { ...draft.output, content: extended.content };
+  const draftBody = { ...draft.output, content: stripTrailingChoiceBlock(extended.content) };
 
   // Step 2 — derive bible + decision UI from the finished body (all short fields).
   const structure = await generateStructured({

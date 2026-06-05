@@ -60,6 +60,7 @@ export const JA: HarnessGuide = {
       '- 10〜14段落、各段落は空行で区切ります。',
       '- 各段落は2〜4文で十分に展開します。場面を要約せず、実際の出来事として見せてください。',
       '- この応答では本文(content)とタイトルのフィールドだけを書きます。選択肢は次の段階で作ります。',
+      '- 本文の中に「[選択]」「選択肢」「①/②」のような選択肢リストや、読者への問いかけを絶対に書かないでください。本文は物語の叙述だけで終えます。',
     ].join('\n');
   },
   buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
@@ -123,6 +124,7 @@ export const JA: HarnessGuide = {
       '- contentは必ず日本語で2400字以上、3200字以下で書きます。1800字未満は失敗です。',
       '- 9〜14段落、各段落は空行で区切ります。',
       '- この応答では本文(content)とタイトルだけを書きます。選択肢は次の段階で作ります。',
+      '- 本文の中に「[選択]」「選択肢」「①/②」のような選択肢リストや、読者への問いかけを絶対に書かないでください。本文は物語の叙述だけで終えます。',
     ].join('\n');
   },
   buildNextStructure: ({ prompt, estimatedChapters, nextChapterNumber, content, previousIssues }) => {

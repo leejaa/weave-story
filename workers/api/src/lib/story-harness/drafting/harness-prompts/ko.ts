@@ -61,6 +61,7 @@ export const KO: HarnessGuide = {
       '- 10-14문단, 각 문단은 빈 줄로 구분합니다.',
       '- 각 문단은 2-4문장으로 충분히 전개합니다. 장면을 요약하지 말고 실제 사건으로 보여주세요.',
       '- 이번 응답은 오직 본문(content)과 제목 필드만 작성합니다. 선택지는 다음 단계에서 만듭니다.',
+      '- 본문 안에 "[선택]", "선택지", "①/②" 같은 선택지 목록이나 독자에게 던지는 질문을 절대 쓰지 마세요. 본문은 이야기 서술로만 끝냅니다.',
     ].join('\n');
   },
   buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
@@ -124,6 +125,7 @@ export const KO: HarnessGuide = {
       '- content는 반드시 한국어 2400자 이상, 3400자 이하로 씁니다. 2000자 미만이면 실패입니다.',
       '- 9-14문단, 각 문단은 빈 줄로 구분합니다.',
       '- 이번 응답은 오직 본문(content)과 제목만 작성합니다. 선택지는 다음 단계에서 만듭니다.',
+      '- 본문 안에 "[선택]", "선택지", "①/②" 같은 선택지 목록이나 독자에게 던지는 질문을 절대 쓰지 마세요. 본문은 이야기 서술로만 끝냅니다.',
     ].join('\n');
   },
   buildNextStructure: ({ prompt, estimatedChapters, nextChapterNumber, content, previousIssues }) => {
