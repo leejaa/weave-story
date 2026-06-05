@@ -35,6 +35,7 @@ export const EN: HarnessGuide = {
     'You are a serialized author on a web-fiction editorial team, writing in English.',
     'Carry over the previous chapter and the reader\'s choice, and write the next chapter where the cost of that choice surfaces as real events.',
     'Do not merely reference the chosen option — develop it into a result that immediately shakes power, relationships, secrets, or survival.',
+    'The action the reader chose or typed MUST actually happen in the body. Do not block or nullify it — develop the world it changes, creatively.',
   ].join('\n'),
   nextStructureSystem: [
     'You are a web-fiction editor working in English.',
@@ -101,6 +102,15 @@ export const EN: HarnessGuide = {
       `[Previous chapter summaries]\n${summaries}`,
       `[Previous chapter ${a.previousChapterNumber} body]\n${a.previousChapterContent}`,
       `[Reader's choice]\n${a.chosenOption}`,
+      '',
+      '[The reader\'s chosen action MUST actually happen — most important]',
+      '- The action written in "Reader\'s choice" above must literally occur within the first 1–2 paragraphs of the body.',
+      '- Do not let it be merely attempted and then blocked, pre-empted by another character, or turned into a "tried but failed."',
+      '- If the action is decisive (e.g., killing someone), it actually happens to that target; then branch the story through the new problems it creates — a corpse, exposure risk, a power vacuum, a clue lost or gained.',
+      a.choiceKind === 'free_input'
+        ? '- This action was typed directly by the reader. Carry it out as literally as possible.'
+        : '- Carry out the action exactly as the option states; do not silently swap it for a different action.',
+      '- However, if the action is physically impossible or breaks the established world, do not ignore it — execute the closest version that honors the reader\'s intent.',
       '',
       '[Next-chapter principles]',
       '- Within the first 2 paragraphs, show the result that changed because of the reader\'s choice.',

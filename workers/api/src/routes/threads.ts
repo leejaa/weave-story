@@ -242,6 +242,7 @@ threadsRouter.post('/:id/choose', async (c) => {
     previousChapterContent: currentChapter?.content ?? '',
     previousChaptersSummaries,
     chosenOption: chosenText,
+    choiceKind: hasChoice ? ('choice' as const) : ('free_input' as const),
     nextChapterNumber,
   };
 

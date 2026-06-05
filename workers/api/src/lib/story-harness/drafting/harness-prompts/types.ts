@@ -25,6 +25,7 @@ export type NextDraftArgs = {
   previousChapterContent: string;
   previousChaptersSummaries: { chapterNumber: number; summary: string }[];
   chosenOption: string;
+  choiceKind?: 'choice' | 'free_input';
   attempt: number;
   previousIssues?: string[];
   isFinal: boolean;

@@ -32,6 +32,9 @@ export type ContinuationContext = SetupContext & {
   previousChapterContent: string;
   previousChaptersSummaries: ChapterSummaryEntry[];
   chosenOption: string;
+  // How the reader picked: a menu option vs free-typed text. Free input gets the strongest
+  // "execute literally" treatment in the prompt. Optional for backward-compat with old jobs.
+  choiceKind?: 'choice' | 'free_input';
   nextChapterNumber: number;
 };
 
