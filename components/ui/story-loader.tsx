@@ -13,9 +13,10 @@ type Props = {
   title: string;
   subtitle: string;
   estimate?: string;
+  notify?: string;
 };
 
-export function StoryLoader({ title, subtitle, estimate }: Props) {
+export function StoryLoader({ title, subtitle, estimate, notify }: Props) {
   const c = usePalette();
 
   return (
@@ -28,6 +29,11 @@ export function StoryLoader({ title, subtitle, estimate }: Props) {
       <Text style={[styles.title, { color: c.thread }]}>{title}</Text>
       <Text style={[styles.subtitle, { color: c.inkSoft }]}>{subtitle}</Text>
       {estimate ? <Text style={[styles.estimate, { color: c.inkFaint }]}>{estimate}</Text> : null}
+      {notify ? (
+        <View style={[styles.notify, { backgroundColor: c.threadSoft ?? 'rgba(45,90,61,0.08)' }]}>
+          <Text style={[styles.notifyText, { color: c.thread }]}>{`🔔  ${notify}`}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -65,5 +71,17 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.mono,
     fontSize: 10,
     letterSpacing: 1,
+  },
+  notify: {
+    marginTop: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+  },
+  notifyText: {
+    fontFamily: FONTS.sansMedium,
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: 'center',
   },
 });

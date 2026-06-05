@@ -17,7 +17,8 @@
   "generating": {
     "title": "Opening your storybook",
     "body": "The first scene is settling onto the page.",
-    "estimate": "About 1–2 minutes"
+    "estimate": "About 1–2 minutes",
+    "notify": "Feel free to leave — we'll send a notification when it's ready"
   },
   "report": {
     "title": "Report",

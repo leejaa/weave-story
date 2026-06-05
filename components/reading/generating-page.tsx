@@ -21,6 +21,7 @@ export function GeneratingPage() {
         title={t('generating.title')}
         subtitle={t('generating.body')}
         estimate={t('generating.estimate')}
+        notify={t('generating.notify')}
       />
     </View>
   );
