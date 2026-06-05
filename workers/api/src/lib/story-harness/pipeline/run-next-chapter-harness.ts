@@ -84,7 +84,9 @@ export async function runNextChapterHarness(params: Params): Promise<NextChapter
   const identity = await loadChapterIdentity(params.db, params.chapterId);
   const storyBible = await loadStoryBible(params.db, identity.storyId);
   const isFinal = params.genCtx.nextChapterNumber >= params.genCtx.estimatedChapters;
-  const maxAttempts = 2;
+  // One more retry than before: with the token cap fixed, failures are rare, so the extra
+  // attempt is a cheap safety net for the occasional short/invalid draft.
+  const maxAttempts = 3;
   let previousIssues: string[] | undefined;
   let lastError: unknown;
 

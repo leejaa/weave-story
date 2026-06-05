@@ -18,11 +18,13 @@ export const NextChapterPackageSchema = z.object({
 export type NextChapterPackage = z.infer<typeof NextChapterPackageSchema>;
 
 // ─── Two-step generation schemas (mirrors the first-chapter harness) ──────────
-// Step 1 writes the chapter body (the only long field); content min aligns with the
-// quality gate's 2000-char floor so shortness is caught by the cheap per-step repair.
+// Step 1 writes the chapter body (the only long field). The hard min here is a loose floor
+// (not the real 2000-char quality bar): a draft that lands a bit short still validates and
+// flows to the soft quality gate, which re-runs it with feedback — instead of hard-throwing
+// at the schema and killing the chapter. Genuinely-truncated bodies still fail and retry.
 export const NextChapterDraftSchema = z.object({
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(2000).max(8000),
+  content: z.string().min(1200).max(8000),
 });
 
 // Step 2 derives the decision UI from the finished body (non-final chapters only).

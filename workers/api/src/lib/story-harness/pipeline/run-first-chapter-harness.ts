@@ -56,7 +56,9 @@ function toNonRetryableSchemaError(err: unknown): NonRetryableStoryGenerationErr
 }
 
 export async function runFirstChapterHarness(params: Params): Promise<FirstChapterHarnessResult> {
-  const maxAttempts = 2;
+  // One more retry than before: with the token cap fixed, failures are rare, so the extra
+  // attempt is a cheap safety net for the occasional short/invalid draft.
+  const maxAttempts = 3;
   let previousIssues: string[] | undefined;
   let lastError: unknown;
 

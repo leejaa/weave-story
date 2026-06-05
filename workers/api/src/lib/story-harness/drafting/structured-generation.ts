@@ -26,6 +26,13 @@ export function isSchemaError(err: unknown): boolean {
   );
 }
 
+// Without an explicit output cap the gateway applies a low default and truncates the draft
+// mid-body — Korean chapter bodies (2400–3400 chars, plus any reasoning tokens) are
+// token-dense, so a short cap cuts the JSON off before it satisfies the schema and the whole
+// chapter fails. Give generous headroom: the 8000-char content ceiling is ~16k tokens, and a
+// high cap also keeps the body from being starved if the model spends tokens on reasoning.
+const MAX_OUTPUT_TOKENS = 16000;
+
 export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   model: LanguageModel;
   system: string;
@@ -37,6 +44,7 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
       model: opts.model,
       system: opts.system,
       prompt: opts.prompt,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       output: Output.object({ schema: opts.schema }),
     });
     return { output: r.output, usage: r.usage };
@@ -47,6 +55,7 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
       model: opts.model,
       system: opts.system,
       prompt: `${opts.prompt}\n\n[직전 출력이 형식 검증에 실패했습니다. 아래 문제를 반드시 고쳐 같은 형식으로 다시 작성하세요]\n${issue}`,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       output: Output.object({ schema: opts.schema }),
     });
     return { output: repaired.output, usage: repaired.usage };
