@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import '@/styles/global.css';
+import { TabLayout } from '@/components/nav/TabLayout';
 import { HomePage } from '@/pages/HomePage';
+import { StoriesPage } from '@/pages/StoriesPage';
 import { SetupPage } from '@/pages/SetupPage';
 import { LoginPage } from '@/pages/LoginPage';
 
@@ -14,7 +16,10 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route element={<TabLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/stories" element={<StoriesPage />} />
+          </Route>
           <Route path="/setup" element={<SetupPage />} />
           <Route path="/login" element={<LoginPage onLogin={async () => {}} />} />
           <Route path="*" element={<Navigate to="/" replace />} />

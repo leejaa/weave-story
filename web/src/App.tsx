@@ -4,7 +4,9 @@ import { queryClient } from '@/lib/query-client';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingPage } from '@/pages/LoadingPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { TabLayout } from '@/components/nav/TabLayout';
 import { HomePage } from '@/pages/HomePage';
+import { StoriesPage } from '@/pages/StoriesPage';
 import { SetupPage } from '@/pages/SetupPage';
 
 function AppRoutes() {
@@ -18,7 +20,12 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      {/* 하단 탭바가 있는 메인 탭 화면 */}
+      <Route element={<TabLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/stories" element={<StoriesPage />} />
+      </Route>
+      {/* 탭바 없는 푸시 화면 */}
       <Route path="/setup" element={<SetupPage />} />
       {/* Task 6~10에서 라우트 추가 예정 */}
       <Route path="*" element={<Navigate to="/" replace />} />

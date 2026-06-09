@@ -1,0 +1,51 @@
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  height: calc(49px + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+}
+
+/* 홈: 투명 (시네마틱 영상이 바닥까지 비침) */
+.transparent {
+  background: transparent;
+}
+
+/* 그 외: 불투명 크림 + 상단 구분선 */
+.solid {
+  background: var(--color-paper);
+  border-top: 1px solid var(--color-rule);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--color-ink-faint);
+  transition: color 0.15s;
+}
+
+.tab.active {
+  color: var(--color-thread);
+}
+
+/* 투명(다크 영상) 위에서는 가독성을 위해 밝은 톤 */
+.transparent .tab {
+  color: rgba(237, 232, 240, 0.5);
+}
+
+.transparent .tab.active {
+  color: rgba(245, 240, 232, 0.96);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 11px;
+}

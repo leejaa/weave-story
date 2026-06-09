@@ -52,6 +52,9 @@
   --shadow-card: 0 2px 12px rgba(42, 31, 20, 0.10);
   --shadow-modal: 0 8px 40px rgba(42, 31, 20, 0.18);
 
+  /* ── 하단 탭바 높이 ── */
+  --tabbar-height: calc(49px + env(safe-area-inset-bottom, 0px));
+
   /* ── Safe Area (앱인토스 env 변수 fallback) ── */
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
