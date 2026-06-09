@@ -1,21 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { loadStoredToken, loginWithToss, logout as doLogout } from '@/lib/auth';
-import { setToken } from '@/lib/api';
+import { restoreAuth, loginWithToss, logout as doLogout } from '@/lib/auth';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
 export function useAuth() {
   const [state, setState] = useState<AuthState>('loading');
 
-  // 앱 시작 시 저장된 토큰 복원
+  // 앱 시작 시 저장된 인증(토큰 또는 데모) 복원
   useEffect(() => {
-    const token = loadStoredToken();
-    if (token) {
-      setToken(token);
-      setState('authenticated');
-    } else {
-      setState('unauthenticated');
-    }
+    setState(restoreAuth() ? 'authenticated' : 'unauthenticated');
   }, []);
 
   const login = useCallback(async () => {
