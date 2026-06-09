@@ -50,6 +50,21 @@ export type Intervention = {
   createdAt: string;
 };
 
+/** 내 이야기 목록 1건 (GET /api/threads) — 기존 앱 ThreadWithStory 와 동일 */
+export type ThreadListItem = {
+  threadId: string;
+  status: string; // 'completed' | 그 외(진행 중)
+  currentChapter: number;
+  progress: string; // 0~1 문자열
+  lastReadAt: string;
+  storyId: string;
+  title: string | null;
+  genre: string | null;
+  mood: string | null;
+  coverImageUrl: string | null;
+  estimatedChapters: number;
+};
+
 export type ThreadDetail = {
   threadId: string;
   status: string;

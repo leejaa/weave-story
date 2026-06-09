@@ -9,7 +9,8 @@ import { useLocation } from 'react-router-dom';
  */
 export function useNavDirection() {
   const location = useLocation();
-  const idx = (window.history.state?.idx as number | undefined) ?? 0;
+  const raw = window.history.state?.idx as number | undefined;
+  const idx = typeof raw === 'number' && Number.isFinite(raw) ? raw : 0;
   const prevIdx = useRef(idx);
   const dir = idx >= prevIdx.current ? 1 : -1;
 

@@ -1,19 +1,66 @@
+import { useNavigate } from 'react-router-dom';
+import { Spinner } from '@/components/ui';
+import { StoryCard } from '@/components/stories/StoryCard';
+import { useThreads } from '@/features/threads/useThreads';
 import styles from './StoriesPage.module.css';
 
-/** 내 이야기 탭 — Task 8(내 이야기 목록)에서 본격 구현. 지금은 빈 상태 플레이스홀더. */
+/**
+ * 내 이야기 탭 — 기존 앱 app/(tabs)/stories.tsx 대응.
+ * 진행 중 / 완결 섹션으로 나눠 2열 그리드로 스레드를 보여준다.
+ * (둘 다 있을 때만 섹션 라벨 노출.) 탭 → /reading/:id.
+ */
 export function StoriesPage() {
+  const navigate = useNavigate();
+  const { threads, isLoading } = useThreads();
+
+  const ready = threads.filter((t) => t.title !== null);
+  const ongoing = ready.filter((t) => t.status !== 'completed');
+  const finished = ready.filter((t) => t.status === 'completed');
+  const showSections = ongoing.length > 0 && finished.length > 0;
+
+  const openThread = (threadId: string) => navigate(`/reading/${threadId}`);
+
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
         <header className={styles.header}>
-          <div className={styles.eyebrow}>MY LIBRARY</div>
           <h1 className={styles.title}>내 이야기</h1>
         </header>
 
-        <div className={styles.empty}>
-          <p className={styles.emptyTitle}>아직 엮은 이야기가 없어요</p>
-          <p className={styles.emptySub}>홈에서 카드를 골라 첫 이야기를 시작해보세요.</p>
-        </div>
+        {isLoading ? (
+          <div className={styles.loading}>
+            <Spinner size={26} tone="thread" />
+          </div>
+        ) : ready.length === 0 ? (
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>아직 만든 이야기가 없어요</p>
+            <p className={styles.emptySub}>새 이야기 탭에서 첫 번째 이야기를 시작해보세요</p>
+          </div>
+        ) : (
+          <>
+            {showSections && ongoing.length > 0 && (
+              <p className={styles.sectionLabel}>진행 중</p>
+            )}
+            {ongoing.length > 0 && (
+              <div className={styles.grid}>
+                {ongoing.map((thread) => (
+                  <StoryCard key={thread.threadId} thread={thread} onPress={openThread} />
+                ))}
+              </div>
+            )}
+
+            {showSections && finished.length > 0 && (
+              <p className={`${styles.sectionLabel} ${styles.sectionLabelGap}`}>완결</p>
+            )}
+            {finished.length > 0 && (
+              <div className={styles.grid}>
+                {finished.map((thread) => (
+                  <StoryCard key={thread.threadId} thread={thread} onPress={openThread} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
