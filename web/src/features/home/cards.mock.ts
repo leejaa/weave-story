@@ -1,6 +1,5 @@
 import type { SampleCardData } from '@/lib/types';
-
-const R2 = 'https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/covers';
+import { MEDIA } from '@/lib/media';
 
 /**
  * 개발용 목업 샘플카드 — 실제 ko 로케일 카피 + 실제 R2 커버 이미지 사용.
@@ -34,7 +33,7 @@ export const MOCK_SAMPLE_CARDS: SampleCardData[] = [
   genreLabel: c.genreLabel,
   title: c.title,
   color: c.color,
-  imageUrl: `${R2}/${c.key}.png`,
+  imageUrl: MEDIA.cover(c.key),
   prompt: c.prompt,
   displayOrder: i,
 }));

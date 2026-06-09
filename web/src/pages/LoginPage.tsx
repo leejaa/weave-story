@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui';
+import { MEDIA } from '@/lib/media';
+import { Spinner } from '@/components/ui';
 import styles from './LoginPage.module.css';
 
 type Props = {
   onLogin: () => Promise<void>;
 };
 
+/** 로그인 게이트 — 기존 앱 login.tsx 와 동일 구조: 다크 비디오 배경 + 브랜드 + 헤드라인 + 하단 CTA. */
 export function LoginPage({ onLogin }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,17 +25,30 @@ export function LoginPage({ onLogin }: Props) {
   };
 
   return (
-    <div className={styles.root}>
-      <div className={styles.hero}>
-        <h1 className={styles.title}>Weave Story</h1>
-        <p className={styles.subtitle}>나만의 이야기를 엮어가세요</p>
-      </div>
+    <div className={styles.screen}>
+      <video className={styles.video} src={MEDIA.loginVideo} autoPlay loop muted playsInline preload="auto" aria-hidden />
+      <div className={styles.overlay} aria-hidden />
 
-      <div className={styles.bottom}>
-        {error && <p className={styles.error}>{error}</p>}
-        <Button size="lg" fullWidth loading={loading} onClick={handleLogin}>
-          토스로 시작하기
-        </Button>
+      <div className={styles.content}>
+        <div className={styles.brand}>
+          <span className={styles.diamond} />
+          <span className={styles.wordmark}>WEAVE STORY</span>
+        </div>
+
+        <div className={styles.headline}>
+          <h1 className={styles.title}>Weave Story</h1>
+          <p className={styles.subtitle}>Your stories, woven together.</p>
+        </div>
+
+        <div className={styles.spacer} />
+
+        <div className={styles.actions}>
+          {error && <p className={styles.error}>{error}</p>}
+          <button className={styles.tossBtn} onClick={handleLogin} disabled={loading}>
+            {loading ? <Spinner size={20} tone="light" /> : '토스로 시작하기'}
+          </button>
+          <p className={styles.legal}>계속하면 서비스 약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다.</p>
+        </div>
       </div>
     </div>
   );

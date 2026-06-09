@@ -1,37 +1,46 @@
 import type { SampleCardData } from '@/lib/types';
+import { CoverTitle } from './CoverTitle';
 import styles from './BookCard.module.css';
 
 type Props = {
   card: SampleCardData;
-  /** 레일 내 순번 — 펄스 애니메이션 스태거에 사용 */
   index: number;
   onSelect: (card: SampleCardData) => void;
 };
 
-/** 홈 레일의 한 권 — 입체 책 표지(표지면 + 책장 스파인 + 장르 pill + 제목). */
+/**
+ * 홈 레일의 한 권 — 기존 sample-book-cover.tsx 와 동일 수치.
+ * slot 176×286, 표지(coverBase) + 책장(pageBlock 14), spine 24, rim 테두리, 장르 pill, Jua 제목, 글로우/펄스.
+ */
 export function BookCard({ card, index, onSelect }: Props) {
   return (
     <button
-      className={styles.book}
+      className={styles.slot}
       style={{ animationDelay: `${index * 130}ms` }}
       onClick={() => onSelect(card)}
       aria-label={card.title.replace(/\n/g, ' ')}
     >
-      <div className={styles.aura} style={{ background: card.color }} />
-      <div className={styles.cover} style={{ backgroundColor: card.color }}>
-        {card.imageUrl && (
-          <img className={styles.img} src={card.imageUrl} alt="" loading="lazy" draggable={false} />
-        )}
-        <div className={styles.titleShade} />
-        <div className={styles.spine} />
-        <span className={styles.pill}>{card.genreLabel}</span>
-        <span className={styles.title}>{card.title}</span>
-      </div>
-      <div className={styles.pages} aria-hidden>
-        {Array.from({ length: 9 }, (_, i) => (
-          <i key={i} style={{ top: `${8 + i * 9}%`, opacity: i % 2 === 0 ? 0.22 : 0.1 }} />
-        ))}
-      </div>
+      <span className={styles.glow} />
+      <span className={styles.book}>
+        <span className={styles.cover} style={{ backgroundColor: card.color }}>
+          {card.imageUrl && (
+            <img className={styles.img} src={card.imageUrl} alt="" loading="lazy" draggable={false} />
+          )}
+          <span className={styles.imageShade} />
+          <span className={styles.titleShade} />
+          <span className={styles.spine} />
+          <span className={styles.rim} />
+          <span className={styles.genrePill}>
+            <span className={styles.genre}>{card.genreLabel}</span>
+          </span>
+          <CoverTitle title={card.title} />
+        </span>
+        <span className={styles.pageBlock} aria-hidden>
+          {Array.from({ length: 9 }, (_, i) => (
+            <i key={i} style={{ top: `${8 + i * 9}%`, opacity: i % 2 === 0 ? 0.2 : 0.09 }} />
+          ))}
+        </span>
+      </span>
     </button>
   );
 }

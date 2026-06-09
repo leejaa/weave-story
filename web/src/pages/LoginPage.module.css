@@ -1,44 +1,133 @@
-.root {
+.screen {
+  position: relative;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-paper);
-  padding: 0 var(--space-6);
-  padding-top: calc(var(--safe-top) + var(--space-12));
-  padding-bottom: calc(var(--safe-bottom) + var(--space-8));
+  min-height: 0;
+  overflow: hidden;
+  background: #0d0b10;
 }
 
-.hero {
-  flex: 1;
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 6, 12, 0.55);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
+  padding: calc(var(--safe-top) + 64px) 32px calc(var(--safe-bottom) + 40px);
+}
+
+/* 상단 브랜드 */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 64px;
+}
+
+.diamond {
+  width: 10px;
+  height: 10px;
+  background: #c8b8ce;
+  transform: rotate(45deg);
+}
+
+.wordmark {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: rgba(237, 232, 240, 0.3);
+}
+
+/* 헤드라인 */
+.headline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .title {
   font-family: var(--font-serif);
-  font-size: var(--size-4xl);
   font-weight: 600;
-  color: var(--color-ink);
-  letter-spacing: -0.5px;
+  font-size: 32px;
+  letter-spacing: 0.3px;
+  color: #ede8f0;
+  text-align: center;
 }
 
 .subtitle {
-  font-family: var(--font-sans);
-  font-size: var(--size-md);
-  color: var(--color-ink-soft);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 27px;
+  color: rgba(237, 232, 240, 0.55);
+  text-align: center;
 }
 
-.bottom {
+.spacer {
+  flex: 1;
+}
+
+/* 하단 액션 */
+.actions {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  align-items: center;
+  gap: 12px;
 }
 
 .error {
+  font-size: 13px;
+  color: #d97768;
   text-align: center;
-  color: var(--color-error);
-  font-size: var(--size-sm);
+}
+
+.tossBtn {
+  width: 100%;
+  height: 52px;
+  border-radius: 10px;
+  background: #3182f6;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s, transform 0.05s;
+}
+
+.tossBtn:active:not(:disabled) {
+  transform: scale(0.99);
+  opacity: 0.92;
+}
+
+.tossBtn:disabled {
+  opacity: 0.6;
+}
+
+.legal {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(237, 232, 240, 0.3);
+  text-align: center;
+  padding: 0 16px;
+  margin-top: 4px;
 }

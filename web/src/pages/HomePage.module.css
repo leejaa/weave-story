@@ -3,7 +3,7 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  background: #0b0708;
+  background: #0d0b10;
 }
 
 .content {
@@ -14,7 +14,7 @@
   flex-direction: column;
 }
 
-/* 실제 앱처럼 헤드라인 바로 아래(상단부)에 레일 배치, 하단은 분위기용 여백 */
+/* 헤드라인 바로 아래 상단부에 레일, 하단은 분위기용 여백 */
 .railWrap {
   margin-top: 22px;
 }

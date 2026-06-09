@@ -3,8 +3,7 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background:
-    radial-gradient(120% 80% at 50% 18%, #241a14 0%, #160f0c 46%, #0b0708 100%);
+  background: #0d0b10; /* 비디오 첫 페인트 전 잠깐 보이는 색 */
 }
 
 .video {
@@ -15,31 +14,28 @@
   object-fit: cover;
 }
 
-/* 책상 위 촛불 같은 따뜻한 중앙 글로우 */
-.glow {
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  width: 460px;
-  height: 460px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(214, 158, 78, 0.22), transparent 62%);
-  filter: blur(8px);
-}
-
-/* 전체 가독성 스크림 */
+/* 영상 위 가독성 스크림 */
 .scrim {
   position: absolute;
   inset: 0;
   background: rgba(10, 8, 12, 0.42);
 }
 
-/* 하단 바닥 페이드 */
-.floor {
+/* 하단 2단 페이드 */
+.floor1 {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 240px;
-  background: linear-gradient(180deg, transparent, rgba(4, 3, 6, 0.55));
+  height: 220px;
+  background: rgba(8, 6, 10, 0.26);
+}
+
+.floor2 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 96px;
+  background: rgba(4, 3, 6, 0.5);
 }

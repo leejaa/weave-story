@@ -1,0 +1,23 @@
+.wrap {
+  position: absolute;
+  left: 22px;
+  right: 12px;
+  bottom: 22px;
+  transform: rotate(-1deg);
+}
+
+.title {
+  display: block;
+  font-family: var(--font-cover); /* Jua */
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 30px;
+  color: #fffaf0;
+  text-align: left;
+  white-space: pre-line;
+  /* 3겹(heavy black + warm gold + drop) 그림자를 text-shadow 다중 레이어로 근사 */
+  text-shadow:
+    2px 3px 5px rgba(0, 0, 0, 0.72),
+    0 4px 8px rgba(0, 0, 0, 0.82),
+    -1px -1px 3px rgba(255, 230, 166, 0.44);
+}
