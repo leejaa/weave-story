@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, getToken } from '@/lib/api';
+import { queryKeys } from '@/lib/query-keys';
 import type { SampleCardData } from '@/lib/types';
 import { MOCK_SAMPLE_CARDS } from './cards.mock';
 
@@ -21,7 +22,7 @@ async function fetchSampleCards(): Promise<SampleCardData[]> {
 
 export function useSampleCards() {
   return useQuery({
-    queryKey: ['sample-cards'],
+    queryKey: queryKeys.sampleCards(),
     queryFn: fetchSampleCards,
     staleTime: 30 * 60 * 1000,
     initialData: MOCK_SAMPLE_CARDS, // 첫 페인트부터 카드가 보이도록
