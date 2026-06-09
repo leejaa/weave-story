@@ -5,5 +5,6 @@ export const MEDIA = {
   loginVideo: `${R2}/videos/login-bg.mp4`,
   homeVideo: `${R2}/videos/home-bg.mp4`,
   setupBg: `${R2}/setup/story-prompt-paper-centered.png`,
+  openBookScene: `${R2}/home/open-book-scene.png`,
   cover: (key: string) => `${R2}/covers/${key}.png`,
 };

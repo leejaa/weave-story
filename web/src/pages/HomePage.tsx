@@ -11,8 +11,8 @@ export function HomePage() {
   const { data: cards } = useSampleCards();
 
   const handleSelect = (card: SampleCardData) => {
-    // 카드 선택 → 셋업 화면으로 프롬프트 전달 (Task 5에서 입력/생성 처리)
-    navigate('/setup', { state: { prompt: card.prompt, card } });
+    // 카드 선택 → 펼친 책 미리보기(중간 화면) → 탭 → 셋업
+    navigate('/preview', { state: { card } });
   };
 
   return (

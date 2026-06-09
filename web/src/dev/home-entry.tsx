@@ -7,6 +7,7 @@ import '@/styles/global.css';
 import { AnimatedRoutes } from '@/components/nav/AnimatedRoutes';
 import { HomePage } from '@/pages/HomePage';
 import { StoriesPage } from '@/pages/StoriesPage';
+import { PreviewPage } from '@/pages/PreviewPage';
 import { SetupPage } from '@/pages/SetupPage';
 import { ReadingPage } from '@/pages/ReadingPage';
 import { LoginPage } from '@/pages/LoginPage';
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
         <AnimatedRoutes>
           <Route path="/" element={<HomePage />} />
           <Route path="/stories" element={<StoriesPage />} />
+          <Route path="/preview" element={<PreviewPage />} />
           <Route path="/setup" element={<SetupPage />} />
           <Route path="/reading/:threadId" element={<ReadingPage />} />
           <Route path="/login" element={<LoginPage onLogin={async () => {}} />} />

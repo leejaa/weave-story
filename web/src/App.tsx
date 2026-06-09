@@ -7,6 +7,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { AnimatedRoutes } from '@/components/nav/AnimatedRoutes';
 import { HomePage } from '@/pages/HomePage';
 import { StoriesPage } from '@/pages/StoriesPage';
+import { PreviewPage } from '@/pages/PreviewPage';
 import { SetupPage } from '@/pages/SetupPage';
 import { ReadingPage } from '@/pages/ReadingPage';
 
@@ -23,6 +24,7 @@ function AppRoutes() {
     <AnimatedRoutes>
       <Route path="/" element={<HomePage />} />
       <Route path="/stories" element={<StoriesPage />} />
+      <Route path="/preview" element={<PreviewPage />} />
       <Route path="/setup" element={<SetupPage />} />
       <Route path="/reading/:threadId" element={<ReadingPage />} />
       {/* Task 7~10에서 라우트 추가 예정 */}
