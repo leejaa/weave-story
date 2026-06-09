@@ -11,3 +11,47 @@ export type SampleCardData = {
   prompts?: string[];
   displayOrder: number;
 };
+
+export type Language = 'en' | 'ko' | 'ja';
+
+/** 이야기 생성 (POST /api/stories) */
+export type CreateStoryRequest = {
+  prompt: string;
+  estimatedChapters: number;
+  language: Language;
+};
+export type CreateStoryResponse = { threadId: string };
+
+/** 챕터/스레드 (GET /api/threads/:id) */
+export type ChapterStatus = 'generating' | 'ready' | 'failed';
+export type ChapterOption = { index: number; text: string };
+
+export type Chapter = {
+  id: string;
+  threadId: string;
+  chapterNumber: number;
+  title: string | null;
+  content: string | null;
+  imageUrl: string | null;
+  options: ChapterOption[] | null;
+  situation: string | null;
+  question: string | null;
+  status: ChapterStatus;
+  createdAt: string;
+};
+
+export type ThreadDetail = {
+  threadId: string;
+  status: string;
+  currentChapter: number;
+  progress: string;
+  lastReadAt: string;
+  storyId: string;
+  title: string | null;
+  genre: string | null;
+  mood: string | null;
+  coverImageUrl: string | null;
+  estimatedChapters: number;
+  chapters: Chapter[];
+  interventions: unknown[];
+};

@@ -1,0 +1,32 @@
+.button {
+  align-self: flex-end;
+  min-height: 48px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 2px;
+  border-bottom: 1.5px solid;
+  background: none;
+}
+
+.active {
+  border-bottom-color: var(--color-thread);
+  color: var(--color-thread);
+}
+
+.inactive {
+  border-bottom-color: rgba(92, 71, 45, 0.2);
+  color: rgba(71, 57, 37, 0.42);
+  cursor: not-allowed;
+}
+
+.pending {
+  opacity: 0.72;
+}
+
+.label {
+  font-family: var(--font-cover); /* Jua */
+  font-size: 17px;
+}
