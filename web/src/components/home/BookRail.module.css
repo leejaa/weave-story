@@ -1,0 +1,18 @@
+.rail {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 18px calc(var(--safe-right) + 26px) 34px calc(var(--safe-left) + 26px);
+  scroll-snap-type: x mandatory;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rail > * {
+  scroll-snap-align: start;
+}

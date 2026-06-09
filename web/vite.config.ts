@@ -16,5 +16,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    rollupOptions: {
+      input: {
+        // 실제 앱 진입점 (토스 로그인 게이트)
+        main: path.resolve(__dirname, 'index.html'),
+        // 인증 우회 미리보기 페이지 — 배포 URL에서 진행상황 바로 확인용
+        home: path.resolve(__dirname, 'home.html'),
+        gallery: path.resolve(__dirname, 'gallery.html'),
+      },
+    },
   },
 });

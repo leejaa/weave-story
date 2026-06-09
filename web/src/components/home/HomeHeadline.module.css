@@ -1,0 +1,11 @@
+.headline {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.36;
+  color: rgba(245, 240, 232, 0.96);
+  white-space: pre-line;
+  letter-spacing: -0.2px;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+  padding: calc(var(--safe-top) + 28px) 28px 0;
+}

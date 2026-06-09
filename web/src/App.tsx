@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LoadingPage } from '@/pages/LoadingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { HomePage } from '@/pages/HomePage';
+import { SetupPage } from '@/pages/SetupPage';
 
 function AppRoutes() {
   const { state, login } = useAuth();
@@ -18,7 +19,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      {/* Task 4~10에서 라우트 추가 예정 */}
+      <Route path="/setup" element={<SetupPage />} />
+      {/* Task 6~10에서 라우트 추가 예정 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
