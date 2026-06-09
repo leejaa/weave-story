@@ -4,6 +4,7 @@ import { queryClient } from '@/lib/query-client';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingPage } from '@/pages/LoadingPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { BookExpandProvider } from '@/features/expand/BookExpand';
 import { AnimatedRoutes } from '@/components/nav/AnimatedRoutes';
 import { HomePage } from '@/pages/HomePage';
 import { StoriesPage } from '@/pages/StoriesPage';
@@ -37,7 +38,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppRoutes />
+        <BookExpandProvider>
+          <AppRoutes />
+        </BookExpandProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

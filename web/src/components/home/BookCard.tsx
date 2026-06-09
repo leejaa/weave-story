@@ -1,11 +1,13 @@
+import { useRef } from 'react';
 import type { SampleCardData } from '@/lib/types';
+import type { ExpandRect } from '@/features/expand/BookExpand';
 import { CoverTitle } from './CoverTitle';
 import styles from './BookCard.module.css';
 
 type Props = {
   card: SampleCardData;
   index: number;
-  onSelect: (card: SampleCardData) => void;
+  onSelect: (card: SampleCardData, rect: ExpandRect | null) => void;
 };
 
 /**
@@ -13,15 +15,22 @@ type Props = {
  * slot 176×286, 표지(coverBase) + 책장(pageBlock 14), spine 24, rim 테두리, 장르 pill, Jua 제목, 글로우/펄스.
  */
 export function BookCard({ card, index, onSelect }: Props) {
+  const bookRef = useRef<HTMLSpanElement>(null);
+
+  const handleClick = () => {
+    const r = bookRef.current?.getBoundingClientRect();
+    onSelect(card, r ? { top: r.top, left: r.left, width: r.width, height: r.height } : null);
+  };
+
   return (
     <button
       className={styles.slot}
       style={{ animationDelay: `${index * 130}ms` }}
-      onClick={() => onSelect(card)}
+      onClick={handleClick}
       aria-label={card.title.replace(/\n/g, ' ')}
     >
       <span className={styles.glow} />
-      <span className={styles.book}>
+      <span className={styles.book} ref={bookRef}>
         <span className={styles.cover} style={{ backgroundColor: card.color }}>
           {card.imageUrl && (
             <img className={styles.img} src={card.imageUrl} alt="" loading="lazy" draggable={false} />

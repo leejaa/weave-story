@@ -28,13 +28,6 @@ const slide: Variants = {
   exit: (d: number) => ({ x: d > 0 ? '-28%' : '100%', transition: { duration: 0.26, ease: EASE } }),
 };
 
-/** 미리보기: 책이 펼쳐지듯 살짝 확대되며 페이드 인 */
-const expand: Variants = {
-  enter: { opacity: 0, scale: 1.05 },
-  center: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE } },
-  exit: { opacity: 0, scale: 1.02, transition: { duration: 0.2, ease: EASE } },
-};
-
 /** prefers-reduced-motion: transform 없이 빠른 페이드만 */
 const reduced: Variants = {
   enter: { opacity: 0 },
@@ -47,6 +40,5 @@ export function variantsFor(pathname: string, reduceMotion: boolean): Variants {
   if (reduceMotion) return reduced;
   if (pathname.startsWith('/reading')) return slide;
   if (pathname.startsWith('/setup')) return modalUp;
-  if (pathname.startsWith('/preview')) return expand;
-  return fade; // 탭(/, /stories)
+  return fade; // 탭(/, /stories) + /preview(hero 오버레이가 확대 담당)
 }
