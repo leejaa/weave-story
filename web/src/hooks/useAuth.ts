@@ -22,15 +22,10 @@ export function useAuth() {
     }
   }, []);
 
+  // 'loading' 으로 전환하지 않는다 → LoginPage 가 마운트된 채로 자체 로딩/에러를 관리(실패 시 에러 유지).
   const loginDemo = useCallback(async (code: string) => {
-    setState('loading');
-    try {
-      await loginWithDemo(code);
-      setState('authenticated');
-    } catch (e) {
-      setState('unauthenticated');
-      throw e;
-    }
+    await loginWithDemo(code); // 실패 시 throw → LoginPage 가 에러 표시
+    setState('authenticated');
   }, []);
 
   const logout = useCallback(() => {

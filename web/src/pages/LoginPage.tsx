@@ -14,9 +14,11 @@ type Props = {
 export function LoginPage({ onLogin, onDemoLogin }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [showCode, setShowCode] = useState(false);
   const [code, setCode] = useState('');
+
+  // 토스 앱 밖(브라우저)에선 토스 SDK 가 없으므로 '토스로 시작하기' → 리뷰어 코드 로그인으로 잇는다.
+  const useReviewer = !!onDemoLogin && !isInTossApp();
 
   const handleLogin = async () => {
     setLoading(true);
@@ -43,8 +45,12 @@ export function LoginPage({ onLogin, onDemoLogin }: Props) {
     }
   };
 
-  // 리뷰어 코드 로그인은 토스 앱 밖(브라우저)에서만 노출
-  const showReviewer = !!onDemoLogin && !isInTossApp();
+  // 메인 CTA 동작: 토스 앱=토스 로그인 / 브라우저=코드 입력 열기→로그인
+  const primary = !useReviewer
+    ? { label: '토스로 시작하기', action: handleLogin, disabled: loading }
+    : !showCode
+      ? { label: '토스로 시작하기', action: () => setShowCode(true), disabled: loading }
+      : { label: '로그인', action: handleDemoLogin, disabled: loading || !code.trim() };
 
   return (
     <div className={styles.screen}>
@@ -66,37 +72,25 @@ export function LoginPage({ onLogin, onDemoLogin }: Props) {
 
         <div className={styles.actions}>
           {error && <p className={styles.error}>{error}</p>}
-          <button className={styles.tossBtn} onClick={handleLogin} disabled={loading}>
-            {loading ? <Spinner size={20} tone="light" /> : '토스로 시작하기'}
-          </button>
-          <p className={styles.legal}>계속하면 서비스 약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다.</p>
 
-          {showReviewer &&
-            (showCode ? (
-              <div className={styles.reviewer}>
-                <input
-                  className={styles.codeInput}
-                  type="password"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleDemoLogin()}
-                  placeholder="리뷰어 코드"
-                  autoFocus
-                  disabled={loading}
-                />
-                <button
-                  className={styles.codeBtn}
-                  onClick={handleDemoLogin}
-                  disabled={loading || !code.trim()}
-                >
-                  확인
-                </button>
-              </div>
-            ) : (
-              <button className={styles.reviewerToggle} onClick={() => setShowCode(true)}>
-                리뷰어 코드로 로그인
-              </button>
-            ))}
+          {useReviewer && showCode && (
+            <input
+              className={styles.codeInput}
+              type="password"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleDemoLogin()}
+              placeholder="리뷰어 코드"
+              autoFocus
+              disabled={loading}
+            />
+          )}
+
+          <button className={styles.tossBtn} onClick={primary.action} disabled={primary.disabled}>
+            {loading ? <Spinner size={20} tone="light" /> : primary.label}
+          </button>
+
+          <p className={styles.legal}>계속하면 서비스 약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다.</p>
         </div>
       </div>
     </div>
