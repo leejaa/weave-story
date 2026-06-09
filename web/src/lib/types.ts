@@ -40,6 +40,16 @@ export type Chapter = {
   createdAt: string;
 };
 
+export type Intervention = {
+  id: string;
+  threadId: string;
+  chapterNumber: number;
+  type: 'choice' | 'free_input';
+  choiceIndex: number | null;
+  freeText: string | null;
+  createdAt: string;
+};
+
 export type ThreadDetail = {
   threadId: string;
   status: string;
@@ -53,5 +63,5 @@ export type ThreadDetail = {
   coverImageUrl: string | null;
   estimatedChapters: number;
   chapters: Chapter[];
-  interventions: unknown[];
+  interventions: Intervention[];
 };

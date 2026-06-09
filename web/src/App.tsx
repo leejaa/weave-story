@@ -8,6 +8,7 @@ import { TabLayout } from '@/components/nav/TabLayout';
 import { HomePage } from '@/pages/HomePage';
 import { StoriesPage } from '@/pages/StoriesPage';
 import { SetupPage } from '@/pages/SetupPage';
+import { ReadingPage } from '@/pages/ReadingPage';
 
 function AppRoutes() {
   const { state, login } = useAuth();
@@ -27,7 +28,8 @@ function AppRoutes() {
       </Route>
       {/* 탭바 없는 푸시 화면 */}
       <Route path="/setup" element={<SetupPage />} />
-      {/* Task 6~10에서 라우트 추가 예정 */}
+      <Route path="/reading/:threadId" element={<ReadingPage />} />
+      {/* Task 7~10에서 라우트 추가 예정 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

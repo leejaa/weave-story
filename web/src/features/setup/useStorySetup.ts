@@ -5,13 +5,10 @@ import { getToken, ApiError } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 import { postCreateStory } from './api';
 
-/** 데모(미인증) 상태에서 생성 시도 시 던지는 마커 에러 */
-class DemoUnavailableError extends Error {}
+/** 데모(미인증)에서 보여줄 목업 스레드 id */
+const DEMO_THREAD_ID = 'mock-rofan';
 
 function messageFor(error: unknown): string {
-  if (error instanceof DemoUnavailableError) {
-    return '미리보기에서는 실제 이야기 생성을 체험할 수 없어요. 토스 로그인 연동 후 가능해요.';
-  }
   if (error instanceof ApiError && error.status === 402) {
     return '크레딧이 부족해요. 충전 후 다시 시도해주세요.';
   }
@@ -29,10 +26,7 @@ export function useStorySetup(initialPrompt = '') {
   const [prompt, setPromptState] = useState(initialPrompt);
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      if (!getToken()) throw new DemoUnavailableError();
-      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: 10, language: 'ko' });
-    },
+    mutationFn: () => postCreateStory({ prompt: prompt.trim(), estimatedChapters: 10, language: 'ko' }),
     onSuccess: ({ threadId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.threads() });
       navigate(`/reading/${threadId}`);
@@ -48,6 +42,11 @@ export function useStorySetup(initialPrompt = '') {
 
   const submit = () => {
     if (!canSubmit || mutation.isPending) return;
+    // 데모(미인증): 실제 생성 대신 목업 읽기 화면으로 이동해 전체 플로우 체험
+    if (!getToken()) {
+      navigate(`/reading/${DEMO_THREAD_ID}`);
+      return;
+    }
     mutation.mutate();
   };
 
