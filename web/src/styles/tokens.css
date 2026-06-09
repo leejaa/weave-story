@@ -12,6 +12,8 @@
   --color-gold:       #c49a3c;
   --color-gold-soft:  rgba(196, 154, 60, 0.15);
   --color-error:      #c0392b;
+  --color-ember:      #b54b3c;  /* 로그아웃 등 경고 액션 (Expo c.ember) */
+  --color-rule:       #ddd7cb;  /* 구분선/비활성 테두리 (Expo c.rule) */
 
   /* ── Typography ── 기존 Expo 앱 constants/colors.ts FONTS 와 1:1 매핑.
      한글은 Expo와 동일하게 시스템 한글 폰트(Apple SD Gothic Neo / Noto Sans CJK)로 폴백 ── */

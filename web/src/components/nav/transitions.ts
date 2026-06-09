@@ -39,6 +39,7 @@ const reduced: Variants = {
 export function variantsFor(pathname: string, reduceMotion: boolean): Variants {
   if (reduceMotion) return reduced;
   if (pathname.startsWith('/reading')) return slide;
+  if (pathname.startsWith('/profile')) return slide; // 내 이야기에서 push
   if (pathname.startsWith('/setup')) return modalUp;
   return fade; // 탭(/, /stories) + /preview(hero 오버레이가 확대 담당)
 }

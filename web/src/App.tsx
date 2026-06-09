@@ -11,6 +11,7 @@ import { StoriesPage } from '@/pages/StoriesPage';
 import { PreviewPage } from '@/pages/PreviewPage';
 import { SetupPage } from '@/pages/SetupPage';
 import { ReadingPage } from '@/pages/ReadingPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 
 function AppRoutes() {
   const { state, login } = useAuth();
@@ -28,7 +29,7 @@ function AppRoutes() {
       <Route path="/preview" element={<PreviewPage />} />
       <Route path="/setup" element={<SetupPage />} />
       <Route path="/reading/:threadId" element={<ReadingPage />} />
-      {/* Task 7~10에서 라우트 추가 예정 */}
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </AnimatedRoutes>
   );

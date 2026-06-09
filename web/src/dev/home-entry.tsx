@@ -11,6 +11,7 @@ import { StoriesPage } from '@/pages/StoriesPage';
 import { PreviewPage } from '@/pages/PreviewPage';
 import { SetupPage } from '@/pages/SetupPage';
 import { ReadingPage } from '@/pages/ReadingPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { LoginPage } from '@/pages/LoginPage';
 
 // 인증 게이트를 우회해 홈/셋업/로그인 화면만 미리보는 개발용 엔트리 (프로덕션 미포함)
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/preview" element={<PreviewPage />} />
           <Route path="/setup" element={<SetupPage />} />
           <Route path="/reading/:threadId" element={<ReadingPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage onLogin={async () => {}} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </AnimatedRoutes>

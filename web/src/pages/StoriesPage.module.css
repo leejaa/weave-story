@@ -29,6 +29,18 @@
   color: var(--color-ink);
 }
 
+.profileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  margin: 0 calc(var(--space-2) * -1);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
 /* ── 섹션 라벨 ── */
 .sectionLabel {
   font-family: var(--font-mono);

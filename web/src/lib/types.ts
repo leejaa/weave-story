@@ -50,6 +50,15 @@ export type Intervention = {
   createdAt: string;
 };
 
+/** 내 계정/크레딧 (GET /api/me) — 기존 앱 MeResult 와 동일 */
+export type MeResult = {
+  id: string;
+  email: string | null;
+  name: string | null;
+  avatarUrl: string | null;
+  credits: number;
+};
+
 /** 내 이야기 목록 1건 (GET /api/threads) — 기존 앱 ThreadWithStory 와 동일 */
 export type ThreadListItem = {
   threadId: string;

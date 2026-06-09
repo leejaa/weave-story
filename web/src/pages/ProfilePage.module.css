@@ -1,0 +1,120 @@
+.root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--safe-top) + var(--space-3)) var(--space-6)
+    calc(var(--safe-bottom) + var(--space-6));
+}
+
+.back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 calc(var(--space-2) * -1) var(--space-8);
+  padding: var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
+/* ── 섹션 ── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* 계정 */
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+.avatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ink);
+}
+.avatarLetter {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--color-paper);
+}
+.displayName {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--size-md);
+  color: var(--color-ink);
+}
+.email {
+  font-family: var(--font-mono);
+  font-size: var(--size-sm);
+  letter-spacing: 0.2px;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 라벨 (요금제 등) */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.planDesc {
+  font-family: var(--font-sans);
+  font-size: var(--size-sm);
+  color: var(--color-ink-soft);
+}
+
+/* ── 액션 ── */
+.signOut {
+  align-self: flex-start;
+  margin-top: var(--space-8);
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--size-md);
+  color: var(--color-ember);
+  cursor: pointer;
+}
+.delete {
+  align-self: flex-start;
+  margin-top: var(--space-5);
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--size-sm);
+  color: var(--color-ink-faint);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.signOut:disabled,
+.delete:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
