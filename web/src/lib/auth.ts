@@ -19,7 +19,7 @@ const TOKEN_KEY = 'ws_access_token';
 const DEMO_KEY = 'ws_demo';
 
 /** 토스 앱 WebView 환경 추정. 아니면(브라우저) 데모로 통과한다. */
-function isInTossApp(): boolean {
+export function isInTossApp(): boolean {
   try {
     return typeof navigator !== 'undefined' && /toss/i.test(navigator.userAgent);
   } catch {
@@ -43,6 +43,19 @@ export function restoreAuth(): 'token' | 'demo' | null {
   return null;
 }
 
+/**
+ * 데모(리뷰어) 로그인 — 기존 앱 signInWithDemo 와 동일.
+ * 코드를 런타임에 입력받아 서버에서 진짜 JWT 를 발급받는다(번들에 코드 미포함).
+ * 토스 인증서 발급 전, 인증이 필요한 전체 플로우(이야기 생성/읽기/내 이야기/프로필)를 실서버로 검증하는 용도.
+ */
+export async function loginWithDemo(code: string): Promise<void> {
+  const { accessToken } = await api.post<{ accessToken: string; refreshToken: string }>(
+    '/api/auth/demo',
+    { code: code.trim() },
+  );
+  saveToken(accessToken);
+}
+
 export async function loginWithToss(): Promise<void> {
   if (!isInTossApp()) {
     // 브라우저 미리보기: 토스 SDK 없음 → 데모로 게이트 통과 (토큰 없음 = 목업 모드)
@@ -51,7 +64,7 @@ export async function loginWithToss(): Promise<void> {
   }
 
   const { authorizationCode, referrer } = await appLogin();
-  const { accessToken } = await api.post<{ accessToken: string }>('/auth/toss', {
+  const { accessToken } = await api.post<{ accessToken: string }>('/api/auth/toss', {
     authorizationCode,
     referrer,
   });

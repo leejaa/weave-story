@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { restoreAuth, loginWithToss, logout as doLogout } from '@/lib/auth';
+import { restoreAuth, loginWithToss, loginWithDemo, logout as doLogout } from '@/lib/auth';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -22,10 +22,21 @@ export function useAuth() {
     }
   }, []);
 
+  const loginDemo = useCallback(async (code: string) => {
+    setState('loading');
+    try {
+      await loginWithDemo(code);
+      setState('authenticated');
+    } catch (e) {
+      setState('unauthenticated');
+      throw e;
+    }
+  }, []);
+
   const logout = useCallback(() => {
     doLogout();
     setState('unauthenticated');
   }, []);
 
-  return { state, login, logout };
+  return { state, login, loginDemo, logout };
 }

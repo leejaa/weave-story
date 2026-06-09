@@ -14,12 +14,12 @@ import { ReadingPage } from '@/pages/ReadingPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 
 function AppRoutes() {
-  const { state, login } = useAuth();
+  const { state, login, loginDemo } = useAuth();
 
   if (state === 'loading') return <LoadingPage />;
 
   if (state === 'unauthenticated') {
-    return <LoginPage onLogin={login} />;
+    return <LoginPage onLogin={login} onDemoLogin={loginDemo} />;
   }
 
   return (

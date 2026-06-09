@@ -2,7 +2,7 @@
  * API 클라이언트 — 기존 CF Worker API를 재사용
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://weave-story-api.leejahun.workers.dev';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://weave-story-api.leejahun0.workers.dev';
 
 let _token: string | null = null;
 
