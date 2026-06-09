@@ -1,0 +1,55 @@
+name: Deploy web (Cloudflare Pages)
+
+# web/ (앱인토스 웹앱) 변경이 main에 푸시되면 빌드 후 Cloudflare Pages에 배포한다.
+# 프로덕션 URL은 고정: https://weave-story-web.pages.dev
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch: # 수동 실행도 허용
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: d82edb9e0df87cd8b607a0df0bca1b4b
+          workingDirectory: web
+          command: pages deploy dist --project-name=weave-story-web --branch=main
+
+      - name: Print deployment URL
+        run: |
+          {
+            echo "### 🌎 Cloudflare Pages 배포 완료"
+            echo ""
+            echo "| | URL |"
+            echo "|---|---|"
+            echo "| 프로덕션(고정) | https://weave-story-web.pages.dev |"
+            echo "| 이번 배포 | ${{ steps.deploy.outputs.deployment-url }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

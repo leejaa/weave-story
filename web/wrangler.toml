@@ -1,0 +1,7 @@
+name = "weave-story-web"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "dist"
+
+[env.production]
+# CF Pages는 자동으로 VITE_* 환경변수를 빌드에 주입
+# 대시보드에서 VITE_API_URL 설정 필요

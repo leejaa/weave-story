@@ -1,0 +1,25 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px var(--space-3);
+  font-size: var(--size-xs);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.thread {
+  background: var(--color-thread-soft);
+  color: var(--color-thread);
+}
+
+.gold {
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+}
+
+.neutral {
+  background: var(--color-paper-soft);
+  color: var(--color-ink-soft);
+}

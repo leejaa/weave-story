@@ -1,0 +1,21 @@
+.card {
+  background: var(--color-paper-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  width: 100%;
+}
+
+.padded {
+  padding: var(--space-5);
+}
+
+.interactive {
+  transition: transform 0.08s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.interactive:active {
+  transform: scale(0.99);
+  box-shadow: var(--shadow-modal);
+}
