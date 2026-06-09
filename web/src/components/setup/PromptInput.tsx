@@ -15,24 +15,22 @@ const CloseCircle = () => (
   </svg>
 );
 
-/** 룰드 페이퍼 위 멀티라인 프롬프트 입력 (story-prompt-input-field.tsx 동일: Jua, 라인 36px). */
+/**
+ * 룰드 페이퍼 멀티라인 프롬프트 입력.
+ * 라인은 textarea 배경(34px 반복 = line-height)으로 그려, 글자 줄과 항상 정확히 정렬되고
+ * 텍스트가 스크롤되면 라인도 함께 움직인다(background-attachment: local).
+ */
 export function PromptInput({ value, placeholder, onChange }: Props) {
   const hasValue = value.trim().length > 0;
   return (
     <div className={styles.sheet}>
-      <div className={styles.ruleStack} aria-hidden>
-        <span className={styles.rule} />
-        <span className={styles.rule} />
-        <span className={styles.rule} />
-        <span className={styles.rule} />
-      </div>
       <textarea
         className={styles.input}
         style={{ paddingRight: hasValue ? 30 : 0 }}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        rows={4}
+        rows={5}
       />
       {hasValue && (
         <button className={styles.clearBtn} onClick={() => onChange('')} aria-label="지우기">
