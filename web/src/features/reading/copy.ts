@@ -8,10 +8,18 @@ export const READING_COPY = {
     inputPlaceholder: '원하는 행동을 직접 입력하세요…',
     continue: '이야기 계속하기',
     entryKicker: '선택의 순간',
+    openChoice: '선택하러 가기',
+    yourChoice: '당신의 선택',
   },
   generating: {
     title: '당신의 책을 펼치고 있어요',
     body: '다음 장면이 페이지 위에 자리 잡고 있어요.',
     estimate: '약 1-2분 소요',
+  },
+  error: {
+    title: '이야기를 펼치지 못했어요',
+    body: '다음 장을 짓는 도중 문제가 생겼어요.\n크레딧은 그대로 있으니 다시 시도해 주세요.',
+    retry: '다시 시도',
+    back: '돌아가기',
   },
 } as const;

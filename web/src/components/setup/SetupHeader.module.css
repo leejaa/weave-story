@@ -1,4 +1,6 @@
 .header {
+  position: relative;
+  z-index: 1;
   padding: calc(var(--safe-top) + 12px) 18px 8px;
   flex-shrink: 0;
 }

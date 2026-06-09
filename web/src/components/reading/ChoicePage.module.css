@@ -5,54 +5,50 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  padding: 28px 22px calc(var(--safe-bottom) + 28px);
+  gap: 16px;
+  padding: 40px 24px calc(var(--safe-bottom) + 40px);
   background: var(--color-paper);
 }
 
 .top {
-  margin-bottom: 22px;
-}
-
-.kicker {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  color: var(--color-ink-faint);
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .situation {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 15px;
-  line-height: 24px;
+  line-height: 26px;
   color: var(--color-ink-soft);
-  margin-bottom: 12px;
 }
 
 .question {
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-serif);
+  font-weight: 600;
   font-size: 24px;
-  line-height: 1.36;
+  line-height: 32px;
+  letter-spacing: -0.3px;
   color: var(--color-ink);
 }
 
 .choices {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .tile {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 14px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 14px 14px 15px;
   text-align: left;
   border: 1px solid var(--color-rule);
-  border-left-width: 1px;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: var(--color-paper);
   transition: opacity 0.15s, border-color 0.15s, background 0.15s;
 }
@@ -69,15 +65,12 @@
 
 .marker {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 13px;
+  margin-top: 2px;
+  padding: 3px 6px;
+  border-radius: 4px;
   background: var(--color-paper-soft);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 11px;
   color: var(--color-ink-faint);
 }
 
@@ -87,17 +80,17 @@
 }
 
 .tileText {
+  flex: 1;
   font-family: var(--font-serif);
-  font-size: 16px;
-  line-height: 1.4;
+  font-size: 17px;
+  line-height: 24px;
   color: var(--color-ink);
 }
 
 .divider {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 20px 0 14px;
+  gap: 8px;
 }
 
 .line {
@@ -107,22 +100,24 @@
 }
 
 .dividerLabel {
-  font-family: var(--font-sans);
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: var(--color-ink-faint);
 }
 
 .input {
   width: 100%;
-  min-height: 56px;
+  min-height: 100px;
   resize: none;
   padding: 12px 14px;
   border: 1px solid var(--color-rule);
-  border-radius: var(--radius-md);
-  background: var(--color-paper-soft);
-  font-family: var(--font-serif);
-  font-size: 16px;
-  line-height: 1.5;
+  border-radius: 12px;
+  background: var(--color-paper-raised);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 22px;
   color: var(--color-ink);
   outline: none;
 }
@@ -136,17 +131,18 @@
 }
 
 .cta {
-  margin-top: 20px;
-  height: 52px;
+  margin-top: 4px;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-full);
+  border-radius: 14px;
   background: var(--color-paper-soft);
   color: var(--color-ink-faint);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
+  letter-spacing: 0.2px;
   transition: background 0.15s, color 0.15s;
 }
 

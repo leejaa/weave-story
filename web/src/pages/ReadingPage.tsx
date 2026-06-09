@@ -5,8 +5,11 @@ import { buildPages, type ReadingPage as RPage } from '@/features/reading/build-
 import { ChapterRibbon } from '@/components/reading/ChapterRibbon';
 import { ReadingPager } from '@/components/reading/ReadingPager';
 import { TextPage } from '@/components/reading/TextPage';
+import { ChoiceEntryPage } from '@/components/reading/ChoiceEntryPage';
 import { ChoicePage } from '@/components/reading/ChoicePage';
+import { InterventionPage } from '@/components/reading/InterventionPage';
 import { GeneratingPage } from '@/components/reading/GeneratingPage';
+import { ChapterErrorPage } from '@/components/reading/ChapterErrorPage';
 import { EndPage } from '@/components/reading/EndPage';
 import { Spinner } from '@/components/ui';
 import styles from './ReadingPage.module.css';
@@ -14,7 +17,7 @@ import styles from './ReadingPage.module.css';
 export function ReadingPage() {
   const navigate = useNavigate();
   const { threadId = '' } = useParams();
-  const { thread, isLoading, choosing, choose } = useReading(threadId);
+  const { thread, isLoading, choosing, retrying, choose, retry } = useReading(threadId);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
@@ -55,10 +58,12 @@ export function ReadingPage() {
   const visiblePage = pages[visibleIndex];
   const ribbonChapter = visiblePage && 'chapterNumber' in visiblePage ? visiblePage.chapterNumber : curChapter;
 
-  const renderPage = (p: RPage) => {
+  const renderPage = (p: RPage, i: number) => {
     switch (p.type) {
       case 'text':
         return <TextPage title={p.title} content={p.content} pageIndex={p.pageIndex} totalPages={p.totalPages} />;
+      case 'entry':
+        return <ChoiceEntryPage situation={p.situation} question={p.question} onOpen={() => setTargetIndex(i + 1)} />;
       case 'choice':
         return (
           <ChoicePage
@@ -69,8 +74,12 @@ export function ReadingPage() {
             onChoose={(sel) => choose(p.chapterNumber, sel)}
           />
         );
+      case 'intervention':
+        return <InterventionPage text={p.text} />;
       case 'generating':
         return <GeneratingPage />;
+      case 'error':
+        return <ChapterErrorPage onRetry={retry} onBack={() => navigate(-1)} retrying={retrying} />;
       case 'end':
         return <EndPage />;
       default:
@@ -89,7 +98,7 @@ export function ReadingPage() {
       <div className={styles.content} ref={contentRef}>
         {dims.width > 0 && (
           <ReadingPager
-            slides={pages.map(renderPage)}
+            slides={pages.map((p, i) => renderPage(p, i))}
             width={dims.width}
             targetIndex={targetIndex}
             onVisibleChange={setVisibleIndex}

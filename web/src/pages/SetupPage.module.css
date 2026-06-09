@@ -5,9 +5,42 @@
   display: flex;
   flex-direction: column;
   background: var(--color-paper);
+  overflow: hidden;
+}
+
+/* 배경: 책상/종이 이미지 + 따뜻한 워시 + 상단 가독성 워시 (story-prompt-background.tsx 동일) */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.bgImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.warmWash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 248, 232, 0.06);
+}
+
+.readabilityWash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38%;
+  background: rgba(255, 250, 239, 0.26);
 }
 
 .scroll {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
   overflow-y: auto;

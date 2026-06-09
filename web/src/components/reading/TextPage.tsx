@@ -18,9 +18,7 @@ export function TextPage({ title, content, pageIndex, totalPages }: Props) {
         {isFirst && title && <div className={styles.chapterTitle}>{title}</div>}
         <div className={styles.prose}>
           {paragraphs.map((p, i) => (
-            <p key={i} className={isFirst && i === 0 ? styles.drop : undefined}>
-              {p}
-            </p>
+            <p key={i}>{p}</p>
           ))}
         </div>
       </div>

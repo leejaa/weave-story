@@ -1,8 +1,9 @@
 /* Weave Story 디자인 토큰 — 기존 앱과 동일한 팔레트 */
 :root {
   /* ── Colors ── */
-  --color-paper:      #f5f0e8;
-  --color-paper-soft: #ede7d9;
+  --color-paper:        #f5f0e8;
+  --color-paper-soft:   #ede7d9;
+  --color-paper-raised: #faf7f2;
   --color-ink:        #2a1f14;
   --color-ink-soft:   rgba(42, 31, 20, 0.6);
   --color-ink-faint:  rgba(42, 31, 20, 0.35);

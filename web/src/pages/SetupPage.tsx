@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { MEDIA } from '@/lib/media';
 import { SETUP_COPY } from '@/features/setup/copy';
 import { useStorySetup } from '@/features/setup/useStorySetup';
 import { SetupHeader } from '@/components/setup/SetupHeader';
@@ -17,6 +18,11 @@ export function SetupPage() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.bg} aria-hidden>
+        <img className={styles.bgImg} src={MEDIA.setupBg} alt="" />
+        <div className={styles.warmWash} />
+        <div className={styles.readabilityWash} />
+      </div>
       <SetupHeader onBack={() => navigate('/')} />
 
       <div className={styles.scroll}>

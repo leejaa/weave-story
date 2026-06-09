@@ -32,7 +32,6 @@ export function ChoicePage({ situation, question, options, choosing, onChoose }:
   return (
     <div className={styles.page}>
       <div className={styles.top}>
-        <div className={styles.kicker}>{READING_COPY.choice.entryKicker}</div>
         {situation && <p className={styles.situation}>{situation}</p>}
         <h2 className={styles.question}>{question || READING_COPY.choice.defaultQuestion}</h2>
       </div>

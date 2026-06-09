@@ -26,7 +26,9 @@ export type UseReading = {
   isLoading: boolean;
   choosing: boolean;
   isInsufficientCredits: boolean;
+  retrying: boolean;
   choose: (chapterNumber: number, selection: ChoiceSelection) => void;
+  retry: () => void;
 };
 
 /**
@@ -113,7 +115,9 @@ export function useReading(threadId: string): UseReading {
       isLoading: query.isLoading,
       choosing: mutation.isPending,
       isInsufficientCredits: mutation.error instanceof ApiError && mutation.error.status === 402,
+      retrying: query.isFetching,
       choose: (chapterNumber, selection) => mutation.mutate({ chapterNumber, selection }),
+      retry: () => void query.refetch(),
     };
   }
 
@@ -122,6 +126,8 @@ export function useReading(threadId: string): UseReading {
     isLoading: false,
     choosing: mockChoosing,
     isInsufficientCredits: false,
+    retrying: false,
     choose: mockChoose,
+    retry: () => {},
   };
 }
