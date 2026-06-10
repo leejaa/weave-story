@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useReading } from '@/features/reading/useReading';
 import { buildPages, type ReadingPage as RPage } from '@/features/reading/build-pages';
@@ -19,19 +19,22 @@ export function ReadingPage() {
   const { threadId = '' } = useParams();
   const { thread, isLoading, choosing, retrying, choose, retry } = useReading(threadId);
 
-  const contentRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
   const [visibleIndex, setVisibleIndex] = useState(0);
   const [targetIndex, setTargetIndex] = useState(0);
 
-  useLayoutEffect(() => {
-    const el = contentRef.current;
+  // 콜백 ref: .content 가 (로딩 종료 후) 마운트되는 시점에 측정/관찰을 시작한다.
+  // useLayoutEffect([]) 는 로딩 중(.content 미존재) 1회만 돌아 측정이 영영 0으로 남는 문제를 방지.
+  const setContentEl = useCallback((el: HTMLDivElement | null) => {
+    observerRef.current?.disconnect();
+    observerRef.current = null;
     if (!el) return;
     const measure = () => setDims({ width: el.clientWidth, height: el.clientHeight });
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
+    observerRef.current = ro;
   }, []);
 
   const pages = useMemo(
@@ -95,7 +98,7 @@ export function ReadingPage() {
         totalChapters={thread.estimatedChapters}
         onBack={() => navigate(-1)}
       />
-      <div className={styles.content} ref={contentRef}>
+      <div className={styles.content} ref={setContentEl}>
         {dims.width > 0 && (
           <ReadingPager
             slides={pages.map((p, i) => renderPage(p, i))}
