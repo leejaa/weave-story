@@ -56,10 +56,18 @@ export async function loginWithDemo(code: string): Promise<void> {
   saveToken(accessToken);
 }
 
+/**
+ * ⚠️ TEMP — 토스 인증서 발급 전 임시 조치.
+ * 브라우저에서 '토스로 시작하기' → 코드 입력 없이 자동 리뷰어 로그인(실서버 세션).
+ * 데모 코드가 공개 번들에 노출되므로 임시 전용. 인증서 발급 후 이 분기와 상수를 제거하고
+ * 정식 토스 로그인으로 되돌릴 것. (코드 회전 시 ANDROID_SUBMISSION.md 동기화)
+ */
+const TEMP_AUTO_DEMO_CODE = 'weave-review-9f3k';
+
 export async function loginWithToss(): Promise<void> {
   if (!isInTossApp()) {
-    // 브라우저 미리보기: 토스 SDK 없음 → 데모로 게이트 통과 (토큰 없음 = 목업 모드)
-    sessionStorage.setItem(DEMO_KEY, '1');
+    // TEMP: 브라우저에선 리뷰어 코드 자동 로그인 → 실서버 토큰 발급
+    await loginWithDemo(TEMP_AUTO_DEMO_CODE);
     return;
   }
 

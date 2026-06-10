@@ -131,26 +131,3 @@
   padding: 0 16px;
   margin-top: 4px;
 }
-
-/* 리뷰어(데모) 코드 입력 — 브라우저에서 '토스로 시작하기' → 코드 입력 → 로그인 */
-.codeInput {
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(237, 232, 240, 0.22);
-  background: rgba(237, 232, 240, 0.08);
-  color: #ede8f0;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  letter-spacing: 1px;
-  text-align: center;
-}
-.codeInput::placeholder {
-  color: rgba(237, 232, 240, 0.35);
-  letter-spacing: 0;
-}
-.codeInput:focus {
-  outline: none;
-  border-color: rgba(49, 130, 246, 0.8);
-}

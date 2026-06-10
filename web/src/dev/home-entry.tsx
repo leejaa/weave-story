@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/setup" element={<SetupPage />} />
           <Route path="/reading/:threadId" element={<ReadingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/login" element={<LoginPage onLogin={async () => {}} onDemoLogin={async () => {}} />} />
+          <Route path="/login" element={<LoginPage onLogin={async () => {}} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </AnimatedRoutes>
         </BookExpandProvider>
