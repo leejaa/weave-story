@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   background: var(--color-paper);
 }
 
@@ -14,49 +14,40 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
 }
 
-/* "weave" 이중 호 스피너 — 즉시 렌더(라이브러리 없음) */
-.weave {
-  animation: weave-rotate 1.4s linear infinite;
-}
-
-.track {
-  fill: none;
-  stroke: var(--color-thread-soft);
-  stroke-width: 3.2;
-}
-
-.arc {
-  fill: none;
+/* 책 외곽선/책등 — 항상 표시(정적) */
+.outline {
   stroke: var(--color-thread);
-  stroke-width: 3.2;
+  stroke-width: 2.2;
   stroke-linecap: round;
-  stroke-dasharray: 90, 150;
-  stroke-dashoffset: 0;
-  transform-origin: center;
-  animation: weave-dash 1.4s ease-in-out infinite;
+  stroke-linejoin: round;
 }
 
-@keyframes weave-rotate {
-  100% {
-    transform: rotate(360deg);
-  }
+/* 페이지 글줄 — 좌→우로 써졌다 지워지길 반복 */
+.write {
+  stroke: var(--color-thread);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.85;
+  animation: story-write 2.4s ease-in-out infinite;
 }
 
-@keyframes weave-dash {
+@keyframes story-write {
   0% {
-    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 1;
+  }
+  35% {
     stroke-dashoffset: 0;
   }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35;
+  70% {
+    stroke-dashoffset: 0;
   }
   100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124;
+    stroke-dashoffset: -1;
   }
 }
 
