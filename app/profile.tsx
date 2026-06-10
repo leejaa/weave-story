@@ -24,10 +24,13 @@ export default function ProfileScreen() {
   const { data: me } = useMe();
   const [showPaywall, setShowPaywall] = useState(false);
 
+  const credits = me?.credits ?? 0;
+
   const handlePaywallSuccess = useCallback(() => {
     setShowPaywall(false);
     queryClient.invalidateQueries({ queryKey: ['me'] });
   }, [queryClient]);
+
   const handleSignOut = () => {
     Alert.alert(t('signOut'), t('signOutConfirm'), [
       { text: t('cancel'), style: 'cancel' },
@@ -88,18 +91,23 @@ export default function ProfileScreen() {
 
       {/* Credits */}
       <View style={[styles.section, { borderBottomColor: c.rule }]}>
-        <Text style={[styles.label, { color: c.inkFaint }]}>{t('plan')}</Text>
-        <View style={styles.planRow}>
-          <Text style={[styles.planDesc, { color: c.inkSoft }]}>
-            {t('creditsRemaining', { count: me?.credits ?? 0 })}
+        <Text style={[styles.label, { color: c.inkFaint }]}>Credits</Text>
+        <View style={styles.creditBlock}>
+          <Text style={[styles.creditNumber, { color: credits === 0 ? c.ember : c.thread }]}>
+            {credits}
           </Text>
-          <Pressable
-            onPress={() => setShowPaywall(true)}
-            style={[styles.rechargeBtn, { backgroundColor: c.thread }]}
-            hitSlop={8}>
-            <Icon name="plus" size={14} color={c.paper} />
-            <Text style={[styles.rechargeText, { color: c.paper }]}>{t('recharge')}</Text>
-          </Pressable>
+          <View style={styles.creditFooter}>
+            <Text style={[styles.creditDesc, { color: c.inkSoft }]}>
+              {t('creditsRemaining', { count: credits })}
+            </Text>
+            <Pressable
+              onPress={() => setShowPaywall(true)}
+              style={[styles.rechargeBtn, { borderColor: c.thread }]}
+              hitSlop={8}>
+              <Icon name="plus" size={12} color={c.thread} />
+              <Text style={[styles.rechargeText, { color: c.thread }]}>{t('recharge')}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -153,21 +161,21 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24 },
   backBtn: { marginBottom: 28 },
   section: {
-    paddingVertical: 20,
+    paddingVertical: 22,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: 12,
+    gap: 10,
   },
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
   },
   avatarFallback: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarLetter: { fontFamily: FONTS.serifSemibold, fontSize: 22 },
-  displayName: { fontFamily: FONTS.sansSemibold, fontSize: SIZES.md },
+  avatarLetter: { fontFamily: FONTS.serifSemibold, fontSize: 26 },
+  displayName: { fontFamily: FONTS.serifSemibold, fontSize: SIZES.lg },
   email: { fontFamily: FONTS.mono, fontSize: SIZES.sm, letterSpacing: 0.2 },
   label: {
     fontFamily: FONTS.mono,
@@ -175,22 +183,28 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
-  planRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  planBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-    borderWidth: 1,
+  creditBlock: {
+    gap: 6,
   },
-  planBadgeText: { fontFamily: FONTS.sansMedium, fontSize: SIZES.sm },
-  planDesc: { fontFamily: FONTS.sans, fontSize: SIZES.sm },
+  creditNumber: {
+    fontFamily: FONTS.serifSemibold,
+    fontSize: 64,
+    lineHeight: 68,
+  },
+  creditFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  creditDesc: { fontFamily: FONTS.mono, fontSize: SIZES.sm },
   rechargeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 7,
     borderRadius: 20,
+    borderWidth: 1,
   },
   rechargeText: { fontFamily: FONTS.sansSemibold, fontSize: SIZES.sm },
   chips: { flexDirection: 'row', gap: 8 },
@@ -201,8 +215,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipText: { fontFamily: FONTS.sansMedium, fontSize: SIZES.sm },
-  signOutBtn: { marginTop: 28 },
+  signOutBtn: { marginTop: 32 },
   signOutText: { fontFamily: FONTS.sans, fontSize: SIZES.md },
-  deleteBtn: { marginTop: 18 },
+  deleteBtn: { marginTop: 20 },
   deleteText: { fontFamily: FONTS.sans, fontSize: SIZES.sm, textDecorationLine: 'underline' },
 });
