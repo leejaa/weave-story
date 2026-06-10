@@ -11,7 +11,7 @@ import { InterventionPage } from '@/components/reading/InterventionPage';
 import { GeneratingPage } from '@/components/reading/GeneratingPage';
 import { ChapterErrorPage } from '@/components/reading/ChapterErrorPage';
 import { EndPage } from '@/components/reading/EndPage';
-import { Spinner } from '@/components/ui';
+import { StoryLoading } from '@/components/ui';
 import styles from './ReadingPage.module.css';
 
 export function ReadingPage() {
@@ -55,7 +55,7 @@ export function ReadingPage() {
   }, [curChapter, status, pages.length]);
 
   if (isLoading || !thread) {
-    return <div className={styles.loading}><Spinner size={28} tone="thread" /></div>;
+    return <StoryLoading fullscreen />;
   }
 
   const visiblePage = pages[visibleIndex];

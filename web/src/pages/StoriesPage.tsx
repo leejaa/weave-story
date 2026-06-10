@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Spinner } from '@/components/ui';
+import { StoryLoading } from '@/components/ui';
 import { StoryCard } from '@/components/stories/StoryCard';
 import { useThreads } from '@/features/threads/useThreads';
 import styles from './StoriesPage.module.css';
@@ -41,7 +41,7 @@ export function StoriesPage() {
 
         {isLoading ? (
           <div className={styles.loading}>
-            <Spinner size={26} tone="thread" />
+            <StoryLoading size={120} />
           </div>
         ) : ready.length === 0 ? (
           <div className={styles.empty}>

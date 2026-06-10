@@ -4,4 +4,5 @@ export { Card } from './Card';
 export { Screen } from './Screen';
 export { TopBar } from './TopBar';
 export { Spinner } from './Spinner';
+export { StoryLoading } from './StoryLoading';
 export { Tag } from './Tag';

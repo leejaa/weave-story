@@ -1,10 +1,5 @@
-import { Spinner } from '@/components/ui';
-import styles from './LoadingPage.module.css';
+import { StoryLoading } from '@/components/ui';
 
 export function LoadingPage() {
-  return (
-    <div className={styles.root}>
-      <Spinner size={32} tone="thread" />
-    </div>
-  );
+  return <StoryLoading fullscreen size={160} />;
 }
