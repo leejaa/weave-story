@@ -78,7 +78,8 @@ src/
 - 콘솔 등록용 에셋: `store-assets/appintoss/out/` (로고 라이트/다크 600, 썸네일 1932×828, 스크린샷 636×1048 ×5)
 
 ## 남은 작업
-### 인증서/콘솔 승인 대기 (Task 3·7·IAP)
+### 인증서/콘솔 승인 대기 (Task 3·7·IAP·푸시)
+> 📌 발급 후 작업은 **[AFTER_CERT.md](./AFTER_CERT.md)** 에 단계별 체크리스트로 정리됨(세션 초기화 대비).
 - 앱인토스 콘솔 **검토 중**(영업일 2일). 승인 후 mTLS 인증서·AAD_STRING·DECRYPTION_KEY 발급.
 - **토스 로그인 실연동**: `appLogin()` → 서버 `POST /api/auth/toss`(mTLS→토스 API→JWT). 클라 골격(`lib/auth.ts` `loginWithToss`, `isInTossApp()` 분기) 준비됨.
 - **백엔드 엔드포인트**(CF Worker): `/api/auth/toss`, `/api/purchases/toss`(IAP 크레딧 적립). 아직 미구현.
