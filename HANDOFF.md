@@ -1,10 +1,48 @@
 # Weave Story Handoff
 
-Last updated: 2026-06-04
+Last updated: 2026-06-10
 
 > **Secrets / env / credentials:** see [`SECRETS_AND_ENV.md`](./SECRETS_AND_ENV.md)
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
+
+## 2026-06-10 — App Store 재심사 대응 + UI 개편
+
+### App Store 심사 탈락 대응 (build 37 → build 41)
+
+build 37이 두 가지 사유로 탈락:
+- **2.1(b)**: 리뷰어가 크레딧 충전 UI를 찾지 못함
+- **3.1.2(c)**: 자동갱신 구독(Premium Monthly)이 ASC에 존재
+
+해소 조치:
+- Premium Monthly 구독 및 구독 그룹을 ASC API로 완전 삭제 (소비성 2개만 유지)
+- `app/profile.tsx`에 크레딧 충전 버튼 + PaywallModal 연결 추가
+- build 41 빌드 + ASC 업로드 + 사용자가 재심사 제출 완료 → 현재 **WAITING_FOR_REVIEW**
+
+### 홈 화면 대규모 개편 (커밋 `3c48cd6`)
+
+- `app/book-preview.tsx` → `app/(modal)/book-preview.tsx` 로 분리, `(modal)` 라우트 그룹 신설
+- `components/home/book-expand-transition.tsx` 신규 — 책 확대 전환 컴포넌트
+- `components/home/book-launch-transition.tsx`, `book-shelf.tsx`, `sample-book-cover.tsx` 개편
+- 구형 컴포넌트 제거: `card-item`, `sample-card-stack`, `shelf-sample-book`, `use-shelf-books`, `use-card-stack`, 외 미사용 컴포넌트 다수
+- story-writing-loader Lottie 애니메이션(`assets/animations/story-writing-loader.json`) 추가
+- 웹 전용 로딩 컴포넌트 신규: `components/setup/story-writing-loading-overlay.web.tsx`, `components/ui/story-loader.web.tsx`
+- `shared/db/schema.ts` — 기본 크레딧 10으로 증가 + Drizzle 마이그레이션(`drizzle/`) 추가
+- `workers/cover-image/src/index.ts` 개선, `tailwind.config.js` 정리
+
+### 마이페이지(프로필) 디자인 개편 (커밋 `74ca766`)
+
+`app/profile.tsx` 전면 개편:
+- 크레딧 숫자를 Fraunces 600 64px 히어로 타이포로 강조 (크레딧 > 0: `thread` 컬러, 0: `ember` 컬러)
+- 충전 버튼 fill pill → ghost outline 버튼으로 변경
+- 아바타 52 → 64px, 이름 폰트 `sansSemibold` → `serifSemibold` (Fraunces)
+- 크레딧 섹션 레이블 "PLAN" → "CREDITS"
+- 섹션 여백·간격 정리
+
+### OTA 배포 이력 (2026-06-10)
+
+- iOS+Android production 동시 업데이트 (update group `7094d447`, 커밋 `74ca766`) — 마이페이지 디자인 개편
+- Android 단독 업데이트 (update group `d7b38cc4`, 커밋 `3c48cd6`) — 홈 개편 + 충전 버튼
 
 ## 2026-06-04 — Multilingual launch (en / ja / ko)
 
@@ -51,9 +89,9 @@ The app has recently gone through a large UX and story-generation iteration:
 
 ## Current Git State
 
-`main` HEAD is `5d6296d` ("i18n: multilingual story generation + localize UI strings"),
-pushed to `origin/main`. IAP (iOS + Android) and the multilingual launch are done and
-deployed; see the 2026-06-04 section above.
+`main` HEAD is `74ca766` ("refactor(profile): 마이페이지 디자인 개편"),
+pushed to `origin/main`. 홈 UI 개편·App Store 재심사 대응·마이페이지 디자인 개편 완료;
+see the 2026-06-10 section above.
 
 Note: `build/app.ipa` is a tracked build artifact that often shows as modified — it is
 intentionally left out of feature commits. `.secrets/` and `*.p8` are gitignored.
@@ -69,16 +107,21 @@ App Store Connect Business page:
 https://appstoreconnect.apple.com/business/atb/65213491-168c-45ae-8624-c75e81079304
 ```
 
-Latest observed status after user completed compliance items:
+Latest observed status:
 
 - Digital Services Act compliance: completed.
 - Paid Apps Agreement: active.
 - Free Apps Agreement: active.
 - Bank account `LEE JAHUN (9047)`: active.
-- U.S. tax forms:
-  - `U.S. Certificate of Foreign Status of Beneficial Owner`: active.
-  - `U.S. Form W-8BEN`: active.
+- U.S. tax forms: active.
 - Korea tax form: pending.
+
+**현재 심사 상태 (2026-06-10)**: build 41, v1.0, **WAITING_FOR_REVIEW**
+
+**ASC IAP 상품 현황**:
+- `Credits Starter 3` (소비성, READY_TO_SUBMIT) ✅
+- `Credits Value 10` (소비성, READY_TO_SUBMIT) ✅
+- `Premium Monthly` 자동갱신 구독 → **삭제 완료** ✅
 
 This means IAP product lookup should be tested again. If product loading still fails, likely next causes are product status, product id mismatch, bundle id mismatch, sandbox tester/device setup, or build environment.
 
@@ -150,33 +193,40 @@ Do not inspect cookies, local storage, profiles, passwords, or session stores.
 
 ## Recent UX Work Summary
 
+### Profile Screen (마이페이지)
+
+Important files:
+
+- `/Users/leegibbeum/repos/weave-story/app/profile.tsx`
+- `/Users/leegibbeum/repos/weave-story/components/ui/paywall-modal.tsx`
+
+Current direction (2026-06-10):
+
+- 크레딧 숫자를 64px Fraunces serifSemibold 히어로 타이포로 — 앱 감성의 핵심 UI
+- 크레딧 > 0: `thread`(포레스트 그린), 0: `ember`(레드) 조건부 컬러
+- 충전 버튼은 ghost outline (border `thread`, 배경 투명) — 숫자가 주인공
+- 아바타 64px, 이름 Fraunces serifSemibold
+
 ### New Story Tab
 
 Important files:
 
 - `/Users/leegibbeum/repos/weave-story/app/(tabs)/index.tsx`
-- `/Users/leegibbeum/repos/weave-story/app/book-preview.tsx`
+- `/Users/leegibbeum/repos/weave-story/app/(modal)/book-preview.tsx` ← (2026-06-10 이동)
 - `/Users/leegibbeum/repos/weave-story/components/home/book-shelf.tsx`
 - `/Users/leegibbeum/repos/weave-story/components/home/book-cover-gallery.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/book-launch-cover.tsx`
+- `/Users/leegibbeum/repos/weave-story/components/home/book-expand-transition.tsx` ← 신규
 - `/Users/leegibbeum/repos/weave-story/components/home/book-launch-transition.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/book-preview-screen.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/book-preview-page.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/open-book-scene.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/open-book-page-text.tsx`
 - `/Users/leegibbeum/repos/weave-story/components/home/sample-book-cover.tsx`
-- `/Users/leegibbeum/repos/weave-story/components/home/cover-title-text.tsx`
 - `/Users/leegibbeum/repos/weave-story/lib/sample-covers/constants.ts`
 
 Current direction:
 
+- book-preview가 `(modal)` 라우트 그룹으로 분리됨 — 루트 스택과 독립
+- book-expand-transition: 책 탭 → 확대 → 모달 전환 담당
 - The main list should feel like a modern large bookstore bestseller display.
-- Background should be lighter, simple, and harmonized with the bottom nav.
-- Sample covers should stand out more than the background.
-- Cover title font moved away from plain default, tried `Gugi`, settled on `Jua`, then slightly reduced size.
-- The old bottom "new story start" CTA on the home tab was removed because it created awkward whitespace.
-- Tapping a sample book opens a separate open-book preview route/screen.
-- The open-book preview no longer has a visible "start story" button. Tapping anywhere on the preview moves to setup/start flow.
+- Cover title font: `Jua`.
+- Tapping a sample book opens book-preview modal → setup flow.
 
 ### Removed / Avoided 3D Direction
 
@@ -375,6 +425,12 @@ Republic of Korea
 The business/legal address update may require Apple Support later, but it did not block the latest IAP contract activation state.
 
 ## Recommended Next Steps
+
+### 0. App Store 심사 대기 중 (2026-06-10)
+
+build 41, v1.0 현재 **WAITING_FOR_REVIEW**. 심사 통과 후 수동 출시. 리뷰어 회신 초안:
+
+> "In-App Purchases are now accessible directly from the Profile screen: tap the profile icon → 'Buy credits' button next to your credit balance, which opens the purchase sheet (Starter Pack / Value Pack). They also still appear when credits run out during chapter generation. The auto-renewable subscription has been removed; the app now offers consumable credits only."
 
 ### 1. Test IAP Product Loading On Device
 

@@ -1,6 +1,6 @@
 # iOS App Store 심사 제출 체크리스트
 
-Last updated: 2026-06-04
+Last updated: 2026-06-10
 
 상태 범례: ⬜ 미착수 · 🟦 진행 중 · ✅ 완료 · ⏭️ 보류/후속
 
@@ -53,7 +53,8 @@ Last updated: 2026-06-04
   - ✅ 출시 방법: **수동 출시** 선택(사용자 결정) *(전화번호 입력 후 저장 시 확정)*
   - ✅ **지원 URL**: 워커 `/support` 페이지 배포 완료(ko/en/ja, 200 확인) → `https://weave-story-api.leejahun0.workers.dev/support` 입력 *(전화번호 입력 후 저장 시 확정)*
   - ✅ **전화번호** 입력 완료(+82 10 3441 4148) → 지원URL·수동출시 포함 **전체 저장 성공**
-  - ✅ IAP 첫 심사 동봉: **Credits Starter 3 + Credits Value 10**(소모품) 버전에 추가됨. *(Premium Monthly 자동갱신 구독은 앱 미구현 추정 → 제외. 추후 정리 권장)*
+  - ✅ IAP 첫 심사 동봉: **Credits Starter 3 + Credits Value 10**(소모품) 버전에 추가됨.
+  - ✅ **Premium Monthly 자동갱신 구독 삭제 완료** (2026-06-10, ASC API) — 3.1.2(c) 탈락 사유 해소.
   - ✅ **스크린샷 업로드 완료** (iPhone 6.5" 슬롯, en-US, 5장): gpt-image-2 아트 + 또렷한 앱 UI 오버레이 + Fraunces 캡션, 1284×2778.
     - 순서: ①Every choice writes your story ②You decide what happens next ③Chapters written as you read ④A shelf of stories only you have read ⑤Start from a single spark
     - 업로드 경로: `fastlane deliver`(ASC API). 브라우저 file_upload는 사용자 첨부 파일만 허용해 불가 → API로 처리.
@@ -88,6 +89,12 @@ Last updated: 2026-06-04
 - **2026-06-02 · OTA(production, iOS)** — paywall 다국어(i18n) + 법적 페이지 ko/en/ja (커밋 `d39d3cd`, update `36513d95`).
 - ⚠️ **최종 App Store 심사 제출은 클린 빌드 권장**(OTA 의존 X) — 모든 블로커가 바이너리에 포함되도록.
 - **2026-06-03 · build 34** — 클린 빌드 + TestFlight 제출 완료 (커밋 `ee99543`). 바이너리 포함: **새 앱 아이콘** + 회원탈퇴 + 신고 + 약관/방침 링크 + 구매복원 + paywall 다국어. → Apple 처리 후 실기기 검증 + 심사 제출 준비.
+- **2026-06-10 · 심사 탈락(Rejected, build 37)** — 2가지 사유: **2.1(b)** "크레딧 충전 UI를 리뷰어가 찾을 수 없음" + **3.1.2(c)** "자동갱신 구독이 존재하나 구독 관리 링크 없음".
+- **2026-06-10 · ASC API — 구독 삭제** — Premium Monthly 자동갱신 구독(ID 6771180496) + 구독 그룹(22100905) ASC API로 삭제. 소비성 2개(Starter/Value Pack)만 남음. 3.1.2(c) 해소.
+- **2026-06-10 · build 41** — 프로필 화면에 크레딧 충전 버튼 + PaywallModal 연결 추가 (커밋 `3c48cd6`). EAS production 빌드(autoIncrement 40→41). 포함: 홈 책장 UI 개편, book-preview 모달 분리, 스토리 로더 추가, 프로필 충전 버튼.
+- **2026-06-10 · ASC 업로드** — `eas submit --platform ios --profile production --latest`. Build 41 v1.0.0 App Store Connect 업로드 완료.
+- **2026-06-10 · 재심사 제출** — 사용자가 ASC에서 직접 build 41을 v1.0에 첨부 후 "Submit for Review" 완료. 현재 **WAITING_FOR_REVIEW**.
+- **2026-06-10 · OTA(production, iOS+Android)** — 프로필 마이페이지 디자인 개편(크레딧 64px 히어로 타이포, ghost 충전 버튼, 아바타/이름 업그레이드). 커밋 `74ca766`, update group `7094d447`.
 
 ## 작업 메모
 
