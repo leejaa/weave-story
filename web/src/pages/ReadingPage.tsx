@@ -55,7 +55,7 @@ export function ReadingPage() {
   }, [curChapter, status, pages.length]);
 
   if (isLoading || !thread) {
-    return <StoryLoading fullscreen />;
+    return <StoryLoading fullscreen size={124} />;
   }
 
   const visiblePage = pages[visibleIndex];
