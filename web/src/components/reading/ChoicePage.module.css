@@ -3,6 +3,8 @@
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* 세로는 네이티브 스크롤, 가로 제스처는 페이저(JS)로 넘김. */
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
   gap: 16px;

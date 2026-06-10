@@ -11,6 +11,9 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* 세로는 네이티브 스크롤, 가로 제스처는 페이저(JS)로 넘김.
+     미지정 시 기본 auto라 스크롤 컨테이너가 가로 스와이프를 삼켜 다음장 넘김이 막힘. */
+  touch-action: pan-y;
 }
 
 .chapterTitle {
