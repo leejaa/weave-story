@@ -1,6 +1,7 @@
 /* 개발용 디자인 시스템 갤러리 — 프로덕션 번들(index.html)에는 포함되지 않음.
    gallery.html 진입점으로만 렌더된다. */
 import { Button, Card, Tag, Spinner, TopBar, Screen } from '@/components/ui';
+import { BookFlip } from '@/components/reading/BookFlip';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -68,6 +69,10 @@ export function Gallery() {
           <Spinner size={18} tone="thread" />
           <Spinner size={28} tone="thread" />
           <Spinner size={28} tone="dark" />
+        </Section>
+
+        <Section title="BookFlip — 생성중 책장 넘김">
+          <BookFlip size={188} />
         </Section>
 
         <Section title="Card">
