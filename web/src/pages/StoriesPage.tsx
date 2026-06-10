@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { StoryLoading } from '@/components/ui';
+import { BookFlip } from '@/components/reading/BookFlip';
 import { StoryCard } from '@/components/stories/StoryCard';
 import { useThreads } from '@/features/threads/useThreads';
 import styles from './StoriesPage.module.css';
@@ -41,7 +41,7 @@ export function StoriesPage() {
 
         {isLoading ? (
           <div className={styles.loading}>
-            <StoryLoading size={96} />
+            <BookFlip size={96} />
           </div>
         ) : ready.length === 0 ? (
           <div className={styles.empty}>

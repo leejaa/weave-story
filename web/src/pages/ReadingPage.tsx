@@ -11,7 +11,7 @@ import { InterventionPage } from '@/components/reading/InterventionPage';
 import { GeneratingPage } from '@/components/reading/GeneratingPage';
 import { ChapterErrorPage } from '@/components/reading/ChapterErrorPage';
 import { EndPage } from '@/components/reading/EndPage';
-import { StoryLoading } from '@/components/ui';
+import { BookFlip } from '@/components/reading/BookFlip';
 import styles from './ReadingPage.module.css';
 
 export function ReadingPage() {
@@ -55,7 +55,7 @@ export function ReadingPage() {
   }, [curChapter, status, pages.length]);
 
   if (isLoading || !thread) {
-    return <StoryLoading fullscreen size={124} />;
+    return <BookFlip fullscreen size={124} />;
   }
 
   const visiblePage = pages[visibleIndex];

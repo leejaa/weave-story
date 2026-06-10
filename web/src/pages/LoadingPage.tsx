@@ -1,5 +1,5 @@
-import { StoryLoading } from '@/components/ui';
+import { BookFlip } from '@/components/reading/BookFlip';
 
 export function LoadingPage() {
-  return <StoryLoading fullscreen size={132} />;
+  return <BookFlip fullscreen size={132} />;
 }
