@@ -35,6 +35,8 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) 
         <div className={styles.bookmark}>
           <span className={styles.eyebrow}>CHAPTER</span>
           <span className={styles.count}>{pad2(chapter)} / {pad2(totalChapters)}</span>
+          <span className={styles.tailBorder} aria-hidden />
+          <span className={styles.tail} aria-hidden />
         </div>
       </div>
 

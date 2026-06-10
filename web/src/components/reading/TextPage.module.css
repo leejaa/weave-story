@@ -18,6 +18,7 @@
   font-style: italic;
   font-size: 13px;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
   color: var(--color-ink-soft);
   margin-bottom: 16px;
 }

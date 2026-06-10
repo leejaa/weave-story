@@ -1,20 +1,18 @@
 .pager {
   flex: 1;
   min-height: 0;
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y; /* 세로는 네이티브 스크롤, 가로는 JS 제스처 */
 }
 
-.pager::-webkit-scrollbar {
-  display: none;
+.track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
 }
 
 .slide {
   flex-shrink: 0;
   height: 100%;
-  scroll-snap-align: start;
 }

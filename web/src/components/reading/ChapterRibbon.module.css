@@ -8,18 +8,18 @@
 .topRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
+  gap: 10px;
+  padding: 10px 16px;
 }
 
 .backBtn {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
+  border-radius: 999px;
   border: 1px solid var(--color-rule);
   background: var(--color-paper-soft);
   color: var(--color-ink-soft);
@@ -33,7 +33,7 @@
 .title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -41,19 +41,24 @@
 }
 
 .position {
-  margin-top: 1px;
-  font-family: var(--font-sans);
-  font-size: 11px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0;
   color: var(--color-ink-faint);
 }
 
+/* 북마크 (꼬리 달린 리본) */
 .bookmark {
+  position: relative;
   flex-shrink: 0;
+  min-width: 72px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
+  align-items: center;
+  gap: 1px;
+  padding: 7px 10px 9px;
+  border-radius: 7px;
   border: 1px solid var(--color-rule);
   background: var(--color-paper-soft);
 }
@@ -61,18 +66,46 @@
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 8px;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   color: var(--color-ink-faint);
 }
 
 .count {
-  font-family: var(--font-mono);
+  font-family: var(--font-serif);
+  font-weight: 600;
   font-size: 12px;
+  letter-spacing: 0;
   color: var(--color-ink);
+}
+
+/* 아래로 향한 북마크 꼬리 삼각형 (안쪽 채움 + 바깥 테두리) */
+.tail,
+.tailBorder {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+.tail {
+  bottom: -7px;
+  margin-left: -8px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 7px solid var(--color-paper-soft);
+  z-index: 2;
+}
+.tailBorder {
+  bottom: -8px;
+  margin-left: -9px;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 8px solid var(--color-rule);
+  z-index: 1;
 }
 
 .track {
   height: 2px;
+  margin: 0 16px;
   background: var(--color-rule);
 }
 
