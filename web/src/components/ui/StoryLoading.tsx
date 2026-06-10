@@ -1,7 +1,7 @@
 import styles from './StoryLoading.module.css';
 
 type Props = {
-  /** 장면 기준 크기(px) = 책 가로폭 */
+  /** 장면 기준 크기(px) */
   size?: number;
   /** 하단 라벨(선택) */
   label?: string;
@@ -9,35 +9,24 @@ type Props = {
   fullscreen?: boolean;
 };
 
-/** 페이지에 글이 써지는 줄 (좌/우 페이지 × 3행) */
-const LINES = [
-  { x1: 11, y1: 18, x2: 28, y2: 18 },
-  { x1: 36, y1: 18, x2: 53, y2: 18 },
-  { x1: 11, y1: 24, x2: 28, y2: 24 },
-  { x1: 36, y1: 24, x2: 53, y2: 24 },
-  { x1: 11, y1: 30, x2: 28, y2: 30 },
-  { x1: 36, y1: 30, x2: 53, y2: 30 },
-];
-
-/** 떠오르는 금가루 (위치 %, 음수 딜레이로 위상 분산) */
-const SPARKS = [
-  { x: 10, y: 34, d: -0.2 },
-  { x: 88, y: 28, d: -1.4 },
-  { x: 50, y: 8, d: -0.7 },
-  { x: 20, y: 78, d: -2.0 },
-  { x: 80, y: 74, d: -1.0 },
-  { x: 4, y: 58, d: -2.5 },
-  { x: 95, y: 54, d: -0.4 },
-  { x: 64, y: 88, d: -1.8 },
+/** 날실(세로) / 씨실(가로) 위치 */
+const WARP = [8, 16, 24, 32, 40]; // 세로 실 x좌표 (정적)
+// 가로 실: y좌표 + 음수 딜레이(위상 분산 → 짜이는 wave)
+const WEFT = [
+  { y: 8, d: -0.1 },
+  { y: 16, d: -0.7 },
+  { y: 24, d: -1.3 },
+  { y: 32, d: -1.9 },
+  { y: 40, d: -2.5 },
 ];
 
 /**
- * 페이지 로드/전환용 공통 로딩 — 화려한 "이야기가 써지는" 장면.
- * 글로우 펄스 + 흔들리는 펼친 책 + 좌→우로 써지는 글줄 + 떠오르는 금가루.
- * 전부 CSS(컴포지터 구동, 라이브러리 없음)라 짧은 로딩에도 즉시 렌더된다.
- * (Lottie는 초기화 수백 ms로 짧은 로딩엔 부적합 → 생성중/쓰는중 긴 화면에만 사용.)
+ * 페이지 로드/전환용 공통 로딩 — "Weave"(실 짜기) 모션.
+ * 날실(세로)은 떠 있고, 씨실(가로)이 좌→우로 차례차례 짜여 들어가며 천이 직조된다.
+ * 글로우 + 미세한 숨쉬기 + 빛 스침으로 마감. 전부 CSS(컴포지터 구동, 라이브러리 없음)라
+ * 짧은 로딩에도 즉시 렌더된다. (Lottie는 생성중/쓰는중 긴 화면에만 사용.)
  */
-export function StoryLoading({ size = 78, label, fullscreen = false }: Props) {
+export function StoryLoading({ size = 76, label, fullscreen = false }: Props) {
   return (
     <div
       className={fullscreen ? styles.fullscreen : styles.inline}
@@ -46,30 +35,26 @@ export function StoryLoading({ size = 78, label, fullscreen = false }: Props) {
     >
       <div className={styles.scene} style={{ fontSize: `${size}px` }}>
         <span className={styles.glow} aria-hidden />
-        {SPARKS.map((s, i) => (
-          <span
-            key={i}
-            className={styles.spark}
-            style={{ left: `${s.x}%`, top: `${s.y}%`, animationDelay: `${s.d}s` }}
-            aria-hidden
-          />
-        ))}
-        <svg className={styles.book} viewBox="0 0 64 44" fill="none" aria-hidden>
-          <path
-            className={styles.outline}
-            d="M32 10 C 22 4, 10 5, 5 9 L 5 36 C 10 32, 22 33, 32 39 C 42 33, 54 32, 59 36 L 59 9 C 54 5, 42 4, 32 10 Z"
-          />
-          <line className={styles.outline} x1="32" y1="10" x2="32" y2="39" />
-          {LINES.map((l, i) => (
-            <line
-              key={i}
-              className={styles.write}
-              style={{ animationDelay: `${i * 0.16}s` }}
-              pathLength={1}
-              {...l}
-            />
-          ))}
-        </svg>
+        <div className={styles.loom}>
+          <svg className={styles.cloth} viewBox="0 0 48 48" fill="none" aria-hidden>
+            {WARP.map((x) => (
+              <line key={`a${x}`} className={styles.warp} x1={x} y1="6" x2={x} y2="42" />
+            ))}
+            {WEFT.map((w) => (
+              <line
+                key={`f${w.y}`}
+                className={styles.weft}
+                style={{ animationDelay: `${w.d}s` }}
+                pathLength={1}
+                x1="6"
+                y1={w.y}
+                x2="42"
+                y2={w.y}
+              />
+            ))}
+          </svg>
+          <span className={styles.sheen} aria-hidden />
+        </div>
       </div>
       {label && <p className={styles.label}>{label}</p>}
     </div>

@@ -17,11 +17,11 @@
   gap: 18px;
 }
 
-/* 장면: 책 중앙 + 글로우/금가루를 담는 박스 (1em = size px) */
+/* 장면 (1em = size px) */
 .scene {
   position: relative;
-  width: 1.75em;
-  height: 1.55em;
+  width: 1.5em;
+  height: 1.5em;
   display: grid;
   place-items: center;
 }
@@ -29,73 +29,77 @@
 /* 뒤에서 번지는 글로우 */
 .glow {
   position: absolute;
-  width: 1.55em;
-  height: 1.25em;
+  width: 1.35em;
+  height: 1.35em;
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--color-thread-soft), transparent 72%);
   filter: blur(3px);
   animation: glow-pulse 2.8s ease-in-out infinite;
 }
 @keyframes glow-pulse {
-  0%, 100% { transform: scale(0.82); opacity: 0.45; }
-  50% { transform: scale(1.15); opacity: 0.9; }
+  0%, 100% { transform: scale(0.85); opacity: 0.45; }
+  50% { transform: scale(1.12); opacity: 0.85; }
 }
 
-/* 펼친 책 (살짝 흔들림) */
-.book {
+/* 베틀(직조면) — 미세하게 숨쉬며 빛 스침을 클립 */
+.loom {
   position: relative;
   width: 1em;
-  height: 0.7em;
-  overflow: visible;
-  animation: book-bob 2.8s ease-in-out infinite;
+  height: 1em;
+  overflow: hidden;
+  border-radius: 0.07em;
+  animation: loom-breathe 3s ease-in-out infinite;
 }
-@keyframes book-bob {
-  0%, 100% { transform: translateY(0.01em) rotate(-0.6deg); }
-  50% { transform: translateY(-0.05em) rotate(0.6deg); }
+@keyframes loom-breathe {
+  0%, 100% { transform: scale(0.97); }
+  50% { transform: scale(1.03); }
 }
 
-.outline {
-  stroke: var(--color-thread);
-  stroke-width: 2.2;
+.cloth {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 날실(세로) — 바탕실(또렷한 중간 톤) */
+.warp {
+  stroke: rgba(45, 90, 61, 0.38);
+  stroke-width: 2.6;
   stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
-/* 글줄: 좌→우로 써졌다 지워지기 반복 */
-.write {
+/* 씨실(가로) — 좌→우로 짜여 들어갔다 빠지길 반복 */
+.weft {
   stroke: var(--color-thread);
-  stroke-width: 1.8;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  opacity: 0.85;
-  animation: story-write 2.4s ease-in-out infinite;
+  animation: weave 2.8s ease-in-out infinite;
 }
-@keyframes story-write {
+@keyframes weave {
   0% { stroke-dashoffset: 1; }
-  35% { stroke-dashoffset: 0; }
-  68% { stroke-dashoffset: 0; }
+  40% { stroke-dashoffset: 0; }
+  72% { stroke-dashoffset: 0; }
   100% { stroke-dashoffset: -1; }
 }
 
-/* 떠오르며 반짝이는 금가루 */
-.spark {
+/* 천을 가로지르는 빛 스침 */
+.sheen {
   position: absolute;
-  width: 0.12em;
-  height: 0.12em;
-  margin: -0.06em 0 0 -0.06em;
-  background: var(--color-gold);
-  border-radius: 1.5px;
-  box-shadow: 0 0 0.08em rgba(196, 154, 60, 0.7);
-  opacity: 0;
-  transform: rotate(45deg) scale(0);
-  animation: spark-rise 2.6s ease-in-out infinite;
+  inset: -20% -40%;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 62%
+  );
+  transform: translateX(-60%);
+  animation: sheen-sweep 2.8s ease-in-out infinite;
 }
-@keyframes spark-rise {
-  0% { transform: translateY(0.22em) rotate(45deg) scale(0); opacity: 0; }
-  30% { transform: translateY(0.05em) rotate(135deg) scale(1); opacity: 1; }
-  60% { opacity: 0.9; }
-  100% { transform: translateY(-0.4em) rotate(315deg) scale(0); opacity: 0; }
+@keyframes sheen-sweep {
+  0%, 15% { transform: translateX(-70%); }
+  60%, 100% { transform: translateX(70%); }
 }
 
 .label {
