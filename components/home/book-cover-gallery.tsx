@@ -72,6 +72,7 @@ export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, o
               card={card}
               index={index}
               disabled={!!selectedCardId}
+              isSelected={selectedCardId === card.id}
               onBookPress={onBookPress}
             />
           ))}

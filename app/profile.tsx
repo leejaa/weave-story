@@ -1,8 +1,11 @@
+import { useCallback, useState } from 'react';
 import { View, Text, Image, Pressable, Alert, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { Icon } from '@/components/ui/icon';
+import { PaywallModal } from '@/components/ui/paywall-modal';
 import { usePalette } from '@/hooks/use-palette';
 import { useLocale } from '@/hooks/use-locale';
 import { useAuth } from '@/lib/auth/client/context';
@@ -14,10 +17,17 @@ export default function ProfileScreen() {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { t } = useTranslation('you');
   const { locale, setLocale, supportedLocales, localeLabels } = useLocale();
   const { signOut, deleteAccount } = useAuth();
   const { data: me } = useMe();
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  const handlePaywallSuccess = useCallback(() => {
+    setShowPaywall(false);
+    queryClient.invalidateQueries({ queryKey: ['me'] });
+  }, [queryClient]);
   const handleSignOut = () => {
     Alert.alert(t('signOut'), t('signOutConfirm'), [
       { text: t('cancel'), style: 'cancel' },
@@ -83,6 +93,13 @@ export default function ProfileScreen() {
           <Text style={[styles.planDesc, { color: c.inkSoft }]}>
             {t('creditsRemaining', { count: me?.credits ?? 0 })}
           </Text>
+          <Pressable
+            onPress={() => setShowPaywall(true)}
+            style={[styles.rechargeBtn, { backgroundColor: c.thread }]}
+            hitSlop={8}>
+            <Icon name="plus" size={14} color={c.paper} />
+            <Text style={[styles.rechargeText, { color: c.paper }]}>{t('recharge')}</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -122,6 +139,12 @@ export default function ProfileScreen() {
         <Text style={[styles.deleteText, { color: c.inkFaint }]}>{t('deleteAccount')}</Text>
       </Pressable>
 
+      <PaywallModal
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onSuccess={handlePaywallSuccess}
+      />
+
     </View>
   );
 }
@@ -152,7 +175,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
-  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  planRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   planBadge: {
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -161,6 +184,15 @@ const styles = StyleSheet.create({
   },
   planBadgeText: { fontFamily: FONTS.sansMedium, fontSize: SIZES.sm },
   planDesc: { fontFamily: FONTS.sans, fontSize: SIZES.sm },
+  rechargeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  rechargeText: { fontFamily: FONTS.sansSemibold, fontSize: SIZES.sm },
   chips: { flexDirection: 'row', gap: 8 },
   chip: {
     paddingHorizontal: 16,

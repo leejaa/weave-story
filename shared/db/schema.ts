@@ -25,7 +25,7 @@ export const users = pgTable('users', {
   email: text('email'),
   name: text('name'),
   avatarUrl: text('avatar_url'),
-  credits: integer('credits').notNull().default(1),
+  credits: integer('credits').notNull().default(10),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

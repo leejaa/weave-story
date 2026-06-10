@@ -6,6 +6,7 @@ export type SampleCardData = {
   color: string;
   imageUrl: string | null;
   prompt: string;
+  prompts: string[];
   displayOrder: number;
 };
 

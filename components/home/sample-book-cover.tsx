@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, Text, View, type View as RNView } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, {
+  cancelAnimation,
   Easing,
   interpolate,
   useAnimatedStyle,
@@ -20,12 +21,17 @@ type Props = {
   card: SampleCardData;
   index: number;
   disabled: boolean;
+  isSelected: boolean;
   onBookPress: (card: SampleCardData, origin: BookOrigin) => void;
 };
 
-export function SampleBookCover({ card, index, disabled, onBookPress }: Props) {
+export function SampleBookCover({ card, index, disabled, isSelected, onBookPress }: Props) {
   const ref = useRef<RNView>(null);
   const pulse = useSharedValue(0);
+  const displayOpacity = useSharedValue(1);
+  // onPressIn에서 measureInWindow를 미리 실행해 저장.
+  // handlePress(onPress)가 발생할 때는 이미 origin이 채워져 있으므로 async 지연 없음.
+  const originRef = useRef<BookOrigin | null>(null);
 
   useEffect(() => {
     pulse.value = withDelay(
@@ -41,13 +47,39 @@ export function SampleBookCover({ card, index, disabled, onBookPress }: Props) {
     );
   }, [index, pulse]);
 
-  const handlePress = useCallback(() => {
-    ref.current?.measureInWindow((x, y, width, height) => {
-      onBookPress(card, { x, y, width, height });
-    });
-  }, [card, onBookPress]);
+  // isSelected / disabled prop 변화에 따라 opacity 목표값을 Reanimated로 설정.
+  // 선택된 카드: handlePress에서 이미 시작됐지만, prop 동기화 보장용.
+  // 비활성화된 카드: 흐리게 (0.5).
+  // 원래 상태: 복원 (1).
+  useEffect(() => {
+    if (isSelected) {
+      displayOpacity.value = withTiming(0, { duration: 120 });
+    } else if (disabled) {
+      displayOpacity.value = withTiming(0.5, { duration: 200 });
+    } else {
+      displayOpacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [isSelected, disabled, displayOpacity]);
 
+  // 손가락이 닿는 순간 위치 미리 측정 — onPress까지 async 지연 해소
+  const handlePressIn = useCallback(() => {
+    ref.current?.measureInWindow((x, y, w, h) => {
+      originRef.current = { x, y, width: w, height: h };
+    });
+  }, []);
+
+  const handlePress = useCallback(() => {
+    // origin이 이미 있으면 즉시 사용, 없으면 fallback (매우 빠른 탭)
+    const origin = originRef.current ?? { x: 0, y: 0, width: 0, height: 0 };
+    originRef.current = null;
+    // overlay가 이 위치에서 즉시 시작하므로 카드를 바로 숨김 (반짝임 차단)
+    displayOpacity.value = 0;
+    onBookPress(card, origin);
+  }, [card, displayOpacity, onBookPress]);
+
+  // opacity를 Reanimated SharedValue로 통합 — React 정적 스타일(bookSelected/bookDisabled) 제거
   const bookStyle = useAnimatedStyle(() => ({
+    opacity: displayOpacity.value,
     transform: [
       { translateY: interpolate(pulse.value, [0, 1], [0, -7]) },
       { rotateZ: `${interpolate(pulse.value, [0, 1], [-0.4, 0.8])}deg` },
@@ -55,8 +87,9 @@ export function SampleBookCover({ card, index, disabled, onBookPress }: Props) {
     ],
   }));
 
+  // 글로우도 displayOpacity에 비례하여 페이드 — React `disabled && styles.hidden` 스냅 제거
   const glowStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(pulse.value, [0, 1], [0.18, 0.45]),
+    opacity: interpolate(pulse.value, [0, 1], [0.18, 0.45]) * displayOpacity.value,
     transform: [{ scale: interpolate(pulse.value, [0, 1], [0.95, 1.04]) }],
   }));
 
@@ -65,11 +98,12 @@ export function SampleBookCover({ card, index, disabled, onBookPress }: Props) {
       ref={ref}
       collapsable={false}
       disabled={disabled}
+      onPressIn={handlePressIn}
       onPress={handlePress}
       style={styles.slot}
     >
-      <Animated.View style={[styles.glow, glowStyle, disabled && styles.hidden]} pointerEvents="none" />
-      <Animated.View style={[styles.book, disabled && styles.disabled, bookStyle]}>
+      <Animated.View style={[styles.glow, glowStyle]} pointerEvents="none" />
+      <Animated.View style={[styles.book, bookStyle]}>
         <View style={[styles.coverBase, { backgroundColor: card.color }]}>
           {card.imageUrl ? (
             <Image source={{ uri: card.imageUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
@@ -125,9 +159,6 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     elevation: 16,
   },
-  hidden: {
-    opacity: 0,
-  },
   book: {
     flex: 1,
     flexDirection: 'row',
@@ -137,9 +168,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.34,
     shadowRadius: 24,
     elevation: 18,
-  },
-  disabled: {
-    opacity: 0.48,
   },
   coverBase: {
     flex: 1,

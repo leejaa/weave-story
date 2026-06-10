@@ -88,7 +88,8 @@ function RootLayout() {
         }}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="book-preview" options={{ headerShown: false, animation: 'fade_from_bottom' }} />
+        {/* 카드 확대 전환용 별도 모달 스택 — animation:'none'으로 expand overlay가 전환 역할을 담당 */}
+        <Stack.Screen name="(modal)" options={{ headerShown: false, presentation: 'modal', animation: 'none' }} />
         <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="reading-choice/[id]" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />

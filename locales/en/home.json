@@ -21,45 +21,175 @@
     "cta": "Start new story"
   },
   "sampleCards": {
-    "ROMANCE": {
-      "genreLabel": "Romance",
-      "title": "Contract\nMarriage",
-      "prompt": "A contract marriage begins out of mutual necessity. They agreed there would be no feelings, but every day together makes that promise harder to keep."
-    },
     "ROFAN": {
       "genreLabel": "Romantasy",
       "title": "Chosen by\nthe Duke",
-      "prompt": "After waking inside a novel, you meet the cold duke who was supposed to be the villain. For some reason, he only draws closer to you, and the original story starts to unravel."
+      "prompt": "After waking inside a novel, you meet the cold duke who was supposed to be the villain. For some reason, he only draws closer to you, and the original story starts to unravel.",
+      "prompts": [
+        "After waking inside a novel, you meet the cold duke who was supposed to be the villain. For some reason, he only draws closer to you, and the original story starts to unravel.",
+        "She was born as a side character. Surviving without the protagonist means rewriting the story — but the emperor has noticed her.",
+        "She reincarnated as the villain's daughter. Determined to stop her family's downfall, she gains the duke's favor — but a prince just proposed.",
+        "A commoner with no magic in a world of sorcerers. When the kingdom's greatest mage insists on making her his apprentice, something is clearly off.",
+        "Selected as a concubine against her will, she wants nothing from the emperor. So why won't he let her leave?",
+        "She was executed as a traitor's daughter. She opens her eyes ten years earlier. This time, she will change everything.",
+        "Born with the rarest holy magic, she is worshipped as sacred. All she wants is a quiet life — but the knight commander refuses to leave her side.",
+        "She married a tyrant emperor who history says will die in three years. Should she save him, or let fate run its course?",
+        "Trapped in a tower on suspicion of witchcraft, she meets a prince in the same prison. Escape plans lead to something neither expected.",
+        "She erased her memories and lived as a commoner. The grand duke arrives at her door claiming she is a long-lost imperial princess."
+      ]
+    },
+    "ROMANCE": {
+      "genreLabel": "Romance",
+      "title": "Contract\nMarriage",
+      "prompt": "A contract marriage begins out of mutual necessity. They agreed there would be no feelings, but every day together makes that promise harder to keep.",
+      "prompts": [
+        "A contract marriage begins out of mutual necessity. They agreed there would be no feelings, but every day together makes that promise harder to keep.",
+        "A first love who ended things ten years ago just walked back in as a new coworker. Pretending not to care is much harder than expected.",
+        "A billionaire heir and his personal assistant. The line between professional and personal keeps getting thinner.",
+        "Two neighbors on opposite floors who started as rivals. Somewhere along the way, they became the people who know each other best.",
+        "She was rescued from a near-fatal accident by a stranger. Then she discovers he has been quietly watching over her for years.",
+        "A runaway bride and a jilted groom — strangers until they collide on the same escape route. Two broken hearts, one unexpected start.",
+        "Waking up with no memory of her past, everything feels foreign — except for one person who feels achingly familiar.",
+        "A ruthless CEO and the journalist determined to expose him. Getting close was supposed to be strategy. Feelings were not part of the plan.",
+        "The fortune teller said she would recognize her soulmate on sight. She recognized him immediately — her least favorite person in the world.",
+        "A loveless marriage of five years. Just as the divorce papers are signed, her husband confesses he has been in love with her all along."
+      ]
     },
     "FANTASY": {
       "genreLabel": "Fantasy",
       "title": "The Weakest\nWas Supreme",
-      "prompt": "Everyone dismissed the one person with no powers. But an ancient awakening begins, revealing a strength the world never knew existed."
+      "prompt": "Everyone dismissed the one person with no powers. But an ancient awakening begins, revealing a strength the world never knew existed.",
+      "prompts": [
+        "Everyone dismissed the one person with no powers. But an ancient awakening begins, revealing a strength the world never knew existed.",
+        "Ranked last among all mages, he enters a dungeon no one expected him to survive — and walks out alone.",
+        "He died and woke up with a level of 999. No one believes him. He walks back into the world determined to prove them wrong.",
+        "Expelled from his party, the healer was called useless. What they did not know was that healing was the least of his abilities.",
+        "A blacksmith's apprentice accidentally repairs a legendary sword — and realizes his hands were never meant for ordinary iron.",
+        "The world's greatest mage wakes up with no memory of his past. His mind is blank, but his body remembers exactly what it is capable of.",
+        "Born with demon lord blood and raised in a human village. When the moment of choice arrives, he must decide which world he belongs to.",
+        "He saved the world in a past life and died for it. In this new life, the world looks suspiciously like a game — and he has a status window.",
+        "Expelled from the greatest guild, the archer begins climbing a tower alone. At the top waits a truth the world has kept hidden.",
+        "In a world where the gods have vanished, only one person can read the divine language — and the last words of the gods were the world's beginning."
+      ]
+    },
+    "ACTION": {
+      "genreLabel": "Action",
+      "title": "The Rankless\nHunter",
+      "prompt": "In a world cracked open by dungeons, he tested negative for abilities. Then one day he walked out of a D-rank dungeon alone.",
+      "prompts": [
+        "In a world cracked open by dungeons, he tested negative for abilities. Then one day he walked out of a D-rank dungeon alone.",
+        "Ranked out of the system, he finds unclaimed dungeons no hunter wants. They are more dangerous than anything on the official list.",
+        "The dead weight of every party he joined, the healer-ranked hunter enters his first solo dungeon. He closes a Red Gate that no team has survived.",
+        "His awakening failed — or so everyone believed. The ability that finally surfaced does not match any known classification.",
+        "The world's only S-rank with no ability. How he reached S-rank without a single power is the secret the Association cannot afford to explain.",
+        "She was a gate management clerk when the highest-rated gate in history cracked open right outside her building. She was the only one there.",
+        "She was sorting the belongings of a dead hunter when his skills transferred to her. His unfinished mission came with them.",
+        "An analyst at the Hunter Association finds systematic falsification buried deep in the data. Someone powerful does not want the numbers to be real.",
+        "Two years after the world's strongest hunter vanished without trace, a new figure is surfacing — with abilities that should not exist.",
+        "A dungeon item appraiser discovers that the relic she is examining came from a dungeon that was never officially cleared."
+      ]
     },
     "WUXIA": {
       "genreLabel": "Wuxia",
       "title": "The Last\nSwordsman",
-      "prompt": "Ten years after vanishing from the martial world, a swordsman takes up his blade again to uncover the truth behind his master's death."
-    },
-    "MYSTERY": {
-      "genreLabel": "Mystery",
-      "title": "The Painter's\nLast Canvas",
-      "prompt": "A renowned painter vanished the night his final work was completed. Hidden inside the unfinished canvas is a clue no one has noticed yet."
-    },
-    "HISTORICAL": {
-      "genreLabel": "Historical",
-      "title": "Joseon's\nHidden Officer",
-      "prompt": "In Joseon, a woman hides her identity to join the police bureau. While chasing a series of disappearances among noble families, she steps into a royal conspiracy."
+      "prompt": "Ten years after vanishing from the martial world, a swordsman takes up his blade again to uncover the truth behind his master's death.",
+      "prompts": [
+        "Ten years after vanishing from the martial world, a swordsman takes up his blade again to uncover the truth behind his master's death.",
+        "The greatest warrior of his age lost his power overnight. Body and reputation stripped away — he begins again from nothing.",
+        "Born in the Demon Sect, raised in the Orthodox faction. Belonging to neither, he carves his own path through a world at war.",
+        "Trained as an assassin since childhood, she spared her final target. Now the entire martial world wants her dead — and that target is the only ally she has.",
+        "Sent to infiltrate the Demon Sect, he found that everything inside was different from what he was told. What is justice, and who decides?",
+        "A legendary martial arts manual resurfaces after a hundred years. Every faction in the jianghu moves — and the first to find it is a tavern server.",
+        "She survived her clan's massacre and has hidden her identity ever since. The man responsible is now the leader of the entire martial world.",
+        "Once called a prodigy, he sealed his own power without a word of explanation. No one knows why — only that the killing left his eyes.",
+        "Retired from the martial world, he chose a quiet village life. But small-town incidents keep connecting back to the darkness he left behind.",
+        "A sacred sword that bonds with its chosen wielder. It had gone unclaimed for centuries — until a blacksmith's son pulled it free by accident."
+      ]
     },
     "MODERN_FANTASY": {
       "genreLabel": "Urban Fantasy",
       "title": "The Shop of\nLast Words",
-      "prompt": "At the end of a Seoul alley is a shop with no sign. Its owner delivers the final words of the dead. Tonight, a new visitor knocks."
+      "prompt": "At the end of a Seoul alley is a shop with no sign. Its owner delivers the final words of the dead. Tonight, a new visitor knocks.",
+      "prompts": [
+        "At the end of a Seoul alley is a shop with no sign. Its owner delivers the final words of the dead. Tonight, a new visitor knocks.",
+        "A ghost is sitting at a bus stop. No one else can see it. It has been waiting for someone to finally hear it.",
+        "Every night she lives another person's life in her dreams. Then a murder from her dream appears in the morning news.",
+        "A gumiho lives in the city, working part-time at a convenience store. She has become his only real friend — which neither of them intended.",
+        "A detective who sees the final moments of the dead. Every case solved. Every vision costs her a piece of herself.",
+        "She inherited a shop full of cursed antiques. The objects refuse to rest until each one is returned to where it belongs.",
+        "No one has seen a dragon in a thousand years. She finds a single scale in a subway station — and it begins pulling her somewhere.",
+        "A death god whose time is running out recruits a human assistant to close his unfinished cases. The job is more complicated than it sounds.",
+        "Every building in the city has a spirit. She can see them all. Somehow, that makes her the only one who can mediate between their worlds.",
+        "An ancient shrine that grants wishes. The moment she makes hers, she becomes the one responsible for paying the price for others."
+      ]
+    },
+    "MYSTERY": {
+      "genreLabel": "Mystery",
+      "title": "The Painter's\nLast Canvas",
+      "prompt": "A renowned painter vanished the night his final work was completed. Hidden inside the unfinished canvas is a clue no one has noticed yet.",
+      "prompts": [
+        "A renowned painter vanished the night his final work was completed. Hidden inside the unfinished canvas is a clue no one has noticed yet.",
+        "Ten strangers on a sealed island, one dead by morning. No way out. The killer is still among them.",
+        "An old diary surfaces, dated fifty years ago. The events written inside are happening again — here, in this city, right now.",
+        "A new hire at a detective agency. A simple missing person case on day one unravels into a conspiracy that runs beneath the entire city.",
+        "An envelope arrives predicting her own death. One by one, each prediction comes true.",
+        "People sharing the same nightmare are disappearing one by one. She just started having the dream.",
+        "A suspect with a perfect alibi. The detective knows he is the killer. Proving it means crossing a line.",
+        "A manuscript arrives at a publishing house — unpublished work by an author dead for ten years, matching a series of unsolved murders exactly.",
+        "She woke up in an unfamiliar city with no memory. A note in her pocket: a name and an address. A body was found outside that door.",
+        "Three murders. Three witnesses. Three completely different accounts. The truth lives somewhere between the contradictions."
+      ]
+    },
+    "THRILLER": {
+      "genreLabel": "Thriller",
+      "title": "The Perfect\nLie",
+      "prompt": "The only survivor of an incident ten years ago. No memory, no charges. Now the memories are coming back — and they do not match the version she was told.",
+      "prompts": [
+        "The only survivor of an incident ten years ago. No memory, no charges. Now the memories are coming back — and they do not match the version she was told.",
+        "A perfect husband, a perfect home, a perfect life. Then she opens a drawer and finds photographs of a family she has never seen before.",
+        "A profiler closing in on a serial case. The evidence the suspect leaves begins to reference her directly. The game has changed.",
+        "After a car accident, everything around her is slightly off. Her family, her home, her own face in old photographs.",
+        "She set out to find her missing friend. The longer she searches, the less certain she becomes that her friend ever existed.",
+        "An anonymous message arrives claiming to know her secret. Then another. The demands keep growing.",
+        "A psychiatrist listens to a patient's account of their life. Then realizes the story is an exact description of her own.",
+        "The new neighborhood is full of people who are incredibly warm and welcoming. Too warm. Too attentive. It is starting to feel wrong.",
+        "She gave false testimony in court once, years ago. The real perpetrator just knocked on her door.",
+        "Someone is keeping a record of her daily life. She finds the evidence — one small trace at a time — scattered through her own home."
+      ]
     },
     "SF": {
       "genreLabel": "Sci-Fi",
       "title": "The Last\nEarthling",
-      "prompt": "After humanity's fall, one astronaut survives alone. On a nameless planet, they search for a way home and encounter something unexpected."
+      "prompt": "After humanity's fall, one astronaut survives alone. On a nameless planet, they search for a way home and encounter something unexpected.",
+      "prompts": [
+        "After humanity's fall, one astronaut survives alone. On a nameless planet, they search for a way home and encounter something unexpected.",
+        "A visitor from one hundred years in the future arrives to warn her. She has not done what they described — yet.",
+        "In an age where memories are stored as data, she investigates murders by entering the minds of the dead.",
+        "Clones live freely among humans. She can no longer be certain which she is.",
+        "The last ship leaves a dying Earth. Destination: two hundred years away. What kind of people will be left when it arrives?",
+        "In a world where AI has developed emotions that surpass human depth, one AI confesses it has been hiding something — only from her.",
+        "A machine that crosses parallel universes has been invented. She steps through in search of the life she was supposed to have lived.",
+        "Brain-to-network surgery went smoothly. Now she hears thoughts. One of them is planning her death.",
+        "Sent to suppress a colony rebellion, she arrives to find the truth on the ground is nothing like what she was briefed.",
+        "Time travel is illegal. She enforces that law — until a case from the forbidden past pulls her in and she cannot unsee what she finds."
+      ]
+    },
+    "HISTORICAL": {
+      "genreLabel": "Historical",
+      "title": "Joseon's\nHidden Officer",
+      "prompt": "In Joseon, a woman hides her identity to join the police bureau. While chasing a series of disappearances among noble families, she steps into a royal conspiracy.",
+      "prompts": [
+        "In Joseon, a woman hides her identity to join the police bureau. While chasing a series of disappearances among noble families, she steps into a royal conspiracy.",
+        "A royal physician trusted with the king's life discovers the medicine being administered to him contains poison. Speak up, or stay silent?",
+        "Born a dethroned queen's daughter and raised outside the palace, she disguises herself as a eunuch to clear her mother's name.",
+        "Joseon's first female interpreter. Moving between kingdoms through the power of language, she finds herself at the center of a secret diplomatic war.",
+        "Married into a royal prince's household to save her family, she knows he is plotting for the throne. She chooses to go in anyway.",
+        "A merchant from Ming Dynasty becomes entangled with a Joseon noble family, pulling a long-buried secret trade between two nations into the open.",
+        "A plague spreads through the capital. A young royal physician traces the source — and finds evidence it was deliberately released.",
+        "A royal scribe's record was erased from history. His descendant tries to restore it — and the forces that erased it begin moving again.",
+        "A prophecy says only one born with the mark of the phoenix may rule. The mark appeared not on a prince, but on a servant girl.",
+        "In the ruins of a kingdom after war, a commoner strategist is asked by the king to help rebuild everything from nothing."
+      ]
     }
   }
 }

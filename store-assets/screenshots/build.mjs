@@ -287,6 +287,8 @@ const platforms = {
   ios:     { w: 1290, h: 2796 },
   android: { w: 1080, h: 2160 },
   ipad:    { w: 2048, h: 2732, deviceRatio: 0.46, textScale: 0.66 },
+  // 앱인토스 미니앱 세로형 스크린샷 (636×1048). 같은 마케팅 레이아웃을 그대로 사용.
+  appintoss: { w: 636, h: 1048, deviceRatio: 0.66, textScale: 0.92 },
 };
 
 function page(p, loc, shot) {

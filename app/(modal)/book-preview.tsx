@@ -11,16 +11,20 @@ export default function BookPreviewRoute() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const card = useMemo<SampleCardData>(() => ({
-    id: getParam(params.id) ?? 'sample-preview',
-    genre: getParam(params.genre) ?? '',
-    genreLabel: getParam(params.genreLabel) ?? '',
-    title: getParam(params.title) ?? '',
-    color: getParam(params.color) ?? '#1c1712',
-    imageUrl: getParam(params.imageUrl) ?? null,
-    prompt: getParam(params.prompt) ?? '',
-    displayOrder: Number(getParam(params.displayOrder) ?? 0),
-  }), [params]);
+  const card = useMemo<SampleCardData>(() => {
+    const prompt = getParam(params.prompt) ?? '';
+    return {
+      id: getParam(params.id) ?? 'sample-preview',
+      genre: getParam(params.genre) ?? '',
+      genreLabel: getParam(params.genreLabel) ?? '',
+      title: getParam(params.title) ?? '',
+      color: getParam(params.color) ?? '#1c1712',
+      imageUrl: getParam(params.imageUrl) ?? null,
+      prompt,
+      prompts: [prompt],
+      displayOrder: Number(getParam(params.displayOrder) ?? 0),
+    };
+  }, [params]);
 
   return (
     <BookPreviewScreen

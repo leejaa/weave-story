@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1780961147746,
+      "tag": "0000_increase_default_credits_to_10",
+      "breakpoints": true
+    }
+  ]
+}

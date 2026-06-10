@@ -1,46 +1,27 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useLocalizedSampleCards } from '@/hooks/use-localized-sample-cards';
 import { BookCoverGallery } from './book-cover-gallery';
-import { BookLaunchTransition } from './book-launch-transition';
 import type { SampleCardData } from '@/lib/api/types';
-import { useBookSelection, type BookOrigin } from './use-book-selection';
+import type { BookOrigin } from './use-book-selection';
 
+// 전환 상태(selectedCard, origin)는 index.tsx가 소유.
+// BookShelf는 카드 갤러리만 표시하고, 선택 이벤트를 위로 올림.
 type Props = {
   headline: string;
+  selectedCardId: string | null;
+  onCardSelected: (card: SampleCardData, origin: BookOrigin) => void;
 };
 
-export function BookShelf({ headline }: Props) {
-  const router = useRouter();
+export function BookShelf({ headline, selectedCardId, onCardSelected }: Props) {
   const { data: cards = [], isLoading } = useLocalizedSampleCards();
-  const { selectedCard, origin, selectBook, clearSelection } = useBookSelection();
 
   const handleBookPress = useCallback(
     (card: SampleCardData, bookOrigin: BookOrigin) => {
-      selectBook(card, bookOrigin);
+      onCardSelected(card, bookOrigin);
     },
-    [selectBook],
+    [onCardSelected],
   );
-
-  const handleLaunchFinish = useCallback(() => {
-    if (!selectedCard) return;
-
-    router.push({
-      pathname: '/book-preview',
-      params: {
-        id: selectedCard.id,
-        genre: selectedCard.genre,
-        genreLabel: selectedCard.genreLabel,
-        title: selectedCard.title,
-        color: selectedCard.color,
-        imageUrl: selectedCard.imageUrl ?? '',
-        prompt: selectedCard.prompt,
-        displayOrder: String(selectedCard.displayOrder),
-      },
-    });
-    clearSelection();
-  }, [clearSelection, router, selectedCard]);
 
   return (
     <View style={styles.container}>
@@ -48,15 +29,8 @@ export function BookShelf({ headline }: Props) {
         headline={headline}
         cards={cards}
         isLoading={isLoading}
-        selectedCardId={selectedCard?.id ?? null}
+        selectedCardId={selectedCardId}
         onBookPress={handleBookPress}
-      />
-
-      <BookLaunchTransition
-        card={selectedCard}
-        origin={origin}
-        isVisible={!!selectedCard && !!origin}
-        onFinish={handleLaunchFinish}
       />
     </View>
   );
