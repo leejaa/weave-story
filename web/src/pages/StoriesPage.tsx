@@ -41,7 +41,7 @@ export function StoriesPage() {
 
         {isLoading ? (
           <div className={styles.loading}>
-            <StoryLoading size={120} />
+            <StoryLoading />
           </div>
         ) : ready.length === 0 ? (
           <div className={styles.empty}>
