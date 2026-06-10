@@ -40,11 +40,47 @@
 
 ---
 
-## 3. Task 7 — 인앱결제(IAP) / 크레딧 충전
-- SDK: `@apps-in-toss/web-bridge`의 **`checkoutPayment`** / `requestTossPayPaysBilling` (web-bridge에 존재 확인됨).
-- 백엔드: `POST /api/purchases/toss` 신설 — 토스 결제 검증(mTLS) → 크레딧 적립(`users.credits`). 기존 `POST /api/purchases/grant`(앱) 패턴 참고.
-- 클라: 프로필/크레딧 화면([web/src/pages/ProfilePage.tsx](./src/pages/ProfilePage.tsx))에 "충전" 버튼 추가 → `checkoutPayment` 호출 → 성공 시 `/api/me` 무효화.
-- 가입 기본 크레딧 10 (DB 적용 완료). 결제 상품/가격은 콘솔에서 등록.
+## 3. Task 7 — 인앱결제 / 크레딧 충전 (조사 완료)
+
+### ⚠️ 중요: 크레딧은 **인앱결제(IAP)** 로 구현. 토스페이(TossPay) 아님.
+앱인토스엔 결제가 **2종류**다 (SDK·문서 확인됨):
+- **인앱결제(IAP)** = 미니앱 내 **디지털 재화**(크레딧 등 소비성 상품). 콘솔에 상품(SKU) 등록 후 스토어 빌링으로 결제. → **우리 크레딧은 이것.**
+- **토스페이(TossPay)** `checkoutPayment`/`requestTossPayPaysBilling` = 실물/서비스 등 일반 결제. 크레딧엔 부적합.
+
+### IAP 클라 흐름 (`import { IAP } from '@apps-in-toss/web-framework'`)
+일회성 구매(크레딧 팩):
+```ts
+const cleanup = IAP.createOneTimePurchaseOrder({
+  options: {
+    sku: 'credits_10',                    // 콘솔에 등록한 소비성 상품 ID
+    processProductGrant: async ({ orderId }) => {
+      // 주문 생성 후 호출됨 → 우리 서버에 크레딧 지급 요청(서버가 orderId 검증·적립).
+      const r = await api.post('/api/purchases/toss', { orderId });  // 멱등(orderId 기준)
+      return r.granted === true;          // 지급 성공 시 true
+    },
+  },
+  onEvent: (e) => { /* e.data: orderId, displayName, amount, currency... → /api/me 무효화 */ },
+  onError: (err) => { /* 로깅/복구 */ },
+});
+```
+- **복구**: 앱 시작 시 `IAP.getPendingOrders()` → 중단된 주문 재지급, `IAP.completeProductGrant({ params: { orderId } })` 로 마감. `IAP.getCompletedOrRefundedOrders()` 로 환불 반영.
+- **최소 앱 버전**: Android 5.234.0 / iOS 5.231.0 (`isMinVersionSupported` 로 가드).
+- 구독 모델 원하면 `IAP.createSubscriptionPurchaseOrder({ options: { sku, offerId, processProductGrant }, ... })`.
+
+### 백엔드 `POST /api/purchases/toss` (IAP 지급 검증)
+- 입력: `{ orderId }`.
+- 처리: **`getIapOrderStatus` 파트너 API(mTLS)** 로 주문 상태 검증 → 유효·결제완료면 크레딧 적립(`users.credits`). **orderId 기준 멱등**(중복 지급 방지). 기존 `POST /api/purchases/grant`(앱 IAP) 로직 재사용 가능.
+- 출력: `{ granted: boolean }`.
+- 참고: 결제상태 조회 API https://developers-apps-in-toss.toss.im/api/getIapOrderStatus.html
+
+### 콘솔 / 클라 UI
+- **콘솔**: 소비성 상품(SKU)·가격·미니앱 아이콘 등록. (상품 심사 있을 수 있음 → 미리 등록)
+- **클라**: 프로필/크레딧 화면([web/src/pages/ProfilePage.tsx](./src/pages/ProfilePage.tsx))에 "충전" 버튼 → `IAP.createOneTimePurchaseOrder` → 지급 후 `/api/me` 무효화로 크레딧 갱신.
+- 가입 기본 크레딧 10 (DB 적용 완료). 이야기 생성 1회 = 크레딧 1 차감(서버).
+
+### 참고 문서
+- 인앱결제 개요: https://developers-apps-in-toss.toss.im/bedrock/reference/framework/인앱%20결제/IAP.html
+- 토스페이(일반결제, 참고): https://developers-apps-in-toss.toss.im/tosspay/develop.html , 결제승인 `POST /api-partner/v1/apps-in-toss/pay/execute-payment`
 
 ---
 
@@ -72,6 +108,7 @@
 2. **CF Worker 발송 훅**: 챕터 생성 완료 지점(기존 "생성 완료 시 발송" 로직, push 서버 Task #10 위치)에서 **FCM 대신 앱인토스 `sendMessage` 호출**. 본문 = "「{제목}」 다음 이야기가 준비됐어요" + 딥링크 `/reading/:threadId`.
 3. **콘솔**: 메시지 템플릿 등록 + 검수 신청(2~3일). 발송용 API 인증 토큰(message-send scope) 발급.
 4. **클라 딥링크 라우팅**: react-router라 `/reading/:threadId`로 들어오면 그대로 처리됨. 미니앱 진입 시 scheme/쿼리 → 라우트 매핑만 확인.
+   - **알림 동의**: SDK `requestNotificationAgreement`(`@apps-in-toss/web-framework`)로 사용자 알림 수신 동의 받기. 기능성 메시지는 동의 불필요지만, 동의 받아두면 알림 도달률↑.
 5. **폴링과 공존**: 현재 읽기 화면은 8초 폴링(`useReading`). 푸시는 "나가 있어도 알림" 용도로 보완. 둘 다 유지.
 
 ### 참고 문서
