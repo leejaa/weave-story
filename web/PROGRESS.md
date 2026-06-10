@@ -2,6 +2,13 @@
 
 기존 React Native(Expo) 앱 "Weave Story"(AI 인터랙티브 소설)를 **앱인토스 미니앱**으로 출시하기 위한 별도 웹앱. `web/` 하위에 React+Vite로 신규 구현하며, 기존 앱의 화면/디자인/에셋을 충실히 재현한다.
 
+> ## 🔔 현재 상태 (2026-06-11)
+> - **앱인토스 1차 제출 → 반려.** 사유: "**앱 이름은 한국어로 작성해 주세요**" — 콘솔 "한국어 앱 이름"에 영어(`Weave Story`)를 넣어서. (기능/내용 문제 아님)
+>   - **결정: 한국어 앱 이름 = `실마리`** (실 한 올이 풀려나가듯 시작되는 이야기 + weave/thread 브랜드 DNA. 영어명 `Weave Story`는 유지.)
+>   - ⬜ **(사용자/다음 세션) 할 일**: 앱인토스 콘솔 → 기본 정보 → "한국어 앱 이름" = `실마리` 입력 → 재제출. 부제(`AI가 써주는 나만의 인터랙티브 소설`)·영어명은 그대로.
+> - ✅ **로딩 모션 BookFlip 통일** — 페이지 로드/전환/생성중/쓰는중 전부 CSS 3D 책장넘김(BookFlip)으로 교체, `lottie-react`/`lottie-web` 의존성 완전 제거(LoginPage 청크 610→245kB). (커밋 `2737afa`·`678fa56`·`d8d0df1`)
+> - ✅ **챕터 가로 스와이프(다음장) 버그 수정** — 본문/선택지 내부 스크롤 컨테이너의 `touch-action` 미지정(기본 auto)이 가로 제스처를 삼키던 문제. `.scroll`(TextPage)·`.page`(ChoicePage)에 `touch-action: pan-y` 추가. (커밋 `a8f4874`) ⬜ 실기기 최종확인.
+
 ## 스택
 - React 18.3 · Vite 5 · TypeScript · react-router-dom v6 (BrowserRouter, CSR)
 - TanStack Query (서버 상태) · CSS Modules
@@ -60,7 +67,7 @@ src/
 - **카드 커버 풀스크린 확대 hero 전환**(BookExpandTransition 복원) → 펼친 책 미리보기.
 - **펼친 책 미리보기(/preview)**: open-book-scene.png + 왼쪽 페이지(장르/제목/프롬프트) + 오른쪽 페이지(표지), 탭→셋업, X→홈.
 - **셋업(/setup)**: 책상/노트 배경 이미지 + 룰드 페이퍼 입력(Jua, 라인=배경 그라데이션으로 텍스트와 정렬) + 제출 + 생성 로딩 오버레이.
-- **리더(/reading/:id)**: 챕터 리본 + 가로 스냅 페이저(본문 페이지네이션) + 선택 진입 카드 + 선택지(A/B/C+직접입력) + 개입 구분선 + 생성중/실패/끝 페이지. 목업 3챕터로 읽기→선택→생성→다음→끝 루프 시연.
+- **리더(/reading/:id)**: 챕터 리본 + 가로 포인터 페이저(한 스와이프=한 장, `ReadingPager`) + 본문 페이지네이션 + 선택 진입 카드 + 선택지(A/B/C+직접입력) + 개입 구분선 + 생성중/실패/끝 페이지. 생성중=BookFlip(CSS 3D 책장넘김). 목업 3챕터로 읽기→선택→생성→다음→끝 루프 시연. ⚠️ 가로 스와이프는 내부 스크롤 컨테이너에 `touch-action: pan-y` 필수(없으면 다음장 안 넘어감, 커밋 `a8f4874`).
 - **내 이야기(/stories)**: 진행 중/완결 섹션 2열 그리드(StoryCard: 표지 3:4 + 스크림 + 진행바/완결배지 + 메타행), 로딩/빈 상태, 헤더 사용자 아이콘→/profile, 탭→/reading/:id.
 - **프로필(/profile)**: 아바타(이미지/이니셜)+이름+이메일+요금제/크레딧+로그아웃+회원탈퇴. 로그아웃/탈퇴=confirm→세션 정리→로그인 게이트 리로드. (언어 선택은 웹 i18n 도입 후.)
 - **데이터 패칭**: 읽기=`useQuery`(생성 중 8초 폴링), 쓰기=`useMutation`(성공 시 캐시 무효화). 목록/계정=`useQuery`. 인증 시 실서버, 미인증(데모)은 목업 폴백. `lib/query-keys` 팩토리.
@@ -80,7 +87,7 @@ src/
 ## 남은 작업
 ### 인증서/콘솔 승인 대기 (Task 3·7·IAP·푸시)
 > 📌 발급 후 작업은 **[AFTER_CERT.md](./AFTER_CERT.md)** 에 단계별 체크리스트로 정리됨(세션 초기화 대비).
-- 앱인토스 콘솔 **검토 중**(영업일 2일). 승인 후 mTLS 인증서·AAD_STRING·DECRYPTION_KEY 발급.
+- 앱인토스 콘솔 제출 → **1차 반려(한국어 앱 이름)**. → 한글명 `실마리`로 재제출 예정(상단 "현재 상태" 참고). 승인 후 mTLS 인증서·AAD_STRING·DECRYPTION_KEY 발급.
 - **토스 로그인 실연동**: `appLogin()` → 서버 `POST /api/auth/toss`(mTLS→토스 API→JWT). 클라 골격(`lib/auth.ts` `loginWithToss`, `isInTossApp()` 분기) 준비됨.
 - **백엔드 엔드포인트**(CF Worker): `/api/auth/toss`, `/api/purchases/toss`(IAP 크레딧 적립). 아직 미구현.
 - **인앱결제(IAP)** 연동.
