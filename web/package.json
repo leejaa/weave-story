@@ -15,7 +15,6 @@
   "dependencies": {
     "@apps-in-toss/web-framework": "2.6.1",
     "@tanstack/react-query": "^5.62.16",
-    "lottie-react": "^2.4.1",
     "motion": "^12.40.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

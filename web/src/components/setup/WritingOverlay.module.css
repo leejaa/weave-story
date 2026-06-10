@@ -23,8 +23,9 @@
 }
 
 .animation {
-  width: 210px;
-  height: 158px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 4px;
 }
 
