@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { PRODUCT_IDS } from './config';
 import { grantPurchase, isCreditProduct } from './grant-purchase';
+import { trackPurchase } from '@/lib/analytics';
 
 type PendingPurchase = {
   resolve: (purchase: Purchase) => void;
@@ -81,6 +82,7 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
         onGranted: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
       });
       Sentry.captureMessage(`[iap] granted+finished productId=${purchase.productId} transactionId=${txId}`, 'info');
+      void trackPurchase({ productId: purchase.productId });
       pendingRef.current?.resolve(purchase);
       pendingRef.current = null;
     } catch (err: unknown) {

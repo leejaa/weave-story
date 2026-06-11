@@ -31,6 +31,7 @@ import { useFonts } from 'expo-font';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { palette } from '@/constants/colors';
 import { loadSavedLocale } from '@/hooks/use-locale';
+import { initAnalytics } from '@/lib/analytics';
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -62,6 +63,7 @@ function RootLayout() {
   });
 
   useEffect(() => {
+    void initAnalytics();
     loadSavedLocale().finally(() => setLocaleReady(true));
   }, []);
 

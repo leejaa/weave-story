@@ -17,8 +17,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.leejahun.weavestory",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "FIREBASE_ANALYTICS_COLLECTION_ENABLED": true
       },
       "entitlements": {
         "com.apple.developer.applesignin": [
@@ -88,7 +90,19 @@
           "color": "#2d5a3d",
           "defaultChannel": "default"
         }
-      ]
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/analytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "buildReactNativeFromSource": true
+          }
+        }
+      ],
+      "./plugins/withFirebaseModularHeaderFix"
     ],
     "experiments": {
       "typedRoutes": true,

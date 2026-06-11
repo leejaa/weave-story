@@ -7,6 +7,7 @@ import { PaywallModal } from '@/components/ui/paywall-modal';
 import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingChoice } from '@/hooks/use-reading-choice';
+import { trackChoiceMade } from '@/lib/analytics';
 import { FONTS, SIZES } from '@/constants/colors';
 
 type Props = {
@@ -35,6 +36,7 @@ export function ReadingChoiceScreen({ threadId, chapterNumber, onClose, onComple
     selectedChapterNumber: number,
     selection: { choiceIndex: number } | { customInput: string },
   ) => {
+    void trackChoiceMade('customInput' in selection ? 'free_input' : 'choice');
     await choose(selectedChapterNumber, selection);
     onComplete();
   };

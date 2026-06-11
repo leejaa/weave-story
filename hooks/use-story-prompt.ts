@@ -5,6 +5,8 @@ import { postCreateStory, postCheckPrompt } from '@/lib/api/fetch';
 import type { MeResult } from '@/lib/api/fetch';
 import { toUserMessage } from '@/lib/api/errors';
 import { useMe } from '@/hooks/use-me';
+import { storyLanguage } from '@/lib/i18n';
+import { trackStoryCreated } from '@/lib/analytics';
 
 const DEFAULT_CHAPTERS = 10;
 
@@ -44,6 +46,7 @@ export function useStoryPrompt() {
     },
     onSuccess: (result) => {
       if (result) {
+        void trackStoryCreated({ length: String(DEFAULT_CHAPTERS), language: storyLanguage() });
         queryClient.invalidateQueries({ queryKey: ['me'] });
         router.replace(`/reading/${result.threadId}`);
       }

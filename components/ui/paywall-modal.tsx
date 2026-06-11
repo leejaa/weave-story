@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -17,6 +17,7 @@ import { CREDITS_PER_PRODUCT, PRODUCT_IDS } from '@/lib/purchases/config';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 import { privacyUrl, termsUrl } from '@/lib/legal';
+import { trackPaywallViewed } from '@/lib/analytics';
 import { ErrorCode } from 'expo-iap';
 
 type Props = {
@@ -35,6 +36,10 @@ export function PaywallModal({ visible, onClose, onSuccess }: Props) {
   const [restoring, setRestoring] = useState(false);
 
   const creditProducts = products.filter(p => CREDITS_PER_PRODUCT[p.id] != null);
+
+  useEffect(() => {
+    if (visible) void trackPaywallViewed('story_setup');
+  }, [visible]);
 
   const handlePurchase = useCallback(async (productId: string) => {
     setLoading(productId);

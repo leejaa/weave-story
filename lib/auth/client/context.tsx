@@ -3,6 +3,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { signInWithApple, signInWithGoogle, signInWithDemo, setSignedOutCallback, deleteAccount } from './api';
 import { clearStaleTokensOnFreshInstall } from './install-guard';
 import { tokenStorage } from './storage';
+import { trackLogin, identifyUser } from '@/lib/analytics';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -44,21 +45,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     setState('authenticated');
+    void trackLogin('apple');
   }, []);
 
   const handleGoogleSignIn = useCallback(async () => {
     await signInWithGoogle();
     setState('authenticated');
+    void trackLogin('google');
   }, []);
 
   const handleDemoSignIn = useCallback(async (code: string) => {
     await signInWithDemo(code);
     setState('authenticated');
+    void trackLogin('demo');
   }, []);
 
   const signOut = useCallback(async () => {
     await tokenStorage.clear();
     setState('unauthenticated');
+    void identifyUser(null);
   }, []);
 
   const handleDeleteAccount = useCallback(async () => {

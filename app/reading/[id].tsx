@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -23,6 +23,7 @@ import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingPosition } from '@/hooks/use-reading-position';
 import { buildPages } from '@/lib/reading/build-pages';
+import { trackChapterViewed } from '@/lib/analytics';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { PageItem } from '@/lib/reading/types';
 
@@ -53,6 +54,11 @@ export default function ReadingScreen() {
     },
     [],
   );
+
+  // Engagement: fire once whenever the reader lands on a new chapter.
+  useEffect(() => {
+    void trackChapterViewed({ chapter: visibleChapter, isFirst: visibleChapter === 1 });
+  }, [visibleChapter]);
 
   const title = data?.title ?? '';
   const estimatedChapters = data?.estimatedChapters ?? 1;
