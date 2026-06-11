@@ -363,21 +363,30 @@ There were two schema files that looked duplicated:
 
 Earlier direction was to clean this duplication. Re-check current contents before editing. The desired end state is one canonical shared schema or thin re-export, not two independently maintained copies.
 
-## AI SDK Deprecation Work
+## AI SDK Deprecation Work — ✅ 완료 (2026-06-11 확인)
 
-The user noticed deprecated `generateObject` call signatures in the editor.
+`ai@6.0.177` 기준 전 호출부가 이미 최신 API로 마이그레이션된 상태임을 확인. 추가 작업 없음.
 
-Direction:
+현재 코드는 deprecated된 `generateObject`/`streamObject` 대신 `generateText` + `output` 설정을 사용:
 
-- Update deprecated Vercel AI SDK usage to current recommended call shapes.
-- Prefer official docs / installed `vercel:ai-sdk` skill when doing this.
-- Search repo-wide for deprecated AI SDK signatures before changing:
-
-```bash
-rg "generateObject|generateText|streamText|experimental_|schemaDescription|as Parameters" lib workers app components shared
+```ts
+import { generateText, Output } from "ai";
+const result = await generateText({ output: Output.object({ schema }), ... });
+return result.output; // (deprecated `experimental_output` 아님)
 ```
 
-Keep changes scoped and verify TypeScript.
+호출부 (전부 동일 패턴):
+- `lib/ai/story-generation.ts`, `lib/ai/prompt-check.ts`
+- `workers/api/src/lib/ai/story-generation.ts`, `workers/api/src/lib/ai/prompt-check.ts`
+- `workers/api/src/lib/story-harness/drafting/structured-generation.ts`, `extend-chapter-body.ts`
+
+다음 deprecated 시그니처는 소스에 **없음** (재확인 시 grep): `generateObject`, `streamObject`,
+`maxTokens`(→`maxOutputTokens` 사용 중), 입력/결과 `experimental_output`(→`output` 사용 중),
+`experimental_activeTools`, `experimental_providerMetadata`.
+
+```bash
+rg "generateObject|streamObject|\bmaxTokens\b|experimental_output|experimental_activeTools|experimental_providerMetadata" lib workers app components shared
+```
 
 ## Generated / Local Assets
 
