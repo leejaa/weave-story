@@ -14,7 +14,8 @@
     "db:generate": "eas env:exec development 'npx drizzle-kit generate'",
     "db:migrate": "eas env:exec development 'npx drizzle-kit migrate'",
     "db:studio": "eas env:exec development 'npx drizzle-kit studio'",
-    "deploy:ios": "bash scripts/deploy-ios.sh"
+    "deploy:ios": "bash scripts/deploy-ios.sh",
+    "deploy:ota": "bash scripts/deploy-ota.sh"
   },
   "dependencies": {
     "@expo-google-fonts/black-han-sans": "^0.4.1",
