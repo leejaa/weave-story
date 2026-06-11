@@ -1,0 +1,16 @@
+{
+  "title": "儲值點數",
+  "subtitle": "用點數開始新故事，或解鎖下一個章節。",
+  "empty": "無法載入商品。請稍後再試。",
+  "popular": "熱門",
+  "creditsLabel": "{{count}} 點",
+  "buy": "購買",
+  "restore": "還原購買",
+  "purchaseErrorTitle": "購買錯誤",
+  "purchaseError": "購買過程發生問題。請再試一次。",
+  "restoreDoneTitle": "還原購買",
+  "restoreDone": "我們已查詢你的購買紀錄。",
+  "restoreErrorTitle": "還原錯誤",
+  "restoreError": "還原購買時發生問題。請稍後再試。",
+  "legalConsent": "購買即表示你同意我們的<terms>使用條款</terms>與<privacy>隱私權政策</privacy>。"
+}

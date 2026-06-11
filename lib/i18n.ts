@@ -26,19 +26,38 @@ import ja_reading from '@/locales/ja/reading.json';
 import ja_you from '@/locales/ja/you.json';
 import ja_purchases from '@/locales/ja/purchases.json';
 
-export const SUPPORTED_LOCALES = ['en', 'ko', 'ja'] as const;
+import zhHant_common from '@/locales/zh-Hant/common.json';
+import zhHant_home from '@/locales/zh-Hant/home.json';
+import zhHant_library from '@/locales/zh-Hant/library.json';
+import zhHant_weave from '@/locales/zh-Hant/weave.json';
+import zhHant_reading from '@/locales/zh-Hant/reading.json';
+import zhHant_you from '@/locales/zh-Hant/you.json';
+import zhHant_purchases from '@/locales/zh-Hant/purchases.json';
+
+export const SUPPORTED_LOCALES = ['en', 'ko', 'ja', 'zh-Hant'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const LOCALE_LABELS: Record<SupportedLocale, string> = {
   en: 'English',
   ko: '한국어',
   ja: '日本語',
+  'zh-Hant': '繁體中文',
 };
 
 function detectLocale(): SupportedLocale {
-  const tag = Localization.getLocales()[0]?.languageCode ?? 'en';
-  return (SUPPORTED_LOCALES as readonly string[]).includes(tag)
-    ? (tag as SupportedLocale)
+  const loc = Localization.getLocales()[0];
+  const code = loc?.languageCode ?? 'en';
+  // Chinese: only Traditional is supported. A Traditional-Chinese device reports
+  // languageCode 'zh', so disambiguate by script (Hant) or region (TW/HK/MO).
+  // Simplified Chinese is not supported and falls back to English.
+  if (code === 'zh') {
+    const tag = loc?.languageTag ?? ''; // e.g. 'zh-Hant-TW', 'zh-TW', 'zh-HK'
+    const region = loc?.regionCode ?? '';
+    const isTraditional = /hant/i.test(tag) || ['TW', 'HK', 'MO'].includes(region);
+    return isTraditional ? 'zh-Hant' : 'en';
+  }
+  return (SUPPORTED_LOCALES as readonly string[]).includes(code)
+    ? (code as SupportedLocale)
     : 'en';
 }
 
@@ -70,6 +89,15 @@ i18n.use(initReactI18next).init({
       reading: ja_reading,
       you: ja_you,
       purchases: ja_purchases,
+    },
+    'zh-Hant': {
+      common: zhHant_common,
+      home: zhHant_home,
+      library: zhHant_library,
+      weave: zhHant_weave,
+      reading: zhHant_reading,
+      you: zhHant_you,
+      purchases: zhHant_purchases,
     },
   },
   lng: detectLocale(),

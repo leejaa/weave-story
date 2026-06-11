@@ -1,0 +1,43 @@
+{
+  "position": "CH. {{chapter}} · BEAT {{beat}}",
+  "chapterLabel": "第 {{number}} 章",
+  "prompt": "她會怎麼做？",
+  "notFound": "找不到這則故事。",
+  "chapterFailed": "章節生成失敗。\n請稍後再試。",
+  "end": "— 完 —",
+  "choice": {
+    "defaultQuestion": "你會怎麼做？",
+    "orInput": "或是自行輸入",
+    "inputPlaceholder": "輸入你想採取的行動…",
+    "continue": "繼續故事",
+    "yourChoice": "你的選擇",
+    "entryKicker": "抉擇的時刻",
+    "openChoice": "選擇接下來的發展"
+  },
+  "generating": {
+    "title": "正在為你翻開故事書",
+    "body": "第一幕正落定於書頁之上。",
+    "estimate": "約需 1–2 分鐘",
+    "notify": "你可以先離開——完成後我們會以通知提醒你"
+  },
+  "report": {
+    "title": "檢舉",
+    "subtitle": "這個章節有什麼問題嗎？",
+    "reasons": {
+      "sexual": "色情或露骨內容",
+      "violence": "暴力或血腥內容",
+      "hate": "仇恨或騷擾",
+      "illegal": "違法內容",
+      "other": "其他"
+    },
+    "successTitle": "已收到檢舉",
+    "success": "謝謝你——我們會審查這項內容。",
+    "errorTitle": "檢舉失敗",
+    "error": "請稍後再試。"
+  },
+  "nowReading": "正在閱讀",
+  "chapterError": {
+    "title": "無法為你翻開故事",
+    "body": "撰寫第一章時發生了問題。\n你的點數並未扣除——請再試一次。"
+  }
+}

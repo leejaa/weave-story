@@ -12,7 +12,7 @@ export type SampleCardData = {
   displayOrder: number;
 };
 
-export type Language = 'en' | 'ko' | 'ja';
+export type Language = 'en' | 'ko' | 'ja' | 'zh-Hant';
 
 /** 이야기 생성 (POST /api/stories) */
 export type CreateStoryRequest = {

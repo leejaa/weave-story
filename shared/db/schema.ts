@@ -78,7 +78,7 @@ export const stories = pgTable('stories', {
   mood: text('mood'),
   coverImageUrl: text('cover_image_url'),
   estimatedChapters: integer('estimated_chapters').notNull().default(10),
-  // Language the story is generated in (en | ja | ko). Drives the AI writing prompts.
+  // Language the story is generated in (en | ja | ko | zh-Hant). Drives the AI writing prompts.
   language: text('language').notNull().default('en'),
   status: text('status').notNull().default('generating'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

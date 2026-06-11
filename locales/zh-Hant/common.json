@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "create": "新故事",
+    "stories": "我的故事"
+  },
+  "genres": {
+    "mystery": "懸疑",
+    "romance": "愛情",
+    "folk": "民間故事",
+    "cozy": "溫馨",
+    "eerie": "怪奇",
+    "slowBurn": "慢熱",
+    "sharp": "犀利",
+    "tender": "溫柔",
+    "drama": "戲劇"
+  },
+  "length": {
+    "short": "3–5章",
+    "medium": "7–10章",
+    "long": "12+章"
+  },
+  "errors": {
+    "threadSnagged": "故事的線纏住了。要再選一次嗎？",
+    "sessionExpired": "登入階段已過期。請重新啟動應用程式。",
+    "forbidden": "你沒有執行此操作的權限。",
+    "tooManyRequests": "請求次數過多。請稍後再試。",
+    "server": "伺服器發生暫時性錯誤。請稍後再試。",
+    "requestFailed": "無法完成你的請求。請再試一次。",
+    "network": "請確認網路連線後再試一次。",
+    "unknown": "發生未知的錯誤。請再試一次。"
+  },
+  "status": {
+    "ongoing": "進行中",
+    "completed": "完結",
+    "generating": "準備中…"
+  },
+  "paywall": {
+    "credits": {
+      "title": "購買點數",
+      "subtitle": "只為你所讀的付費",
+      "popular": "熱門",
+      "creditsDesc_one": "{{count}} 章",
+      "creditsDesc_other": "{{count}} 章",
+      "goSubscription": "想無限暢讀嗎？查看訂閱 →"
+    },
+    "subscription": {
+      "back": "← 返回",
+      "title": "月費訂閱",
+      "subtitle": "每月無限生成章節",
+      "badge": "無限",
+      "productDesc": "想生成多少章節都可以",
+      "perMonth": " / 月",
+      "restoreLink": "已經訂閱了嗎？還原",
+      "restoreHint": "重新安裝應用程式或更換裝置時可使用",
+      "restoreSuccess": "訂閱已還原！",
+      "restoreNone": "找不到有效的訂閱。"
+    }
+  },
+  "actions": {
+    "retry": "再試一次",
+    "back": "返回"
+  }
+}

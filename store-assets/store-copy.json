@@ -1,5 +1,5 @@
 {
-  "_note": "Store listing copy for App Store (apple) + Google Play (play). en is existing/live; ja & ko are new drafts pending approval. Char limits: Apple name<=30, subtitle<=30, keywords<=100, promo<=170, desc<=4000; Play title<=30, short<=80, full<=4000.",
+  "_note": "Store listing copy for App Store (apple) + Google Play (play). en is existing/live; ja, ko & zh-Hant are new drafts pending approval. App Store Connect locale: zh-Hant (Traditional Chinese). Google Play locale: zh-TW (Taiwan); add zh-HK separately if targeting Hong Kong. Char limits: Apple name<=30, subtitle<=30, keywords<=100, promo<=170, desc<=4000; Play title<=30, short<=80, full<=4000.",
   "apple": {
     "en-US": {
       "name": "Weave Story",
@@ -21,6 +21,13 @@
       "keywords": "AI소설,인터랙티브,선택,웹소설,이야기,창작,로맨스,판타지,미스터리,비주얼노벨,읽기",
       "promotionalText": "선택할 때마다 이야기가 당신만의 모습으로 바뀝니다. 한 줄의 영감에서 시작해, AI가 분기하는 이야기를 한 장씩 엮어요. 당신의 선택, 당신의 결말.",
       "description": "Weave Story는 당신의 선택 하나하나가 오직 당신을 위한 이야기를 만들어가는 AI 인터랙티브 소설 앱입니다.\n\n하나의 불씨에서 시작하세요 — 장르, 분위기, 설정. Weave Story가 그것을 살아 있는 이야기로 한 장씩 생성합니다. 매 갈림길에서 다음에 무슨 일이 일어날지는 당신이 결정합니다. 당신의 선택은 줄거리를 분기시키고, 인물을 깊게 만들며, 그 누구도 똑같이 읽지 못할 결말로 이어집니다.\n\n주요 기능\n• 당신의 모든 결정에 적응해 AI가 생성하는 챕터\n• 의미와 결과가 따르는 분기형 스토리\n• 당신이 만든 모든 이야기를 보관하는 나만의 서재\n• 장편 소설을 위한 깔끔하고 몰입감 있는 읽기 경험\n• 장르를 넘나드는 창작: 로맨스, 미스터리, 판타지, 스릴러 등\n\nWeave Story는 읽기를 AI와 함께 써내려가는 경험으로 바꿉니다. 당신의 이야기, 당신의 선택, 당신의 결말.\n\n참고: 이야기는 AI로 생성되며 성인용이거나 예상치 못한 주제를 포함할 수 있습니다. 부적절해 보이는 챕터는 리더에서 바로 신고할 수 있습니다."
+    },
+    "zh-Hant": {
+      "name": "Weave Story",
+      "subtitle": "用選擇編織專屬AI小說",
+      "keywords": "AI小說,互動小說,選擇,網路小說,故事,創作,愛情,奇幻,懸疑,視覺小說,閱讀",
+      "promotionalText": "每一次選擇，都讓故事成為專屬你的模樣。從一個靈感出發，讓AI一章一章編織出分歧的故事。你的選擇，你的結局。",
+      "description": "Weave Story 是一款AI互動小說應用程式，你做的每一個選擇，都會形塑一個專為你而寫的故事。\n\n從一個靈感開始——類型、氛圍、設定。Weave Story 會將它生成為一個活生生的故事，一章接著一章。在每個轉折點，下一步會發生什麼，由你決定。你的選擇會讓情節分歧、讓角色更立體，並通往一個別人都無法以相同方式讀到的結局。\n\n主要特色\n• 因應你每個決定而生成的AI章節\n• 帶有意義與後果的分歧式劇情\n• 收藏你所創造的每一個故事的個人書庫\n• 為長篇小說打造的乾淨、不受干擾的閱讀體驗\n• 跨類型創作：愛情、懸疑、奇幻、驚悚等\n\nWeave Story 讓閱讀變成一件你與AI共同書寫的事。你的故事，你的選擇，你的結局。\n\n注意：故事由AI生成，可能包含成人或意料之外的主題。你可以從閱讀畫面直接檢舉任何看似不當的章節。"
     }
   },
   "play": {
@@ -38,6 +45,11 @@
       "title": "Weave Story",
       "shortDescription": "선택할 때마다 이야기가 갈라지는 AI 인터랙티브 소설. 당신만의 한 권을.",
       "fullDescription": "Weave Story는 당신의 선택 하나하나가 오직 당신을 위한 이야기를 만들어가는 AI 인터랙티브 소설 앱입니다.\n\n하나의 불씨에서 시작하세요 — 장르, 분위기, 설정. Weave Story가 그것을 살아 있는 이야기로 한 장씩 생성합니다. 매 갈림길에서 다음에 무슨 일이 일어날지는 당신이 결정합니다. 당신의 선택은 줄거리를 분기시키고, 인물을 깊게 만들며, 그 누구도 똑같이 읽지 못할 결말로 이어집니다.\n\n주요 기능\n• 당신의 모든 결정에 적응해 AI가 생성하는 챕터\n• 의미와 결과가 따르는 분기형 스토리\n• 당신이 만든 모든 이야기를 보관하는 나만의 서재\n• 장편 소설을 위한 깔끔하고 몰입감 있는 읽기 경험\n• 장르를 넘나드는 창작: 로맨스, 미스터리, 판타지, 스릴러 등\n\nWeave Story는 읽기를 AI와 함께 써내려가는 경험으로 바꿉니다. 당신의 이야기, 당신의 선택, 당신의 결말.\n\n참고: 이야기는 AI로 생성되며 성인용이거나 예상치 못한 주제를 포함할 수 있습니다. 부적절해 보이는 챕터는 리더에서 바로 신고할 수 있습니다."
+    },
+    "zh-TW": {
+      "title": "Weave Story",
+      "shortDescription": "每次選擇都讓故事分歧的AI互動小說。打造專屬你的一本書。",
+      "fullDescription": "Weave Story 是一款AI互動小說應用程式，你做的每一個選擇，都會形塑一個專為你而寫的故事。\n\n從一個靈感開始——類型、氛圍、設定。Weave Story 會將它生成為一個活生生的故事，一章接著一章。在每個轉折點，下一步會發生什麼，由你決定。你的選擇會讓情節分歧、讓角色更立體，並通往一個別人都無法以相同方式讀到的結局。\n\n主要特色\n• 因應你每個決定而生成的AI章節\n• 帶有意義與後果的分歧式劇情\n• 收藏你所創造的每一個故事的個人書庫\n• 為長篇小說打造的乾淨、不受干擾的閱讀體驗\n• 跨類型創作：愛情、懸疑、奇幻、驚悚等\n\nWeave Story 讓閱讀變成一件你與AI共同書寫的事。你的故事，你的選擇，你的結局。\n\n注意：故事由AI生成，可能包含成人或意料之外的主題。你可以從閱讀畫面直接檢舉任何看似不當的章節。"
     }
   }
 }

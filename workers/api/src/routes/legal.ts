@@ -5,10 +5,12 @@ const SUPPORT_EMAIL = 'leejahun0@gmail.com';
 const EFFECTIVE_DATE = '2026-06-02';
 const APP_NAME = 'Weave Story';
 
-export type LegalLang = 'ko' | 'en' | 'ja';
+export type LegalLang = 'ko' | 'en' | 'ja' | 'zh-Hant';
 
 export function normalizeLang(input?: string | null): LegalLang {
-  const l = (input ?? '').slice(0, 2).toLowerCase();
+  const raw = (input ?? '').toLowerCase();
+  if (raw.startsWith('zh')) return 'zh-Hant';
+  const l = raw.slice(0, 2);
   return l === 'en' || l === 'ja' ? l : 'ko';
 }
 
@@ -16,6 +18,7 @@ const CONTACT_LABEL: Record<LegalLang, string> = {
   ko: '문의',
   en: 'Contact',
   ja: 'お問い合わせ',
+  'zh-Hant': '聯絡',
 };
 
 function page(lang: LegalLang, title: string, body: string): string {
@@ -145,6 +148,43 @@ const PRIVACY: Record<LegalLang, { title: string; body: string }> = {
 <h2>7. 変更</h2>
 <p>本ポリシーは変更されることがあり、変更時は本ページに掲載します。</p>`,
   },
+  'zh-Hant': {
+    title: '隱私權政策',
+    body: `<h1>隱私權政策</h1>
+<p class="meta">${APP_NAME} · 生效日 ${EFFECTIVE_DATE}</p>
+<p>${APP_NAME}（以下稱「本服務」）是一款AI互動小說應用程式。本政策說明本服務所蒐集、使用與保存的個人資料。</p>
+<h2>1. 我們蒐集的資訊</h2>
+<ul>
+  <li><b>帳號資訊</b>: 以Apple或Google登入時所提供的電子郵件、姓名與個人檔案圖片。</li>
+  <li><b>使用者生成內容</b>: 使用者輸入的故事設定（提示）以及由此生成的章節文字。</li>
+  <li><b>購買紀錄</b>: 應用程式內購買（點數）的交易識別碼與發放紀錄。付款資訊由Apple處理，本服務不予保存。</li>
+  <li><b>診斷資訊</b>: 為修正錯誤與提升穩定性所用的去識別化診斷日誌。</li>
+</ul>
+<h2>2. 使用目的</h2>
+<ul>
+  <li>提供服務（登入、故事生成與保存、續讀）。</li>
+  <li>處理應用程式內購買與發放點數。</li>
+  <li>診斷錯誤、改善品質、防止濫用。</li>
+  <li>檢視並處理使用者檢舉的內容。</li>
+</ul>
+<h2>3. 第三方委託與跨境傳輸</h2>
+<p>為營運本服務，我們使用以下處理者，部分可能位於您所在國家／地區之外。</p>
+<ul>
+  <li>Apple、Google — 登入驗證、應用程式內購買。</li>
+  <li>Cloudflare — 應用程式代管。</li>
+  <li>Neon — 資料庫。</li>
+  <li>AI生成供應商（如 Anthropic） — 故事文字生成。</li>
+  <li>Sentry — 錯誤診斷。</li>
+</ul>
+<h2>4. 保存與刪除</h2>
+<p>個人資料於您使用本服務期間保存，透過應用程式內的<b>刪除帳號</b>，您的帳號、生成內容、購買紀錄等相關資料將立即永久刪除。</p>
+<h2>5. 您的權利</h2>
+<p>您可要求查閱或刪除您的資料，亦可透過應用程式內的刪除帳號直接刪除。</p>
+<h2>6. 兒童</h2>
+<p>本服務不以未滿14歲之兒童為對象。</p>
+<h2>7. 變更</h2>
+<p>本政策可能變更，變更時將公告於本頁面。</p>`,
+  },
 };
 
 const TERMS: Record<LegalLang, { title: string; body: string }> = {
@@ -241,6 +281,37 @@ const TERMS: Record<LegalLang, { title: string; body: string }> = {
 <h2>7. 準拠法</h2>
 <p>本規約は大韓民国の法律に準拠します。</p>`,
   },
+  'zh-Hant': {
+    title: '使用條款',
+    body: `<h1>使用條款</h1>
+<p class="meta">${APP_NAME} · 生效日 ${EFFECTIVE_DATE}</p>
+<p>本條款規範您對${APP_NAME}（以下稱「本服務」）的使用。使用本服務即表示您同意本條款。</p>
+<h2>1. 本服務</h2>
+<p>本服務提供由AI根據您所輸入的設定生成互動小說章節的功能。生成結果由AI自動產生，本服務不保證其正確性或適切性。</p>
+<h2>2. 點數與付款</h2>
+<ul>
+  <li>生成故事會使用於應用程式內購買的點數。</li>
+  <li>付款與退款依Apple App Store的政策辦理。</li>
+  <li>點數為僅能於本服務內使用的虛擬商品，不得兌換現金。</li>
+</ul>
+<h2>3. 使用者的義務（禁止行為）</h2>
+<p>使用者不得生成或要求生成下列內容:</p>
+<ul>
+  <li>兒童性剝削物等違法內容。</li>
+  <li>助長對他人之騷擾、仇恨或歧視的內容。</li>
+  <li>助長或教唆真實世界犯罪或暴力的內容。</li>
+  <li>其他違反相關法令或Apple App Store政策的內容。</li>
+</ul>
+<p>不當的生成物可透過應用程式內的檢舉功能檢舉，本服務經檢視後得採取隱藏內容、限制帳號使用等措施。</p>
+<h2>4. 內容權利</h2>
+<p>您所生成的內容以非公開方式提供給您本人，不會分享給其他使用者。</p>
+<h2>5. 免責聲明</h2>
+<p>本服務以「現狀」提供。在法律允許的範圍內，本服務對因AI生成物所產生的結果不負責任。</p>
+<h2>6. 終止</h2>
+<p>您可隨時透過應用程式內的刪除帳號終止使用。</p>
+<h2>7. 準據法</h2>
+<p>本條款依大韓民國法律辦理。</p>`,
+  },
 };
 
 const SUPPORT: Record<LegalLang, { title: string; body: string }> = {
@@ -284,6 +355,20 @@ const SUPPORT: Record<LegalLang, { title: string; body: string }> = {
   <li><b>購入が反映されません。</b> 課金画面の<b>購入の復元</b>をタップしてください。解決しない場合は上記メールへご連絡ください。</li>
   <li><b>不適切な内容を見ました。</b> チャプター画面の報告（🚩）ボタンから報告してください。確認のうえ対応します。</li>
   <li><b>アカウント削除の方法は？</b> プロフィール画面の<b>アカウント削除</b>から、アカウントとすべてのデータを直ちに完全に削除できます。</li>
+</ul>`,
+  },
+  'zh-Hant': {
+    title: '客戶支援',
+    body: `<h1>${APP_NAME} 客戶支援</h1>
+<p class="meta">AI互動小說應用程式</p>
+<p>需要協助嗎？請參考以下內容，或來信 <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>。我們通常會在兩個工作天內回覆。</p>
+<h2>常見問題</h2>
+<ul>
+  <li><b>如何建立故事？</b> 輸入類型、氛圍與設定，AI 就會生成第一章，接著你每做一次選擇，下一章便隨之展開。</li>
+  <li><b>點數是什麼？</b> 用於生成故事的應用程式內貨幣。可透過應用程式內購買儲值，付款與退款依Apple App Store政策辦理。</li>
+  <li><b>購買沒有生效。</b> 請點選付款畫面的<b>還原購買</b>。若仍無法解決，請來信上方信箱。</li>
+  <li><b>我看到不當內容。</b> 請使用章節畫面的檢舉（🚩）按鈕檢舉，我們會檢視並處理。</li>
+  <li><b>如何刪除帳號？</b> 在個人檔案畫面的<b>刪除帳號</b>，即可立即永久刪除你的帳號與所有資料。</li>
 </ul>`,
   },
 };

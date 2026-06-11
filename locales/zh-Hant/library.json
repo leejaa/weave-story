@@ -1,0 +1,25 @@
+{
+  "title": "書庫",
+  "stat": "{{threads}} 則故事 · {{unfinished}} 則進行中",
+  "tabs": {
+    "reading": "閱讀中",
+    "finished": "已讀完",
+    "saved": "已收藏",
+    "archived": "封存"
+  },
+  "screenTitle": "我的故事",
+  "section": {
+    "ongoing": "進行中",
+    "completed": "完結"
+  },
+  "empty": {
+    "stories": {
+      "title": "還沒有任何故事",
+      "subtitle": "從新故事分頁開始你的第一個故事"
+    },
+    "threads": {
+      "title": "還沒讀過任何故事",
+      "subtitle": "從首頁挑一則故事開始吧"
+    }
+  }
+}

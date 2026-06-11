@@ -21,9 +21,13 @@ const COPY: Record<StoryLang, Record<Kind, { title: string; body: (t: string) =>
     first: { title: '이야기가 준비됐어요 ✨', body: (t) => `「${t}」 — 탭하면 바로 읽을 수 있어요.` },
     next: { title: '다음 챕터가 도착했어요', body: (t) => `「${t}」 이어서 읽어보세요.` },
   },
+  'zh-Hant': {
+    first: { title: '你的故事準備好了 ✨', body: (t) => `「${t}」 — 點一下即可開始閱讀。` },
+    next: { title: '下一章已送達', body: (t) => `「${t}」的續章來了，點一下繼續讀。` },
+  },
 };
 
-const FALLBACK_TITLE: Record<StoryLang, string> = { en: 'Your story', ja: '物語', ko: '이야기' };
+const FALLBACK_TITLE: Record<StoryLang, string> = { en: 'Your story', ja: '物語', ko: '이야기', 'zh-Hant': '你的故事' };
 
 export async function sendChapterReadyPush(params: {
   db: DB;

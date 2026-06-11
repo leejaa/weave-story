@@ -1,0 +1,26 @@
+{
+  "eyebrow": "新故事",
+  "title": "編織一則故事",
+  "subtitle": "一句話、一個場景、一種感覺。你的種子將化為第一章。",
+  "seed": {
+    "label": "故事的種子",
+    "placeholder": "一位祖母、一片海岸、一個陌生人…"
+  },
+  "mood": "氛圍",
+  "length": "篇幅",
+  "disclosure": "故事會依據你的選擇生成。品質或有起伏，文字若偶爾迷路，請稍緩片刻。",
+  "begin": "開始編織",
+  "headline": "你想要什麼\n樣的故事？",
+  "subtext": "自由地描述你想要的故事。",
+  "placeholder": "例如：一名偵探在1920年代的上海，揭開一樁直通權力核心的陰謀…",
+  "hint": "角色、背景與衝突越具體，故事就越生動。",
+  "quickStart": "快速開始",
+  "startBtn": "開始故事",
+  "preparingBtn": "故事準備中...",
+  "loadingTitle": "正在撰寫你的故事",
+  "loadingSubtitle": "只需片刻即可完成。",
+  "refine_label": "再多告訴我們一些",
+  "refine_placeholder": "自由作答（也可以略過）",
+  "refine_next": "下一步",
+  "refine_skip": "略過這個問題"
+}

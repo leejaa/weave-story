@@ -1,0 +1,14 @@
+{
+  "language": "語言",
+  "signOut": "登出",
+  "signOutConfirm": "確定要登出嗎？",
+  "cancel": "取消",
+  "plan": "方案",
+  "unlimitedStories": "無限故事使用中",
+  "creditsRemaining": "剩餘 {{count}} 點",
+  "recharge": "儲值",
+  "deleteAccount": "刪除帳號",
+  "deleteAccountConfirm": "你的帳號與所有資料（包含故事與剩餘點數）將被永久刪除，且無法復原。確定要刪除帳號嗎？",
+  "deleteAccountErrorTitle": "刪除失敗",
+  "deleteAccountError": "發生問題。請稍後再試。"
+}

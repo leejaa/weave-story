@@ -5,7 +5,9 @@ import i18n from '@/lib/i18n';
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
 
 function currentLang(): string {
-  const l = (i18n.language || 'ko').slice(0, 2);
+  const lang = i18n.language || 'ko';
+  if (lang.startsWith('zh')) return 'zh-Hant';
+  const l = lang.slice(0, 2);
   return ['ko', 'en', 'ja'].includes(l) ? l : 'ko';
 }
 

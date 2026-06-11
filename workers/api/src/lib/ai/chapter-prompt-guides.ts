@@ -131,4 +131,35 @@ const ja: LangGuide = {
     `次のインタラクティブ小説の章の重要な出来事、人物の行動、感情の変化を200字以内で要約してください。\n\n[第${n}章の内容]\n${content}`,
 };
 
-export const GUIDES: Record<StoryLang, LangGuide> = { ko, en, ja };
+const zhHant: LangGuide = {
+  writerSystem:
+    '你是一位文學小說作家。你會根據讀者選定的設定，以繁體中文撰寫互動小說的章節。請以富有文學性與感官質感的文筆，寫出生動的場景與情感。',
+  summarySystem: '你是一位小說編輯。你會將章節內容簡潔地摘要。',
+  desc: {
+    title: '整部故事的標題（詩意而印象深刻，30字以內）',
+    genre: GENRE_DESC,
+    chapterTitleFirst: '第1章的標題（20字以內）',
+    chapterTitle: '章節標題（20字以內）',
+    contentMain:
+      '【直接呈現給讀者的章節正文全文】務必2000字以上、2800字以下。9至12段，各段以空行分隔。將故事的所有敘事都寫在這裡。請勿在 situation 欄位寫新的故事。',
+    contentFinal:
+      '【直接呈現給讀者的章節正文全文】務必2000字以上、2800字以下。9至12段，以空行分隔。請將故事完結。',
+    situation:
+      '【顯示於選擇畫面的簡短情境摘要】將 content 中描寫的抉擇時刻以1至2句摘要。60字以內。禁止寫新內容。',
+    question: '向讀者拋出的選擇提問（例:「她該怎麼做？」，20字以內）',
+    choices: '讀者選項剛好2個（各25字以內，繁體中文，具體的行動描寫）',
+    finalSituation: '因為是最後一章，留空字串',
+    finalQuestion: '因為是最後一章，留空字串',
+    finalChoices: '因為是最後一章，務必為空陣列 []',
+  },
+  firstPrompt: (prompt, chapters) =>
+    `讀者想要的故事:\n"${prompt}"\n\n總章數: ${chapters}章\n\n請根據以上設定，撰寫故事的第一章。\n\n【務必遵守】\n- content: 務必寫滿2000字以上。\n- situation: 將 content 中描寫的抉擇時刻，僅以1至2句（60字以內）摘要。`,
+  summariesLabel: '[前面章節的摘要]',
+  summaryLine: (n, s) => `第${n}章: ${s}`,
+  nextPrompt: ({ prompt, chapters, summaries, prevNumber, prevContent, chosen, nextNumber, isFinal }) =>
+    `故事設定: "${prompt}"\n總章數: ${chapters}章\n\n${summaries}[第${prevNumber}章內容]\n${prevContent}\n\n讀者的選擇: "${chosen}"\n\n目前章節編號: ${nextNumber} / ${chapters}\n${isFinal ? '\n這是最後一章。choices 務必以空陣列 [] 回傳。' : ''}\n\n【務必遵守】\n- content: 務必寫滿2000字以上。\n- situation: 僅以1至2句（60字以內）摘要。`,
+  summaryPrompt: (content, n) =>
+    `請將以下互動小說章節的關鍵事件、人物行動與情感變化，以200字以內摘要。\n\n[第${n}章內容]\n${content}`,
+};
+
+export const GUIDES: Record<StoryLang, LangGuide> = { ko, en, ja, 'zh-Hant': zhHant };
