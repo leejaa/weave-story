@@ -38,8 +38,8 @@ async function jreq(method, url, body) {
 }
 
 // locale code in the store -> screenshot file prefix
-const FILE_LOCALE = { 'en-US': 'en', 'ja-JP': 'ja', 'ko-KR': 'ko' };
-const SHOT_ORDER = ['01-choice', '02-setup', '03-read', '04-home', '05-library'];
+const FILE_LOCALE = { 'en-US': 'en', 'ja-JP': 'ja', 'ko-KR': 'ko', 'zh-TW': 'zh-Hant' };
+const SHOT_ORDER = ['01-setup', '02-choice', '03-read', '04-home', '05-library'];
 
 const edit = await jreq('POST', `${base}/edits`);
 const eid = edit.id;
