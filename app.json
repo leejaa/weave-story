@@ -31,6 +31,9 @@
     "android": {
       "package": "com.leejahun.weavestory",
       "googleServicesFile": "./google-services.json",
+      "blockedPermissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#1c1c1a",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
