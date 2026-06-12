@@ -3,6 +3,8 @@ import { makeDb } from '../db';
 import { chapters, stories, users } from '../schema';
 import { generateFirstChapterBackground, generateNextChapterBackground } from '../threads/background';
 import { notifyOwner } from '../notify/owner';
+import { logError } from '../observability/logger';
+import { alertServerError } from '../observability/alert';
 import type { WorkerEnv } from '../../types';
 import type { StoryGenerationJob } from './story-generation-jobs';
 import { NonRetryableStoryGenerationError } from '../story-harness/errors';
@@ -159,10 +161,20 @@ export async function handleStoryGenerationQueue(
       const error = serializeError(err);
       console.error(`${tag} error attempt=${message.attempts} elapsed=${elapsed}ms`, error);
 
+      const errorName = err instanceof Error ? err.name : 'Error';
+      const terminalLogCtx = {
+        type: job.type,
+        chapterId: job.chapterId,
+        storyId: job.type === 'first-chapter' ? job.storyId : undefined,
+        attempts: message.attempts,
+      };
+
       if (err instanceof NonRetryableStoryGenerationError) {
         await markJobFailed(job, env);
         message.ack();
         console.warn(`${tag} ack non_retryable`);
+        logError(err, { event: 'queue_job_failed', requestId: job.jobId, durationMs: elapsed, extra: { reason: 'non_retryable', ...terminalLogCtx } });
+        await alertServerError(env, { source: 'queue', requestId: job.jobId, path: `story-generation/${job.type}`, errorName });
         continue;
       }
 
@@ -170,6 +182,8 @@ export async function handleStoryGenerationQueue(
         await markJobFailed(job, env);
         message.ack();
         console.error(`${tag} final_failed attempts=${message.attempts}`, error);
+        logError(err, { event: 'queue_job_failed', requestId: job.jobId, durationMs: elapsed, extra: { reason: 'max_attempts', ...terminalLogCtx } });
+        await alertServerError(env, { source: 'queue', requestId: job.jobId, path: `story-generation/${job.type}`, errorName });
         continue;
       }
 
