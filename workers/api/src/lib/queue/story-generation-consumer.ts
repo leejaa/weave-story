@@ -1,7 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 import { makeDb } from '../db';
-import { chapters, stories } from '../schema';
+import { chapters, stories, users } from '../schema';
 import { generateFirstChapterBackground, generateNextChapterBackground } from '../threads/background';
+import { notifyOwner } from '../notify/owner';
 import type { WorkerEnv } from '../../types';
 import type { StoryGenerationJob } from './story-generation-jobs';
 import { NonRetryableStoryGenerationError } from '../story-harness/errors';
@@ -112,6 +113,20 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
       coverWorkerApiKey: env.AI_GATEWAY_API_KEY,
       useHarness: env.USE_STORY_HARNESS !== 'false',
     });
+
+    // 운영자 알림 — 첫 챕터 완성(best-effort). 여기 도달 = 생성 성공.
+    try {
+      const [row] = await db
+        .select({ title: stories.title, status: stories.status, email: users.email, name: users.name })
+        .from(stories)
+        .innerJoin(users, eq(stories.userId, users.id))
+        .where(eq(stories.id, job.storyId));
+      if (row && row.status === 'ready') {
+        await notifyOwner(env, `✨ 첫 챕터 완성\nuser: ${row.email ?? row.name ?? '-'}\ntitle: ${row.title ?? '-'}`);
+      }
+    } catch (err) {
+      console.error('[notify] first-chapter failed', err);
+    }
     return;
   }
 

@@ -4,6 +4,7 @@ import { makeDb } from '../lib/db';
 import { users, purchaseGrants } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { verifyGooglePurchase } from '../lib/google-play';
+import { notifyOwner } from '../lib/notify/owner';
 import type { AppEnv, WorkerEnv } from '../types';
 
 const BUNDLE_ID = 'com.leejahun.weavestory';
@@ -75,7 +76,7 @@ purchasesRouter.post('/grant', async (c) => {
     .update(users)
     .set({ credits: sql`${users.credits} + ${creditsToGrant}` })
     .where(eq(users.id, userId))
-    .returning({ credits: users.credits });
+    .returning({ credits: users.credits, email: users.email });
 
   await db.insert(purchaseGrants).values({
     userId,
@@ -85,6 +86,7 @@ purchasesRouter.post('/grant', async (c) => {
   });
 
   console.log(`[grant] granted userId=${userId} platform=${platform} product=${productId} credits=${creditsToGrant} total=${updated.credits}`);
+  c.executionCtx.waitUntil(notifyOwner(c.env, `💳 결제\nuser: ${updated.email ?? userId}\nproduct: ${productId}\nplatform: ${platform}\n+${creditsToGrant} 크레딧 (총 ${updated.credits})`));
   return c.json({ credits: updated.credits });
 });
 
