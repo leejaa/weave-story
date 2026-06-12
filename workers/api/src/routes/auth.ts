@@ -6,6 +6,7 @@ import { verifyAppleIdentityToken } from '../lib/auth/apple';
 import { exchangeAppleAuthCode } from '../lib/auth/apple-oauth';
 import { verifyGoogleIdToken } from '../lib/auth/google';
 import { signAccessToken, generateRefreshToken, hashRefreshToken, REFRESH_TOKEN_TTL_MS } from '../lib/tokens';
+import { notifyOwner } from '../lib/notify/owner';
 import type { AppEnv } from '../types';
 
 export const authRouter = new Hono<AppEnv>();
@@ -36,6 +37,7 @@ authRouter.post('/apple', async (c) => {
     const [newUser] = await db.insert(users).values({ email: email ?? null, name }).returning({ id: users.id });
     await db.insert(accounts).values({ userId: newUser.id, provider: 'apple', providerSub: appleSub });
     userId = newUser.id;
+    c.executionCtx.waitUntil(notifyOwner(c.env, `🎉 신규 가입 (Apple)\nemail: ${email ?? '-'}\nname: ${name ?? '-'}`));
   }
 
   // Capture an Apple refresh token (best-effort) so we can revoke it on account
@@ -84,6 +86,7 @@ authRouter.post('/google', async (c) => {
       .returning({ id: users.id });
     await db.insert(accounts).values({ userId: newUser.id, provider: 'google', providerSub: googleSub });
     userId = newUser.id;
+    c.executionCtx.waitUntil(notifyOwner(c.env, `🎉 신규 가입 (Google)\nemail: ${email ?? '-'}\nname: ${name ?? '-'}`));
   }
 
   const rawRefreshToken = generateRefreshToken();

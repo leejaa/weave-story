@@ -24,6 +24,9 @@ export type WorkerEnv = {
   // rejected. Sourced from the play-publisher service-account JSON key.
   GOOGLE_PLAY_SA_CLIENT_EMAIL?: string;
   GOOGLE_PLAY_SA_PRIVATE_KEY?: string;
+  // 운영자 텔레그램 알림(신규 가입·새 이야기 등). 둘 다 설정돼야 동작, 없으면 no-op.
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
 };
 
 export type AppEnv = {

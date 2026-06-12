@@ -7,6 +7,7 @@ import { checkPromptSpecificity } from '../lib/ai/prompt-check';
 import { normalizeStoryLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
+import { notifyOwner } from '../lib/notify/owner';
 import type { AppEnv } from '../types';
 
 export const storiesRouter = new Hono<AppEnv>();
@@ -31,13 +32,17 @@ storiesRouter.post('/', async (c) => {
 
   const db = makeDb(c.env.DATABASE_URL);
 
-  const [userRow] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
+  const [userRow] = await db.select({ credits: users.credits, email: users.email, name: users.name }).from(users).where(eq(users.id, userId));
   if (!userRow || userRow.credits <= 0) return c.json({ error: 'insufficient_credits' }, 402);
   await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
 
   const [story] = await db.insert(stories)
     .values({ userId, setupAnswers: { prompt: prompt.trim() }, estimatedChapters, language, status: 'generating' })
     .returning();
+
+  const who = userRow.email ?? userRow.name ?? userId;
+  const promptPreview = prompt.trim().slice(0, 120);
+  c.executionCtx.waitUntil(notifyOwner(c.env, `📖 새 이야기 생성\nuser: ${who}\nlang: ${language}\nprompt: ${promptPreview}`));
 
   const [thread] = await db.insert(threads).values({ userId, storyId: story.id }).returning();
 
