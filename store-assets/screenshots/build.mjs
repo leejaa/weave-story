@@ -270,6 +270,49 @@ const L10N = {
       { key: 'romance', mood: '따뜻한', done: '완결', title: '당신과의 계약 결혼' },
     ],
   },
+
+  'zh-Hant': {
+    dir: 'zh-Hant',
+    market: {
+      choice:  { eyebrow: 'WEAVE · 互動小說', headline: '你的<span class="accent">選擇</span><br>改寫故事', sub: '你做的每個選擇，<br>都改寫接下來的發展。' },
+      setup:   { eyebrow: 'CREATE · 一句話', headline: '一句話<br>展開一部<span class="accent">小說</span>', sub: '描述你想要的故事，<br>AI 寫下第一章。' },
+      read:    { eyebrow: 'READ · 沉浸頁面', headline: '為你一人<br>而寫的<span class="accent">小說</span>', sub: '如紙本般沉靜的頁面，<br>讓你沉浸其中。' },
+      home:    { eyebrow: 'GENRES · 七個世界', headline: '從愛情到<br><span class="accent">武俠</span>', sub: '七種類型任你挑選，<br>今夜的一本書。' },
+      library: { eyebrow: 'LIBRARY · 我的書架', headline: '隨時<br><span class="accent">接著讀</span>', sub: '進行中與已完結的故事，<br>都在同一處。' },
+    },
+    ui: {
+      greetingEvening: '晚安。', heroHeadline: '世上唯一<br>專屬你的故事', woven: '為今夜編織', seeAll: '查看全部 →',
+      spHeadline: '你想要<br>什麼故事？', spSubtext: '自由描述你想要的故事。',
+      spHint: '角色、背景、衝突越具體，故事就越鮮明。', spStart: '開始故事',
+      libTitle: '我的故事', libEyebrow: 'MY LIBRARY',
+      orInput: '或直接輸入', inputPlaceholder: '輸入你想做的事…', continue: '繼續故事', entryKicker: '選擇的時刻',
+      nowReading: '正在閱讀',
+    },
+    demo: {
+      storyTitle: '公爵選擇了我',
+      situation: '公爵放下手中的玫瑰，望向我。「今晚，願意與我同行嗎？」',
+      question: '你會握住他的手嗎？',
+      options: ['毫不猶豫握住他的手', '先問為什麼非得是我', '禮貌地拒絕，轉身離開'],
+      chapterLabel: '第三章 · 玫瑰與荊棘',
+      prose: [
+        '公爵的書房裡灑滿午後遲來的光。他立在窗邊，久久望著庭園，而我停在門檻邊，遲遲無法再上前一步。',
+        '「你害怕嗎？」他沒有回頭，這樣問道。一向熟悉的冷淡之下，藏著我從未聽過的低低顫抖。',
+        '我沒有回答，只是邁出一步。地板輕輕作響，他便循聲緩緩回過頭來。',
+      ],
+      setupTyped: '朝鮮末年風雨飄搖，一名女子隱藏身分入宮，發現了謀反的證據',
+    },
+    cards: {
+      rofan:   { genre: '奇幻愛情', title: '公爵\n選擇了我' },
+      romance: { genre: '愛情',     title: '與你的\n契約婚姻' },
+      fantasy: { genre: '奇幻',     title: '無能者\n是世界最強' },
+      mystery: { genre: '懸疑',     title: '消失畫家的\n最後一幅畫' },
+    },
+    libRows: [
+      { key: 'rofan', mood: '悸動', ch: 'Ch.4', title: '公爵選擇了我', pct: 50 },
+      { key: 'mystery', mood: '詭譎', ch: 'Ch.1', title: '消失畫家的最後一幅畫', pct: 20 },
+      { key: 'romance', mood: '溫柔', done: '完結', title: '與你的契約婚姻' },
+    ],
+  },
 };
 
 const SHOTS = [
@@ -279,6 +322,15 @@ const SHOTS = [
   { id: 'home', screen: 'home' },
   { id: 'library', screen: 'library' },
 ];
+
+/* Direction C: illustrated storybook backdrops behind each shot. */
+const SHOT_BG = {
+  choice:  '1-hook-thread-worlds',
+  setup:   '2-create-blank-page',
+  read:    '4-immersion-floating-city',
+  home:    '5-worlds-gathered',
+  library: '6-cta-converge',
+};
 
 // deviceRatio = phone width / canvas width; textScale shrinks copy on the
 // wider iPad canvas. iPad keeps the same absolute phone size as iPhone (more
@@ -311,15 +363,19 @@ function page(p, loc, shot) {
   const islandW = Math.round(deviceW * 0.34);
   const islandH = Math.round(bezel * 2.4);
   const view = screens(loc)[shot.screen];
+  const bg = `../bg-generated/bg-${SHOT_BG[shot.id]}.png`;
 
   return `<!doctype html><html lang="${loc.dir}"><head><meta charset="utf-8">
 <link rel="stylesheet" href="../styles.css">
 <style>
-  .canvas{width:${w}px;height:${h}px;}
+  .canvas{width:${w}px;height:${h}px;background:#efe6d6 url('${bg}') center top / cover no-repeat;}
+  /* readability scrim: soften the illustration behind the headline + below the device */
+  .canvas::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg, rgba(247,242,233,0.88) 0%, rgba(247,242,233,0.45) 16%, rgba(247,242,233,0) 30%);}
   .copy{width:100%;padding:${copyTop}px ${margin}px 0;}
   .eyebrow{font-size:${eSize}px;letter-spacing:${(eSize*0.18).toFixed(1)}px;margin-bottom:${Math.round(eSize*1.1)}px;}
-  .headline{font-size:${hSize}px;line-height:1.17;}
-  .subline{font-size:${sSize}px;line-height:1.5;margin-top:${Math.round(sSize*0.85)}px;}
+  .headline{font-family:"FrauncesSemi";font-weight:600;font-size:${(hSize*0.92).toFixed(1)}px;line-height:1.12;letter-spacing:-0.5px;}
+  .subline{font-size:${sSize}px;line-height:1.5;margin-top:${Math.round(sSize*0.95)}px;}
   .device{margin-top:${gap}px;width:${deviceW}px;height:${deviceH}px;border-radius:${Math.round(deviceW*0.092)}px;padding:${bezel}px;}
   .device .screen{width:${screenW}px;height:${screenH}px;border-radius:${Math.round(deviceW*0.082)}px;}
   .device .island{width:${islandW}px;height:${islandH}px;border-radius:${Math.round(islandH/2)}px;top:${Math.round(bezel*1.0)}px;}
