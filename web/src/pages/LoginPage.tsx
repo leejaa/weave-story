@@ -29,7 +29,7 @@ export function LoginPage({ onLogin }: Props) {
 
   return (
     <div className={styles.screen}>
-      <video className={styles.video} src={MEDIA.loginVideo} autoPlay loop muted playsInline preload="auto" aria-hidden />
+      <video className={styles.video} src={MEDIA.loginVideo} poster={MEDIA.loginPoster} autoPlay loop muted playsInline preload="auto" aria-hidden />
       <div className={styles.overlay} aria-hidden />
 
       <div className={styles.content}>

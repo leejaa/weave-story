@@ -6,6 +6,16 @@ Last updated: 2026-06-10
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
 
+## 2026-06-11 — AI 광고 영상 프리프로덕션 시작
+
+- Weave Story 광고 영상을 Vercel AI Gateway의 `openai/gpt-image-2`와
+  `bytedance/seedance-2.0` 조합으로 제작하기로 결정.
+- 바로 이미지를 생성하지 않고, Creative Brief부터 시작해 단계별 산출물을 사용자와
+  논의하고 승인한 뒤 다음 단계로 진행.
+- 제작 기준, 확정/미확정 사항, 결정 기록은
+  [`store-assets/ads/AI_VIDEO_PRODUCTION.md`](./store-assets/ads/AI_VIDEO_PRODUCTION.md)에 관리.
+- 현재 단계: **Creative Brief 작성 전 논의**.
+
 ## 2026-06-10 — App Store 재심사 대응 + UI 개편
 
 ### App Store 심사 탈락 대응 (build 37 → build 41)

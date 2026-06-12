@@ -24,6 +24,13 @@ export default defineConfig({
         home: path.resolve(__dirname, 'home.html'),
         gallery: path.resolve(__dirname, 'gallery.html'),
       },
+      output: {
+        // 안정적인 외부 라이브러리를 단일 vendor 청크로 분리 — 자주 바뀌는 앱 코드와 캐시 수명을 분리한다
+        // (immutable 헤더와 결합 시 재방문에서 vendor는 캐시 적중, 앱 코드만 갱신).
+        manualChunks(id) {
+          if (id.includes('node_modules')) return 'vendor';
+        },
+      },
     },
   },
 });

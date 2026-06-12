@@ -8,7 +8,7 @@ import styles from './HomeBackground.module.css';
 export function HomeBackground({ videoSrc = MEDIA.homeVideo }: { videoSrc?: string }) {
   return (
     <div className={styles.bg} aria-hidden>
-      <video className={styles.video} src={videoSrc} autoPlay loop muted playsInline preload="auto" />
+      <video className={styles.video} src={videoSrc} poster={MEDIA.homePoster} autoPlay loop muted playsInline preload="auto" />
       <div className={styles.scrim} />
       <div className={styles.floor1} />
       <div className={styles.floor2} />
