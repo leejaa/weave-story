@@ -19,6 +19,21 @@
       "distribution": "internal",
       "channel": "preview"
     },
+    "preview-apk": {
+      "extends": "production",
+      "autoIncrement": false,
+      "distribution": "internal",
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://weave-story-api.leejahun0.workers.dev",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "857705716385-r8e3m7ctl80d3pikd0drr4mt0sd5uv2q.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "857705716385-sm8k5eet5bb1895f8sf183lik9g7ng35.apps.googleusercontent.com",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://de6d381577b8b0e4d93856f8932fcdb4@o4511421727047680.ingest.us.sentry.io/4511424606502912"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "channel": "production"
