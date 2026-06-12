@@ -315,9 +315,11 @@ const L10N = {
   },
 };
 
+// Order = user journey: create → choose → read → explore genres → return.
+// Shot 1 (setup) leads with the core hook: turn one line into your own novel.
 const SHOTS = [
-  { id: 'choice', screen: 'choice' },
   { id: 'setup', screen: 'setup' },
+  { id: 'choice', screen: 'choice' },
   { id: 'read', screen: 'read' },
   { id: 'home', screen: 'home' },
   { id: 'library', screen: 'library' },
