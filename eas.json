@@ -48,6 +48,12 @@
         "serviceAccountKeyPath": "./.secrets/play-sa.json",
         "track": "alpha"
       }
+    },
+    "internal": {
+      "android": {
+        "serviceAccountKeyPath": "./.secrets/play-sa.json",
+        "track": "internal"
+      }
     }
   }
 }
