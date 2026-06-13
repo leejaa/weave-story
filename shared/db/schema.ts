@@ -42,11 +42,17 @@ export const purchaseGrants = pgTable('purchase_grants', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   productId: text('product_id').notNull(),
+  // 멱등 키 — Apple transactionId 또는 Android purchaseToken. 환불 매칭에도 사용.
   rcPurchaseDateMs: text('rc_purchase_date_ms').notNull(),
   creditsGranted: integer('credits_granted').notNull(),
+  // 'active' | 'refunded' — 환불/취소 시 refunded로 전환하고 크레딧을 회수한다.
+  status: text('status').notNull().default('active'),
+  refundedAt: timestamp('refunded_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (t) => [
   index('idx_purchase_grants_user_product').on(t.userId, t.productId),
+  // 환불 웹훅/폴링이 grantKey로 빠르게 찾도록.
+  index('idx_purchase_grants_grant_key').on(t.rcPurchaseDateMs),
 ]);
 
 export const accounts = pgTable('accounts', {

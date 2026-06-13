@@ -9,6 +9,8 @@ import { purchasesRouter } from './routes/purchases';
 import { reportsRouter } from './routes/reports';
 import { pushRouter } from './routes/push';
 import { appConfigRouter } from './routes/app-config';
+import { storeNotificationsRouter } from './routes/store-notifications';
+import { pollGoogleVoidedPurchases } from './lib/purchases/google-voided';
 import { privacyPage, termsPage, supportPage, mandarinPrivacyPage, normalizeLang } from './routes/legal';
 import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
 import { logError } from './lib/observability/logger';
@@ -29,6 +31,8 @@ app.route('/api/purchases', purchasesRouter);
 app.route('/api/reports', reportsRouter);
 app.route('/api/push', pushRouter);
 app.route('/api/app-config', appConfigRouter);
+// 스토어 환불 알림(공개 — App Store Server Notifications V2).
+app.route('/api/store-notifications', storeNotificationsRouter);
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 
@@ -73,5 +77,11 @@ export default {
   },
   queue(batch: MessageBatch<StoryGenerationJob>, env: WorkerEnv) {
     return handleStoryGenerationQueue(batch, env);
+  },
+  // cron: Google Play 환불(voided) 폴링. Apple은 서버 알림(웹훅)으로 처리.
+  async scheduled(_event: ScheduledController, env: WorkerEnv, ctx: ExecutionContext) {
+    ctx.waitUntil(
+      pollGoogleVoidedPurchases(env).catch((err) => console.error('[scheduled] google-voided failed', err)),
+    );
   },
 };

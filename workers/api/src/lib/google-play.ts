@@ -129,3 +129,39 @@ export async function verifyGooglePurchase(
   }
   return valid;
 }
+
+type VoidedPurchase = { purchaseToken?: string; voidedTimeMillis?: string; orderId?: string };
+
+/**
+ * 최근 환불/취소(voided)된 일회성 구매 토큰 목록. Voided Purchases API 폴링용.
+ * `sinceMs` 이후 voided된 건만 조회. SA 미설정 시 빈 배열.
+ */
+export async function listVoidedPurchaseTokens(env: WorkerEnv, sinceMs: number): Promise<string[]> {
+  if (!env.GOOGLE_PLAY_SA_CLIENT_EMAIL || !env.GOOGLE_PLAY_SA_PRIVATE_KEY) {
+    console.error('[google-voided] service account credentials not configured');
+    return [];
+  }
+
+  let accessToken: string;
+  try {
+    accessToken = await getAccessToken(env);
+  } catch (err) {
+    console.error('[google-voided] failed to obtain access token', err);
+    return [];
+  }
+
+  const url =
+    `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${PACKAGE_NAME}` +
+    `/purchases/voidedpurchases?startTime=${sinceMs}&type=1`; // type=1: 일회성+구독 모두 포함
+
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (!res.ok) {
+    console.error(`[google-voided] HTTP ${res.status}: ${await res.text()}`);
+    return [];
+  }
+
+  const data = (await res.json()) as { voidedPurchases?: VoidedPurchase[] };
+  return (data.voidedPurchases ?? [])
+    .map((v) => v.purchaseToken)
+    .filter((t): t is string => typeof t === 'string' && t.length > 0);
+}

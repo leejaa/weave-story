@@ -22,6 +22,10 @@ name = "GEN_RATE_LIMITER"
 namespace_id = "1002"
 simple = { limit = 12, period = 60 }
 
+# Google Play 환불(voided) 폴링 — 매일 1회(00:30 UTC).
+[triggers]
+crons = ["30 0 * * *"]
+
 [[queues.producers]]
 binding = "STORY_GENERATION_QUEUE"
 queue = "weave-story-generation-queue"
