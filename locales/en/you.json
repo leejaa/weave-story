@@ -11,5 +11,9 @@
   "deleteAccount": "Delete account",
   "deleteAccountConfirm": "Your account and all data, including stories and remaining credits, will be permanently deleted. This cannot be undone. Delete your account?",
   "deleteAccountErrorTitle": "Deletion failed",
-  "deleteAccountError": "Something went wrong. Please try again in a moment."
+  "deleteAccountError": "Something went wrong. Please try again in a moment.",
+  "dailyReward": {
+    "claim": "Claim today’s free credit +1",
+    "claimed": "Claimed today · come back tomorrow"
+  }
 }

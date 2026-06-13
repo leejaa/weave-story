@@ -10,6 +10,7 @@ import { usePalette } from '@/hooks/use-palette';
 import { useLocale } from '@/hooks/use-locale';
 import { useAuth } from '@/lib/auth/client/context';
 import { useMe } from '@/hooks/use-me';
+import { useDailyReward } from '@/hooks/use-daily-reward';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { SupportedLocale } from '@/lib/i18n';
 
@@ -22,9 +23,19 @@ export default function ProfileScreen() {
   const { locale, setLocale, supportedLocales, localeLabels } = useLocale();
   const { signOut, deleteAccount } = useAuth();
   const { data: me } = useMe();
+  const { claim, claiming } = useDailyReward();
   const [showPaywall, setShowPaywall] = useState(false);
 
   const credits = me?.credits ?? 0;
+  const dailyClaimable = me?.dailyClaimable ?? false;
+
+  const handleClaimDaily = useCallback(async () => {
+    try {
+      await claim();
+    } catch {
+      // 이미 수령했거나 네트워크 오류 — 캐시는 다음 /me refetch로 정합화됨.
+    }
+  }, [claim]);
 
   const handlePaywallSuccess = useCallback(() => {
     setShowPaywall(false);
@@ -114,6 +125,23 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
         </View>
+
+        {/* 일일 보상 — KST 날짜당 1회 무료 크레딧 */}
+        {dailyClaimable ? (
+          <Pressable
+            onPress={handleClaimDaily}
+            disabled={claiming}
+            accessibilityRole="button"
+            accessibilityLabel={t('dailyReward.claim')}
+            style={[styles.dailyBtn, { backgroundColor: c.thread, opacity: claiming ? 0.6 : 1 }]}>
+            <Icon name="sparkle" size={15} color={c.paper} />
+            <Text style={[styles.dailyText, { color: c.paper }]}>{t('dailyReward.claim')}</Text>
+          </Pressable>
+        ) : (
+          <View style={[styles.dailyDone, { borderColor: c.rule }]}>
+            <Text style={[styles.dailyDoneText, { color: c.inkFaint }]}>{t('dailyReward.claimed')}</Text>
+          </View>
+        )}
       </View>
 
       {/* Language */}
@@ -212,6 +240,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   rechargeText: { fontFamily: FONTS.sansSemibold, fontSize: SIZES.sm },
+  dailyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    height: 46,
+    borderRadius: 12,
+  },
+  dailyText: { fontFamily: FONTS.sansSemibold, fontSize: SIZES.sm },
+  dailyDone: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    height: 46,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  dailyDoneText: { fontFamily: FONTS.sansMedium, fontSize: SIZES.sm },
   chips: { flexDirection: 'row', gap: 8 },
   chip: {
     paddingHorizontal: 16,

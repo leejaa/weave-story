@@ -10,5 +10,9 @@
   "deleteAccount": "회원 탈퇴",
   "deleteAccountConfirm": "계정과 모든 데이터(스토리, 남은 크레딧 포함)가 영구적으로 삭제되며 되돌릴 수 없습니다. 정말 탈퇴하시겠어요?",
   "deleteAccountErrorTitle": "탈퇴 실패",
-  "deleteAccountError": "문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
+  "deleteAccountError": "문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+  "dailyReward": {
+    "claim": "오늘의 무료 크레딧 받기 +1",
+    "claimed": "오늘 보상을 받았어요 · 내일 다시"
+  }
 }

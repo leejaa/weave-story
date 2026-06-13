@@ -3,10 +3,18 @@ import { throwIfError } from '@/lib/api/errors';
 import { storyLanguage } from '@/lib/i18n';
 import type { SampleCardData, ThreadWithStory, ThreadDetail, Story, Chapter, Intervention } from '@/lib/api/types';
 
-export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null; credits: number };
+export type MeResult = { id: string; email: string | null; name: string | null; avatarUrl: string | null; credits: number; dailyClaimable: boolean };
 
 export async function fetchMe(): Promise<MeResult> {
   const res = await authFetch('/api/me');
+  await throwIfError(res);
+  return res.json();
+}
+
+export type DailyRewardResult = { claimed: boolean; credits: number; granted?: number; dailyClaimable: boolean };
+
+export async function postClaimDailyReward(): Promise<DailyRewardResult> {
+  const res = await authFetch('/api/me/daily-reward', { method: 'POST' });
   await throwIfError(res);
   return res.json();
 }

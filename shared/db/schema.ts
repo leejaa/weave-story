@@ -26,6 +26,8 @@ export const users = pgTable('users', {
   name: text('name'),
   avatarUrl: text('avatar_url'),
   credits: integer('credits').notNull().default(10),
+  // 마지막 일일 보상 수령일(KST 'YYYY-MM-DD'). 오늘과 다르면 수령 가능.
+  lastDailyClaimDate: text('last_daily_claim_date'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
