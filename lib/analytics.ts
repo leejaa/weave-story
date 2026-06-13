@@ -86,6 +86,10 @@ export const trackChoiceMade = (kind: 'choice' | 'free_input') => track('choice_
 /** Virality — user shared a story via the native share sheet. */
 export const trackShare = (args: { threadId: string }) => track('share', { thread_id: args.threadId });
 
+/** Activation — a story reached its ending while the reader was viewing it. */
+export const trackStoryCompleted = (args: { threadId: string; chapters: number }) =>
+  track('story_completed', { thread_id: args.threadId, chapters: args.chapters });
+
 /** Monetization — paywall shown. `source` = where it was triggered from. */
 export const trackPaywallViewed = (source: string) => track('paywall_viewed', { source });
 

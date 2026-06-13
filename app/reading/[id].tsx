@@ -27,7 +27,7 @@ import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingPosition } from '@/hooks/use-reading-position';
 import { buildPages } from '@/lib/reading/build-pages';
-import { trackChapterViewed } from '@/lib/analytics';
+import { trackChapterViewed, trackStoryCompleted } from '@/lib/analytics';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { PageItem } from '@/lib/reading/types';
 
@@ -68,6 +68,15 @@ export default function ReadingScreen() {
   const estimatedChapters = data?.estimatedChapters ?? 1;
   const currentChapter = data?.currentChapter ?? 1;
   const isCompleted = data?.status === 'completed';
+
+  // Activation: 이야기가 완결에 도달하면 스레드당 한 번만 완료 이벤트를 보낸다.
+  const completionFired = useRef(false);
+  useEffect(() => {
+    if (isCompleted && !completionFired.current) {
+      completionFired.current = true;
+      void trackStoryCompleted({ threadId: id, chapters: currentChapter });
+    }
+  }, [isCompleted, id, currentChapter]);
 
   const { pages, startIndex } = data
     ? buildPages(
