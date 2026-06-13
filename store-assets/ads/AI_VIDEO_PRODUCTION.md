@@ -16,10 +16,11 @@ Weave Story 광고 영상을 `GPT Image 2 + Seedance 2.0` 조합으로 제작한
 
 - 콘셉트 전환(2026-06-13): 기존 `세 장르 삶을 따라가는` 구조를 폐기하고,
   `주어진 선택을 거부하고 직접 새 세계를 만든다`는 단일 클라이맥스 콘셉트로 재설계.
-- 완료 단계: `1. Creative Brief` ~ `5. Shot List`(v1) 재작성 + 대표 Key Visual 승인 + `6. Storyboard` 8컷 전부 승인.
-- 현재 단계: `6. Storyboard` 완료 → animatic 또는 `7. 최종 키프레임` 착수 대기
-- 다음 작업: (a) 승인된 8컷으로 animatic(임시 시간축+음악) 검증, 또는 (b) 숏별 고해상도 최종 키프레임 제작
+- 완료 단계: `1. Creative Brief` ~ `9` 전 과정 1차 완료. 8컷 스토리보드 → Seedance i2v 영상화 → ffmpeg 편집(음악 B + 엔드카드) → **30초 광고영상 4개 언어(ko/en/ja/zh-Hant) 제작 완료**.
+- 현재 단계: 4개 언어 1차 컷 완성, 검수·미세조정 단계.
+- 다음 작업(선택): 숏별 모션 다듬기 / 효과음 추가 / App Store 단독 버전 / **광고 송출 전 음악 Suno Pro 재생성(상업권)**.
 - 작화 스타일(투명 수채화·가는 잉크·종이 질감·성인용 일러스트 소설)은 유지하며, 승인된 Key Visual `key-visual-v1-01`을 새 콘셉트의 작화·구성·색 대비 기준으로 사용한다.
+- ⚠️ 현재 컷은 Google Play 배지 포함이나 **안드로이드 미공개**. iOS 단독 집행 시 App Store 단독 엔드카드 별도 필요. 음악은 무료 플랜 곡이라 송출 전 Pro 재생성 필요.
 - 마케팅 전략 및 90일 실행 계획은 `MARKETING_STRATEGY.md`에서 별도로 관리한다.
 
 ## 확정 사항
@@ -684,6 +685,24 @@ Same color throughout; the ribbon is a clear cloth object, the drawn line is ali
 - 스토리보드(6단계) 8컷 1장씩 생성·검수 후 전부 승인. (S02만 01→02 재작업: 첫 take가 두 세계가 너무 비슷해, 구체적 드라마로 교체.)
 - 승인된 8컷으로 30초 애니메틱 v1(무음 하드컷, 1080×1920) 제작.
 - 오디오 방향 확정: 음악 + 효과음만, 내레이션 없음(언어중립 마스터 유지).
+- 8컷을 `seedance-v1.5-pro` i2v로 영상화(5초/숏) → ffmpeg로 30초 본편 + 음악 B(75~105초) 합성.
+- 엔드카드 디자인 검수: 실제 앱 아이콘+Fraunces(wght 680)+Pretendard 카피+공식 스토어 배지. Apple 배지 SVG는 qlmanage 왜곡 → 브라우저 canvas 래스터화로 정확히 추출. App Store+Google Play 높이 통일·정렬.
+- **30초 광고영상 4개 언어(ko/en/ja/zh-Hant) 1차 완성.** 본편·음악 공통, 엔드카드만 교체(카피+로컬라이즈 배지, 일본어 Noto Sans JP·번체 Noto Sans TC로 정확한 자형).
+
+## 최종 산출물 (1차 컷, 2026-06-13)
+
+30초 / 1080×1920 / 9:16 / 음악 포함. 본편(S01~S07) 언어중립, 엔드카드만 언어별.
+
+| 언어 | 카피 | 영상 URL |
+|---|---|---|
+| 한국어 | 읽을 때마다, 새로운 삶이 시작된다. | https://1enydyathth4pu27.public.blob.vercel-storage.com/ads/weave-ad-ko-ivroz3VrSvI5fnAKcDWwmxvaDBHFPb.mp4 |
+| English | Every time you read, a new life begins. | https://1enydyathth4pu27.public.blob.vercel-storage.com/ads/weave-ad-en-UWjuB5DYl5RlCjJ67dPt8envgtUy2m.mp4 |
+| 日本語 | 読むたび、新しい人生が始まる。 | https://1enydyathth4pu27.public.blob.vercel-storage.com/ads/weave-ad-ja-ruQKzsOmCoMRkh3yaDZgdkwnXFGoHn.mp4 |
+| 繁體中文 | 每一次閱讀，都是一段新的人生。 | https://1enydyathth4pu27.public.blob.vercel-storage.com/ads/weave-ad-zh-Hant-XCZ9V710SKCEpnhT2sMbIKtJ8MZx3K.mp4 |
+
+로컬 산출물: `store-assets/ads/generated/video/final-ad-{ko,en,ja,zh-Hant}.mp4` (gitignore). 클립: `clip-S0{1..8}.mp4`.
+
+송출 전 체크: ① 음악 Suno Pro 재생성(상업권) ② 안드로이드 공개 전이면 App Store 단독 엔드카드 ③ 숏 모션/효과음 다듬기.
 
 ## 참고 자료
 
