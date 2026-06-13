@@ -16,10 +16,10 @@ Weave Story 광고 영상을 `GPT Image 2 + Seedance 2.0` 조합으로 제작한
 
 - 콘셉트 전환(2026-06-13): 기존 `세 장르 삶을 따라가는` 구조를 폐기하고,
   `주어진 선택을 거부하고 직접 새 세계를 만든다`는 단일 클라이맥스 콘셉트로 재설계.
-- 완료 단계: `1. Creative Brief`, `2. Beat Sheet`, `3. Visual Bible`(작화 기준), `4. Continuity Bible`, `5. Shot List`는 새 콘셉트로 재작성.
-- 현재 단계: `2~5단계 재작성본 검토 대기`
-- 다음 작업: 재작성본 승인 → 새 콘셉트용 대표 Key Visual 생성 → `6. Storyboard`
-- 작화 스타일(투명 수채화·가는 잉크·종이 질감·성인용 일러스트 소설)은 유지하며, 기존 Style Frame v2는 작화 품질 참조로만 사용한다(구성은 옛 콘셉트라 폐기).
+- 완료 단계: `1. Creative Brief`, `2. Beat Sheet`, `3. Visual Bible`, `4. Continuity Bible`, `5. Shot List`(v1) — 모두 새 콘셉트로 재작성. 새 콘셉트 대표 Key Visual 승인 완료.
+- 현재 단계: `6. Storyboard` 착수 대기
+- 다음 작업: 숏별 스토리보드 패널을 1장씩 생성·검수 → animatic
+- 작화 스타일(투명 수채화·가는 잉크·종이 질감·성인용 일러스트 소설)은 유지하며, 승인된 Key Visual `key-visual-v1-01`을 새 콘셉트의 작화·구성·색 대비 기준으로 사용한다.
 
 ## 확정 사항
 
@@ -297,12 +297,19 @@ A·B·C 색 논리:
 - 얼굴과 선택/창조 행동은 그림자 속에서도 명확하게 읽혀야 한다.
 - 생성처럼 보이는 빛도 잉크와 물감이 종이 위에서 번지는 물성을 유지한다.
 
-#### 작화 참조: Style Frame v2 (구성 폐기, 작화만 참조)
+#### 대표 Key Visual (새 콘셉트, 승인)
 
-- 파일: `store-assets/ads/generated/style-frame/style-frame-v2-01.png`
-- 기존 콘셉트(세 장르 삶)용으로 생성된 이미지다. 구성은 폐기한다.
-- 투명 수채화, 가는 잉크 드로잉, 종이 질감, 성인용 일러스트 소설, 주인공 외형, 포레스트 그린 잉크 선의 물성은 **작화 품질 기준으로만** 계속 참조한다.
-- 새 콘셉트용 대표 Key Visual은 Shot List 승인 후 별도로 생성한다.
+- 파일: `store-assets/ads/generated/key-visual/key-visual-v1-01.png`
+- 프롬프트: `scripts/ads/prompts/key-visual-prompts.mjs` (`v1`)
+- 생성: `openai/gpt-image-2`, `1024x1536`
+- 상태: 새 콘셉트의 작화·구성·색 대비 기준으로 **승인**.
+- 승인 근거:
+  - 주인공 외형(웨이브 짙은 갈색 머리, 아이보리 셔츠 + 포레스트 그린 카디건)이 직접 그리는 모습으로 표현됨.
+  - 좌·우의 `주어진` 두 세계(A·B)가 차갑고 빛바랜 저채도 + 얼굴 없는 군중으로 `정형/주어짐`을 전달.
+  - 그녀가 그려낸 세계(C)가 생동하는 풀 수채화 + 포레스트 그린으로 채도·생기가 압도.
+  - A·B(절제) vs C(생동) 대비라는 핵심 색 논리가 작동.
+- 후속 보완 여지(스토리보드/키프레임 단계에서 강화): C의 흡인감(몰입), 리본→잉크선의 `직접 긋는` 동작 강조.
+- 기존 Style Frame v2(`style-frame-v2-01.png`)는 옛 콘셉트(세 장르 삶)용이라 구성은 폐기하고 작화 품질 참조로만 남긴다.
 
 #### 주인공 기본 외형
 
@@ -632,6 +639,7 @@ Same color throughout; the ribbon is a clear cloth object, the drawn line is ali
 - 주인공 연속성 앵커(웨이브 짙은 갈색 머리, 아이보리+그린, 손의 주도성, 단일 얼굴)는 유지.
 - 위 콘셉트로 Beat Sheet·Visual Bible 색 논리·Continuity Bible·Shot List를 재작성.
 - Shot List v1: 30초 8숏(멈춤 → A·B 펼쳐짐 → 거부 → 직접 긋기 → C 생성 → 몰입 → 제품 공개 → 엔드카드), 길이 합계 30초 검증.
+- 새 콘셉트 대표 Key Visual `key-visual-v1-01`을 첫 take로 생성·승인. A·B(절제) vs C(생동) 대비와 주인공 직접 그리기 표현이 의도대로 작동. 작화·색 기준으로 잠금.
 
 ## 참고 자료
 
