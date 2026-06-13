@@ -20,6 +20,7 @@ Weave Story 광고 영상을 `GPT Image 2 + Seedance 2.0` 조합으로 제작한
 - 현재 단계: `6. Storyboard` 완료 → animatic 또는 `7. 최종 키프레임` 착수 대기
 - 다음 작업: (a) 승인된 8컷으로 animatic(임시 시간축+음악) 검증, 또는 (b) 숏별 고해상도 최종 키프레임 제작
 - 작화 스타일(투명 수채화·가는 잉크·종이 질감·성인용 일러스트 소설)은 유지하며, 승인된 Key Visual `key-visual-v1-01`을 새 콘셉트의 작화·구성·색 대비 기준으로 사용한다.
+- 마케팅 전략 및 90일 실행 계획은 `MARKETING_STRATEGY.md`에서 별도로 관리한다.
 
 ## 확정 사항
 
@@ -49,9 +50,17 @@ Weave Story 광고 영상을 `GPT Image 2 + Seedance 2.0` 조합으로 제작한
 | 역할 | 도구 |
 |---|---|
 | 이미지 설계 및 최종 키프레임 생성 | `openai/gpt-image-2` |
-| 이미지 기반 영상 생성 | `bytedance/seedance-2.0` |
+| 이미지 기반 영상 생성 | `bytedance/seedance-v1.5-pro` (i2v, 초당 과금. 2.0은 토큰 과금이라 제외) |
+| 음악 | Suno(무가사) — 버전 B 채택 |
 | 모델 접근 및 과금 | Vercel AI Gateway |
-| 최종 영상 조립, 자막, 음악 | 추후 확정 |
+| 최종 영상 조립·엔드카드 | ffmpeg (로컬) |
+
+영상화 메모(2026-06-13):
+- 8숏 스토리보드 패널을 키프레임으로 `seedance-v1.5-pro` i2v 생성(5초/숏). 영상생성은 잔액<$100이면 **분당 1회 제한** → 요청 간 ≥65초 간격.
+- ffmpeg: 숏별 트림(샷리스트 길이)→1080×1920 아이보리 레터박스→concat→음악 B(75~105초, 페이드)→엔드카드 오버레이(26.5초부터 페이드인).
+- 엔드카드: 실제 앱 아이콘(둥근사각)+Fraunces 워드마크(wght 680)+Pretendard 카피+공식 스토어 배지. **Apple 배지 SVG는 qlmanage가 왜곡** → 로컬 http 서버 + 브라우저 canvas 래스터화로 정확히 추출.
+- 본편(S01~S07) 언어중립, **엔드카드만 4개 언어(ko/en/ja/zh-Hant) 교체**(카피+로컬라이즈 스토어 배지). 워드마크 `Weave Story` 공통.
+- 생성 스크립트: `scripts/ads/generate-seedance.mjs`. 폰트·배지 등 에셋과 생성물은 비커밋.
 
 ### 제작 방식
 
