@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { boolean, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const sampleCards = pgTable('sample_cards', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -45,7 +45,9 @@ export const purchaseGrants = pgTable('purchase_grants', {
   rcPurchaseDateMs: text('rc_purchase_date_ms').notNull(),
   creditsGranted: integer('credits_granted').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_purchase_grants_user_product').on(t.userId, t.productId),
+]);
 
 export const accounts = pgTable('accounts', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -56,7 +58,10 @@ export const accounts = pgTable('accounts', {
   // (Apple Guideline 5.1.1(v)). Nullable: only set for Apple sign-ins when configured.
   appleRefreshToken: text('apple_refresh_token'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_accounts_provider_sub').on(t.provider, t.providerSub),
+  index('idx_accounts_user_id').on(t.userId),
+]);
 
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -64,7 +69,10 @@ export const sessions = pgTable('sessions', {
   refreshTokenHash: text('refresh_token_hash').notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_sessions_refresh_token_hash').on(t.refreshTokenHash),
+  index('idx_sessions_expires_at').on(t.expiresAt),
+]);
 
 // Expo push tokens, one row per device. Used to notify a user when a chapter
 // finishes generating while they're away from the app.
@@ -75,7 +83,9 @@ export const pushTokens = pgTable('push_tokens', {
   platform: text('platform'), // 'ios' | 'android'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_push_tokens_user_id').on(t.userId),
+]);
 
 // Each story is created by a user via setup questions, no shared global stories.
 export const stories = pgTable('stories', {
@@ -91,7 +101,9 @@ export const stories = pgTable('stories', {
   language: text('language').notNull().default('en'),
   status: text('status').notNull().default('generating'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_stories_user_id').on(t.userId),
+]);
 
 export const storyBibles = pgTable('story_bibles', {
   storyId: uuid('story_id').primaryKey().references(() => stories.id, { onDelete: 'cascade' }),
@@ -117,7 +129,10 @@ export const threads = pgTable('threads', {
   startedAt: timestamp('started_at', { withTimezone: true }).defaultNow().notNull(),
   lastReadAt: timestamp('last_read_at', { withTimezone: true }).defaultNow().notNull(),
   finishedAt: timestamp('finished_at', { withTimezone: true }),
-});
+}, (t) => [
+  index('idx_threads_user_id').on(t.userId),
+  index('idx_threads_story_id').on(t.storyId),
+]);
 
 export const chapters = pgTable('chapters', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -133,7 +148,9 @@ export const chapters = pgTable('chapters', {
   status: text('status').notNull().default('ready'), // 'generating' | 'ready' | 'failed'
   moderationStatus: text('moderation_status').notNull().default('ok'), // 'ok' | 'reported' | 'hidden'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_chapters_thread_chapter').on(t.threadId, t.chapterNumber),
+]);
 
 export const generationRuns = pgTable('generation_runs', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -162,7 +179,9 @@ export const interventions = pgTable('interventions', {
   choiceIndex: integer('choice_index'),
   freeText: text('free_text'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_interventions_thread_chapter').on(t.threadId, t.chapterNumber),
+]);
 
 // User reports of objectionable AI-generated content (Apple Guideline 1.2 / UGC).
 export const contentReports = pgTable('content_reports', {
@@ -173,7 +192,9 @@ export const contentReports = pgTable('content_reports', {
   detail: text('detail'),
   status: text('status').notNull().default('pending'), // 'pending' | 'reviewed' | 'actioned'
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => [
+  index('idx_content_reports_chapter_id').on(t.chapterId),
+]);
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),

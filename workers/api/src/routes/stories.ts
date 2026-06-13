@@ -26,9 +26,11 @@ storiesRouter.post('/', async (c) => {
   const userId = c.get('userId');
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
-  const estimatedChapters = typeof body?.estimatedChapters === 'number' ? body.estimatedChapters : 10;
+  const estimatedChapters = Math.min(50, Math.max(1, typeof body?.estimatedChapters === 'number' ? Math.floor(body.estimatedChapters) : 10));
   const language = normalizeStoryLang(body?.language);
   if (!prompt?.trim()) return c.json({ error: 'prompt required' }, 400);
+  if (prompt.trim().length > 2000) return c.json({ error: 'prompt too long' }, 400); // 입력 검증: 길이 제한
+
 
   const db = makeDb(c.env.DATABASE_URL);
 
@@ -76,6 +78,7 @@ storiesRouter.post('/check-prompt', async (c) => {
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
   if (!prompt?.trim()) return c.json({ error: 'prompt required' }, 400);
+  if (prompt.trim().length > 2000) return c.json({ error: 'prompt too long' }, 400);
 
   const result = await checkPromptSpecificity(prompt.trim(), c.env.AI_GATEWAY_API_KEY, normalizeStoryLang(body?.language));
   return c.json(result);

@@ -175,6 +175,10 @@ threadsRouter.post('/:id/choose', async (c) => {
   const hasChoice = typeof choiceIndex === 'number';
   const hasCustom = typeof customInput === 'string' && customInput.trim().length > 0;
   if (!hasChoice && !hasCustom) return c.json({ error: 'choiceIndex or customInput required' }, 400);
+  // 입력 검증: 자유입력 길이 제한(프롬프트 주입/남용 완화), 인덱스 범위.
+  if (hasCustom && customInput.trim().length > 500) return c.json({ error: 'customInput too long' }, 400);
+  if (hasChoice && (!Number.isInteger(choiceIndex) || choiceIndex < 0 || choiceIndex > 10)) return c.json({ error: 'invalid choiceIndex' }, 400);
+  if (!Number.isInteger(chapterNumber) || chapterNumber < 1 || chapterNumber > 1000) return c.json({ error: 'invalid chapterNumber' }, 400);
 
   const db = makeDb(c.env.DATABASE_URL);
 
