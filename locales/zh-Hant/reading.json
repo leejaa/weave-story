@@ -12,7 +12,8 @@
     "continue": "繼續故事",
     "yourChoice": "你的選擇",
     "entryKicker": "抉擇的時刻",
-    "openChoice": "選擇接下來的發展"
+    "openChoice": "選擇接下來的發展",
+    "failedTitle": "無法繼續"
   },
   "generating": {
     "title": "正在為你翻開故事書",

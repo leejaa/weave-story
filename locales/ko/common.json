@@ -67,5 +67,8 @@
     "recommendedBody": "더 나아진 Weave Story를 만나보세요.",
     "updateButton": "업데이트",
     "later": "나중에"
+  },
+  "auth": {
+    "sessionExpiredBanner": "세션이 만료되어 로그아웃되었어요. 다시 로그인해 주세요."
   }
 }

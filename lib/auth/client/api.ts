@@ -18,9 +18,9 @@ GoogleSignin.configure({
 });
 
 let refreshPromise: Promise<string | null> | null = null;
-let onSignedOut: (() => void) | null = null;
+let onSignedOut: ((reason?: 'expired') => void) | null = null;
 
-export function setSignedOutCallback(cb: () => void) {
+export function setSignedOutCallback(cb: (reason?: 'expired') => void) {
   onSignedOut = cb;
 }
 
@@ -35,8 +35,9 @@ async function refreshAccessToken(): Promise<string | null> {
   });
 
   if (res.status === 401) {
+    // 리프레시 토큰이 만료/폐기됨 → 비자발적 로그아웃. 로그인 화면에서 사유를 안내한다.
     await tokenStorage.clear();
-    onSignedOut?.();
+    onSignedOut?.('expired');
     return null;
   }
 

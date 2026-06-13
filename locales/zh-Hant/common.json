@@ -67,5 +67,8 @@
     "recommendedBody": "立即體驗更好的 Weave Story。",
     "updateButton": "更新",
     "later": "稍後"
+  },
+  "auth": {
+    "sessionExpiredBanner": "登入階段已過期，請重新登入。"
   }
 }

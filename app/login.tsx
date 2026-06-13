@@ -3,6 +3,7 @@ import { Redirect } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -36,7 +37,8 @@ function LoginBackground() {
 }
 
 export default function LoginScreen() {
-  const { state, signInWithApple, signInWithGoogle, signInWithDemo } = useAuth();
+  const { state, sessionExpired, signInWithApple, signInWithGoogle, signInWithDemo } = useAuth();
+  const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
   const [reviewerMode, setReviewerMode] = useState(false);
   const [code, setCode] = useState('');
@@ -89,6 +91,13 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.spacer} />
+
+      {sessionExpired && (
+        <View style={styles.expiredBanner}>
+          <Ionicons name="time-outline" size={15} color={ACCENT} />
+          <Text style={styles.expiredText}>{t('auth.sessionExpiredBanner')}</Text>
+        </View>
+      )}
 
       <View style={styles.actions}>
         {Platform.OS === 'ios' && (
@@ -182,6 +191,24 @@ const styles = StyleSheet.create({
   headline: {
     alignItems: 'center',
     gap: 12,
+  },
+  expiredBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(200,184,206,0.12)',
+    borderColor: 'rgba(200,184,206,0.28)',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+  },
+  expiredText: {
+    flex: 1,
+    fontFamily: FONTS.sans,
+    fontSize: SIZES.sm,
+    color: TEXT_PRIMARY,
   },
   title: {
     fontFamily: FONTS.serifSemibold,

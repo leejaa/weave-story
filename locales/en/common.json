@@ -67,5 +67,8 @@
     "recommendedBody": "Update to enjoy the latest Weave Story.",
     "updateButton": "Update",
     "later": "Later"
+  },
+  "auth": {
+    "sessionExpiredBanner": "Your session expired. Please sign in again."
   }
 }

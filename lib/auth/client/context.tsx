@@ -9,6 +9,9 @@ type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
 interface AuthContextValue {
   state: AuthState;
+  // 세션 만료로 비자발적 로그아웃된 경우 true (로그인 화면 안내용). 재로그인 시 해제.
+  sessionExpired: boolean;
+  clearSessionExpired: () => void;
   signInWithApple: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithDemo: (code: string) => Promise<void>;
@@ -20,13 +23,19 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>('loading');
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
-    setSignedOutCallback(() => setState('unauthenticated'));
+    setSignedOutCallback((reason) => {
+      if (reason === 'expired') setSessionExpired(true);
+      setState('unauthenticated');
+    });
     clearStaleTokensOnFreshInstall()
       .then(() => tokenStorage.getRefreshToken())
       .then((token) => setState(token ? 'authenticated' : 'unauthenticated'));
   }, []);
+
+  const clearSessionExpired = useCallback(() => setSessionExpired(false), []);
 
   const handleAppleSignIn = useCallback(async () => {
     const credential = await AppleAuthentication.signInAsync({
@@ -71,9 +80,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState('unauthenticated');
   }, []);
 
+  // 로그인에 성공하면 만료 안내를 해제한다(모든 로그인 경로 커버).
+  useEffect(() => {
+    if (state === 'authenticated') setSessionExpired(false);
+  }, [state]);
+
   return (
     <AuthContext.Provider
-      value={{ state, signInWithApple: handleAppleSignIn, signInWithGoogle: handleGoogleSignIn, signInWithDemo: handleDemoSignIn, signOut, deleteAccount: handleDeleteAccount }}>
+      value={{ state, sessionExpired, clearSessionExpired, signInWithApple: handleAppleSignIn, signInWithGoogle: handleGoogleSignIn, signInWithDemo: handleDemoSignIn, signOut, deleteAccount: handleDeleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

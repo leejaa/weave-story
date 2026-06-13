@@ -12,7 +12,8 @@
     "continue": "物語を続ける",
     "yourChoice": "あなたの選択",
     "entryKicker": "選択の瞬間",
-    "openChoice": "次の行動を選ぶ"
+    "openChoice": "次の行動を選ぶ",
+    "failedTitle": "続けられませんでした"
   },
   "generating": {
     "title": "あなたの本を開いています",

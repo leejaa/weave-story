@@ -12,7 +12,8 @@
     "continue": "이야기 계속하기",
     "yourChoice": "당신의 선택",
     "entryKicker": "선택의 순간",
-    "openChoice": "선택하러 가기"
+    "openChoice": "선택하러 가기",
+    "failedTitle": "이어가지 못했어요"
   },
   "generating": {
     "title": "당신의 책을 펼치고 있어요",

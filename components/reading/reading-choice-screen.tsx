@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChoicePage } from '@/components/reading/choice-page';
@@ -8,6 +8,7 @@ import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingChoice } from '@/hooks/use-reading-choice';
 import { trackChoiceMade } from '@/lib/analytics';
+import { ApiError, toUserMessage } from '@/lib/api/errors';
 import { FONTS, SIZES } from '@/constants/colors';
 
 type Props = {
@@ -37,8 +38,15 @@ export function ReadingChoiceScreen({ threadId, chapterNumber, onClose, onComple
     selection: { choiceIndex: number } | { customInput: string },
   ) => {
     void trackChoiceMade('customInput' in selection ? 'free_input' : 'choice');
-    await choose(selectedChapterNumber, selection);
-    onComplete();
+    try {
+      await choose(selectedChapterNumber, selection);
+      onComplete();
+    } catch (err) {
+      // 402(크레딧 부족)는 PaywallModal이 처리하므로 알림을 띄우지 않는다.
+      // 429(레이트 리밋)·5xx·네트워크 등은 토스트성 알림으로 안내(화면 유지, 재시도 가능).
+      if (err instanceof ApiError && err.status === 402) return;
+      Alert.alert(t('choice.failedTitle'), toUserMessage(err));
+    }
   };
 
   if (isLoading) {

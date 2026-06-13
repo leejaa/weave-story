@@ -12,7 +12,8 @@
     "continue": "Continue story",
     "yourChoice": "Your choice",
     "entryKicker": "Moment of choice",
-    "openChoice": "Choose what happens next"
+    "openChoice": "Choose what happens next",
+    "failedTitle": "Couldn't continue"
   },
   "generating": {
     "title": "Opening your storybook",

@@ -67,5 +67,8 @@
     "recommendedBody": "より良くなったWeave Storyをお楽しみください。",
     "updateButton": "アップデート",
     "later": "あとで"
+  },
+  "auth": {
+    "sessionExpiredBanner": "セッションの有効期限が切れました。もう一度ログインしてください。"
   }
 }
