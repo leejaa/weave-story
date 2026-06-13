@@ -7,11 +7,15 @@ import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter
 import { normalizeStoryLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob, createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
+import { rateLimit } from '../lib/middleware/rate-limit';
 import type { AppEnv } from '../types';
 
 export const threadsRouter = new Hono<AppEnv>();
 
 threadsRouter.use(requireAuth);
+
+// AI 다음 챕터 생성 레이트 리밋(userId 키).
+const genLimit = rateLimit((e) => e.GEN_RATE_LIMITER, (c) => c.get('userId'));
 
 threadsRouter.get('/', async (c) => {
   const userId = c.get('userId');
@@ -118,7 +122,7 @@ threadsRouter.get('/:id', async (c) => {
 
 // Re-run a failed first-chapter generation for an existing thread. No credit charge —
 // the credit was already spent when the story was created.
-threadsRouter.post('/:id/retry-first-chapter', async (c) => {
+threadsRouter.post('/:id/retry-first-chapter', genLimit, async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
   const db = makeDb(c.env.DATABASE_URL);
@@ -174,7 +178,7 @@ threadsRouter.post('/:id/retry-first-chapter', async (c) => {
   return c.json({ ok: true });
 });
 
-threadsRouter.post('/:id/choose', async (c) => {
+threadsRouter.post('/:id/choose', genLimit, async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
   const { chapterNumber, choiceIndex, customInput } = await c.req.json();

@@ -8,11 +8,15 @@ import { normalizeStoryLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import { notifyOwner } from '../lib/notify/owner';
+import { rateLimit } from '../lib/middleware/rate-limit';
 import type { AppEnv } from '../types';
 
 export const storiesRouter = new Hono<AppEnv>();
 
 storiesRouter.use(requireAuth);
+
+// AI 생성·검사 엔드포인트 레이트 리밋(userId 키). requireAuth 이후라 userId 보장.
+const genLimit = rateLimit((e) => e.GEN_RATE_LIMITER, (c) => c.get('userId'));
 
 storiesRouter.get('/', async (c) => {
   const userId = c.get('userId');
@@ -22,7 +26,7 @@ storiesRouter.get('/', async (c) => {
   return c.json(rows);
 });
 
-storiesRouter.post('/', async (c) => {
+storiesRouter.post('/', genLimit, async (c) => {
   const userId = c.get('userId');
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
@@ -74,7 +78,7 @@ storiesRouter.post('/', async (c) => {
   return c.json({ threadId: thread.id }, 201);
 });
 
-storiesRouter.post('/check-prompt', async (c) => {
+storiesRouter.post('/check-prompt', genLimit, async (c) => {
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
   if (!prompt?.trim()) return c.json({ error: 'prompt required' }, 400);

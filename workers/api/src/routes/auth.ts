@@ -7,9 +7,13 @@ import { exchangeAppleAuthCode } from '../lib/auth/apple-oauth';
 import { verifyGoogleIdToken } from '../lib/auth/google';
 import { signAccessToken, generateRefreshToken, hashRefreshToken, REFRESH_TOKEN_TTL_MS } from '../lib/tokens';
 import { notifyOwner } from '../lib/notify/owner';
+import { rateLimit, clientIp } from '../lib/middleware/rate-limit';
 import type { AppEnv } from '../types';
 
 export const authRouter = new Hono<AppEnv>();
+
+// 인증 엔드포인트 전체에 IP 기반 레이트 리밋(무차별 로그인·데모코드 추측 완화).
+authRouter.use('*', rateLimit((e) => e.AUTH_RATE_LIMITER, clientIp));
 
 authRouter.post('/apple', async (c) => {
   const { identityToken, fullName, authorizationCode } = await c.req.json();

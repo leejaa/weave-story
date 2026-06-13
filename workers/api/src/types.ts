@@ -1,4 +1,5 @@
 import type { StoryGenerationJob } from './lib/queue/story-generation-jobs';
+import type { RateLimiter } from './lib/middleware/rate-limit';
 
 export type WorkerEnv = {
   DATABASE_URL: string;
@@ -6,6 +7,9 @@ export type WorkerEnv = {
   AI_GATEWAY_API_KEY: string;
   CF_COVER_WORKER_URL: string;
   STORY_GENERATION_QUEUE: Queue<StoryGenerationJob>;
+  // 네이티브 Rate Limiting 바인딩. 미설정 시 미들웨어가 통과(no-op).
+  AUTH_RATE_LIMITER?: RateLimiter; // 인증 엔드포인트 — IP 키
+  GEN_RATE_LIMITER?: RateLimiter; // AI 생성 엔드포인트 — userId 키
   USE_STORY_HARNESS?: string;
   APPLE_IAP_KEY_ID: string;
   APPLE_IAP_ISSUER_ID: string;

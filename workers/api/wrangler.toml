@@ -10,6 +10,18 @@ enabled = true
 [vars]
 USE_STORY_HARNESS = "true"
 
+# 네이티브 Rate Limiting 바인딩(per-colo 슬라이딩 윈도우). period 는 10 또는 60만 허용.
+# 인증: IP당 60초 30회(무차별 로그인 완화). 생성: userId당 60초 12회(AI 남용 완화).
+[[ratelimits]]
+name = "AUTH_RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "GEN_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 12, period = 60 }
+
 [[queues.producers]]
 binding = "STORY_GENERATION_QUEUE"
 queue = "weave-story-generation-queue"
