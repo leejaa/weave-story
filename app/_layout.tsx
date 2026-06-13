@@ -32,6 +32,9 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { palette } from '@/constants/colors';
 import { loadSavedLocale } from '@/hooks/use-locale';
 import { initAnalytics } from '@/lib/analytics';
+import { useVersionGate } from '@/hooks/use-version-gate';
+import { ForceUpdateScreen } from '@/components/update/force-update-screen';
+import { UpdatePrompt } from '@/components/update/update-prompt';
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -49,6 +52,7 @@ function RootLayout() {
   const colorScheme = useColorScheme();
   const colors = palette[colorScheme === 'dark' ? 'dark' : 'light'];
   const [localeReady, setLocaleReady] = useState(false);
+  const { status: updateStatus, storeUrl, dismissRecommended } = useVersionGate();
 
   const [fontsLoaded, fontError] = useFonts({
     Fraunces_400Regular,
@@ -83,21 +87,30 @@ function RootLayout() {
     <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
     <AuthProvider>
     <PurchasesProviderWrapper>
-      <NotificationsBridge />
-      <Stack
-        screenOptions={{
-          contentStyle: { backgroundColor: colors.paper },
-        }}>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* 카드 확대 전환용 별도 모달 스택 — animation:'none'으로 expand overlay가 전환 역할을 담당 */}
-        <Stack.Screen name="(modal)" options={{ headerShown: false, presentation: 'modal', animation: 'none' }} />
-        <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
-        <Stack.Screen name="reading-choice/[id]" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="refine" options={{ headerShown: false, animation: 'slide_from_right' }} />
-        <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
-      </Stack>
+      {updateStatus === 'force' ? (
+        <ForceUpdateScreen storeUrl={storeUrl} />
+      ) : (
+        <>
+          <NotificationsBridge />
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: colors.paper },
+            }}>
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            {/* 카드 확대 전환용 별도 모달 스택 — animation:'none'으로 expand overlay가 전환 역할을 담당 */}
+            <Stack.Screen name="(modal)" options={{ headerShown: false, presentation: 'modal', animation: 'none' }} />
+            <Stack.Screen name="reading/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
+            <Stack.Screen name="reading-choice/[id]" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="setup" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="refine" options={{ headerShown: false, animation: 'slide_from_right' }} />
+            <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          </Stack>
+          {updateStatus === 'recommended' && (
+            <UpdatePrompt storeUrl={storeUrl} onDismiss={dismissRecommended} />
+          )}
+        </>
+      )}
       <SystemBars
         style={{
           statusBar: colorScheme === 'dark' ? 'light' : 'dark',

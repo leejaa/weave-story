@@ -59,5 +59,13 @@
   "actions": {
     "retry": "Try again",
     "back": "Back"
+  },
+  "update": {
+    "forceTitle": "Update required",
+    "forceBody": "Please update to the latest version to keep using Weave Story.",
+    "recommendedTitle": "A new version is available",
+    "recommendedBody": "Update to enjoy the latest Weave Story.",
+    "updateButton": "Update",
+    "later": "Later"
   }
 }

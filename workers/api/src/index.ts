@@ -8,6 +8,7 @@ import { sampleCardsRouter } from './routes/sample-cards';
 import { purchasesRouter } from './routes/purchases';
 import { reportsRouter } from './routes/reports';
 import { pushRouter } from './routes/push';
+import { appConfigRouter } from './routes/app-config';
 import { privacyPage, termsPage, supportPage, mandarinPrivacyPage, normalizeLang } from './routes/legal';
 import { handleStoryGenerationQueue } from './lib/queue/story-generation-consumer';
 import { logError } from './lib/observability/logger';
@@ -27,6 +28,7 @@ app.route('/api/sample-cards', sampleCardsRouter);
 app.route('/api/purchases', purchasesRouter);
 app.route('/api/reports', reportsRouter);
 app.route('/api/push', pushRouter);
+app.route('/api/app-config', appConfigRouter);
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 

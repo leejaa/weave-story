@@ -59,5 +59,13 @@
   "actions": {
     "retry": "もう一度",
     "back": "戻る"
+  },
+  "update": {
+    "forceTitle": "アップデートが必要です",
+    "forceBody": "快適にご利用いただくため、最新バージョンにアップデートしてください。",
+    "recommendedTitle": "新しいバージョンがあります",
+    "recommendedBody": "より良くなったWeave Storyをお楽しみください。",
+    "updateButton": "アップデート",
+    "later": "あとで"
   }
 }

@@ -59,5 +59,13 @@
   "actions": {
     "retry": "다시 시도",
     "back": "돌아가기"
+  },
+  "update": {
+    "forceTitle": "업데이트가 필요해요",
+    "forceBody": "원활한 이용을 위해 최신 버전으로 업데이트해 주세요.",
+    "recommendedTitle": "새 버전이 나왔어요",
+    "recommendedBody": "더 나아진 Weave Story를 만나보세요.",
+    "updateButton": "업데이트",
+    "later": "나중에"
   }
 }

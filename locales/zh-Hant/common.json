@@ -59,5 +59,13 @@
   "actions": {
     "retry": "再試一次",
     "back": "返回"
+  },
+  "update": {
+    "forceTitle": "需要更新",
+    "forceBody": "請更新至最新版本以繼續使用 Weave Story。",
+    "recommendedTitle": "有新版本",
+    "recommendedBody": "立即體驗更好的 Weave Story。",
+    "updateButton": "更新",
+    "later": "稍後"
   }
 }

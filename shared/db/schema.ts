@@ -29,6 +29,15 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
+// 강제/권장 업데이트 게이트 설정. 플랫폼별 한 행. 재배포 없이 SQL로 즉시 변경 가능.
+export const appConfig = pgTable('app_config', {
+  platform: text('platform').primaryKey(), // 'ios' | 'android'
+  minSupported: text('min_supported').notNull(), // 이 버전 미만이면 강제 업데이트
+  latest: text('latest').notNull(), // 최신 버전(권장 업데이트 기준)
+  storeUrl: text('store_url').notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
 export const purchaseGrants = pgTable('purchase_grants', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
