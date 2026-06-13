@@ -44,5 +44,10 @@
   "hidden": {
     "title": "This chapter can't be shown",
     "body": "This chapter was hidden under our content policy."
+  },
+  "share": {
+    "untitled": "An untitled story",
+    "message": "\"{{title}}\"\nA story I wove on Weave Story. Your choices change how it unfolds.\n{{link}}",
+    "cta": "Share this story"
   }
 }

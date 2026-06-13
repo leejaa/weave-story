@@ -44,5 +44,10 @@
   "hidden": {
     "title": "無法顯示此章節",
     "body": "依據內容政策，此章節已被隱藏。"
+  },
+  "share": {
+    "untitled": "無題的故事",
+    "message": "《{{title}}》\n這是我在 Weave Story 編織的故事。你的選擇將改變故事的走向。\n{{link}}",
+    "cta": "分享這則故事"
   }
 }

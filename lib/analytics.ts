@@ -83,6 +83,9 @@ export const trackChapterViewed = (args: { chapter: number; isFirst: boolean }) 
 /** Engagement — reader advanced the story. `kind` is 'choice' | 'free_input'. */
 export const trackChoiceMade = (kind: 'choice' | 'free_input') => track('choice_made', { kind });
 
+/** Virality — user shared a story via the native share sheet. */
+export const trackShare = (args: { threadId: string }) => track('share', { thread_id: args.threadId });
+
 /** Monetization — paywall shown. `source` = where it was triggered from. */
 export const trackPaywallViewed = (source: string) => track('paywall_viewed', { source });
 
