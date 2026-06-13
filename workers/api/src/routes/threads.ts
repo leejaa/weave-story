@@ -105,7 +105,15 @@ threadsRouter.get('/:id', async (c) => {
     db.select().from(interventions).where(eq(interventions.threadId, threadId)).orderBy(asc(interventions.createdAt)),
   ]);
 
-  return c.json({ ...row, chapters: allChapters, interventions: allInterventions });
+  // 숨김 처리된 챕터는 본문이 서버 밖으로 나가지 않도록 스크럽한다.
+  // 클라이언트는 moderationStatus === 'hidden'을 보고 안내 화면을 렌더한다.
+  const sanitizedChapters = allChapters.map((ch) =>
+    ch.moderationStatus === 'hidden'
+      ? { ...ch, content: null, title: null, situation: null, question: null, options: null, summary: null }
+      : ch,
+  );
+
+  return c.json({ ...row, chapters: sanitizedChapters, interventions: allInterventions });
 });
 
 // Re-run a failed first-chapter generation for an existing thread. No credit charge —

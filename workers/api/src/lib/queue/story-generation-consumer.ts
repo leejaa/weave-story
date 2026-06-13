@@ -3,6 +3,8 @@ import { makeDb } from '../db';
 import { chapters, stories, users } from '../schema';
 import { generateFirstChapterBackground, generateNextChapterBackground } from '../threads/background';
 import { notifyOwner } from '../notify/owner';
+import { moderateChapterContent } from '../moderation/classify';
+import { hideChapter } from '../moderation/enforce';
 import { logError } from '../observability/logger';
 import { alertServerError } from '../observability/alert';
 import type { WorkerEnv } from '../../types';
@@ -98,6 +100,35 @@ async function markJobFailed(job: StoryGenerationJob, env: WorkerEnv): Promise<v
   }
 }
 
+// 생성 직후 안전성 분류 — 정책 위반이면 자동 숨김 + 운영자 알림(best-effort).
+// 분류기 오류는 fail-open(콘텐츠는 노출)하되 생성 흐름을 막지 않는다.
+async function moderateGeneratedChapter(
+  job: StoryGenerationJob,
+  env: WorkerEnv,
+  db: ReturnType<typeof makeDb>,
+): Promise<void> {
+  try {
+    const [row] = await db
+      .select({ content: chapters.content, title: chapters.title })
+      .from(chapters)
+      .where(eq(chapters.id, job.chapterId))
+      .limit(1);
+    if (!row?.content) return;
+
+    const verdict = await moderateChapterContent(row.content, env.AI_GATEWAY_API_KEY);
+    if (verdict.action === 'hide') {
+      await hideChapter(env, db, job.chapterId, {
+        source: 'generation',
+        detail: `title: ${row.title ?? '-'}\ncategories: ${verdict.categories.join(', ') || '-'}\nreason: ${verdict.reason || '-'}`,
+      });
+      console.warn(`${getJobTag(job)} moderation_hidden categories=${verdict.categories.join(',')}`);
+    }
+  } catch (err) {
+    // 모더레이션 실패가 챕터 생성을 실패로 만들지 않도록 흡수한다.
+    console.error(`${getJobTag(job)} moderation_error`, err);
+  }
+}
+
 async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv): Promise<void> {
   const db = makeDb(env.DATABASE_URL);
   const shouldRun = await assertJobCanRun(job, db);
@@ -129,6 +160,8 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     } catch (err) {
       console.error('[notify] first-chapter failed', err);
     }
+
+    await moderateGeneratedChapter(job, env, db);
     return;
   }
 
@@ -139,6 +172,8 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     apiKey: env.AI_GATEWAY_API_KEY,
     useHarness: env.USE_STORY_HARNESS !== 'false',
   });
+
+  await moderateGeneratedChapter(job, env, db);
 }
 
 export async function handleStoryGenerationQueue(

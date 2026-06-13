@@ -16,6 +16,7 @@ import { ChoiceEntryPage } from '@/components/reading/choice-entry-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
 import { InterventionPage } from '@/components/reading/intervention-page';
 import { ChapterErrorPage } from '@/components/reading/chapter-error-page';
+import { HiddenPage } from '@/components/reading/hidden-page';
 import { ReportSheet } from '@/components/reading/report-sheet';
 import { PaywallModal } from '@/components/ui/paywall-modal';
 import { postReport, type ReportReason } from '@/lib/api/fetch';
@@ -218,6 +219,7 @@ export default function ReadingScreen() {
               />
             )}
             {item.type === 'generating' && <GeneratingPage />}
+            {item.type === 'hidden' && <HiddenPage />}
             {item.type === 'intervention' && <InterventionPage text={item.text} />}
             {item.type === 'end' && (
               <View style={styles.centered}>

@@ -19,6 +19,9 @@ export type GeneratingPageItem = { key: string; type: 'generating'; chapterNumbe
 
 export type InterventionPageItem = { key: string; type: 'intervention'; chapterNumber: number; text: string };
 
+// 모더레이션으로 숨김 처리된 챕터 — 본문 대신 안내를 보여준다.
+export type HiddenPageItem = { key: string; type: 'hidden'; chapterNumber: number };
+
 export type EndPageItem = { key: string; type: 'end' };
 
-export type PageItem = TextPageItem | ChoicePageItem | GeneratingPageItem | InterventionPageItem | EndPageItem;
+export type PageItem = TextPageItem | ChoicePageItem | GeneratingPageItem | InterventionPageItem | HiddenPageItem | EndPageItem;

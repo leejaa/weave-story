@@ -39,6 +39,9 @@ export type ChapterOption = { index: number; text: string };
 
 export type ChapterStatus = 'generating' | 'ready' | 'failed';
 
+// 'ok' = 정상, 'reported' = 신고 접수(여전히 노출), 'hidden' = 자동/수동 숨김(본문 비노출)
+export type ModerationStatus = 'ok' | 'reported' | 'hidden';
+
 export type Chapter = {
   id: string;
   threadId: string;
@@ -50,6 +53,7 @@ export type Chapter = {
   situation: string | null;
   question: string | null;
   status: ChapterStatus;
+  moderationStatus: ModerationStatus;
   createdAt: string;
 };
 

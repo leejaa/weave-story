@@ -39,5 +39,9 @@
   "chapterError": {
     "title": "We couldn't open your story",
     "body": "Something went wrong while writing the first chapter.\nYour credit is intact — please try again."
+  },
+  "hidden": {
+    "title": "This chapter can't be shown",
+    "body": "This chapter was hidden under our content policy."
   }
 }

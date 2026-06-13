@@ -47,6 +47,12 @@ export function buildPages(
       continue;
     }
 
+    // 모더레이션 숨김 챕터: 본문이 없으므로(서버에서 스크럽됨) 안내 페이지로 대체.
+    if (ch.moderationStatus === 'hidden') {
+      pages.push({ key: `ch${ch.chapterNumber}-hidden`, type: 'hidden', chapterNumber: ch.chapterNumber });
+      continue;
+    }
+
     if (!ch.content) continue;
 
     const charsFirst = calcCharsPerPage(width, listHeight, true);
