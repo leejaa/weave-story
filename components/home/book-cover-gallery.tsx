@@ -1,11 +1,15 @@
 import { useCallback } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useFocusEffect } from 'expo-router';
 import { FONTS, SIZES } from '@/constants/colors';
 import type { SampleCardData } from '@/lib/api/types';
 import { SampleBookCover } from './sample-book-cover';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { BookOrigin } from './use-book-selection';
+
+// 어두운 비디오 배경 위에서 쓰는 반투명 라이트 스켈레톤 색.
+const DARK_BG_SKELETON = 'rgba(245,240,232,0.16)';
 
 const HOME_BG = require('@/assets/videos/home-bg.mp4');
 
@@ -55,8 +59,10 @@ export function BookCoverGallery({ headline, cards, isLoading, selectedCardId, o
       </View>
 
       {isLoading ? (
-        <View style={styles.loading}>
-          <ActivityIndicator color="rgba(245,240,232,0.75)" />
+        <View style={[styles.scroller, styles.skeletonRail]}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} width={176} height={286} radius={14} color={DARK_BG_SKELETON} style={styles.skeletonCover} />
+          ))}
         </View>
       ) : (
         <ScrollView
@@ -125,14 +131,18 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 8,
   },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scroller: {
     flex: 1,
     marginTop: 134,
+  },
+  skeletonRail: {
+    flexDirection: 'row',
+    paddingLeft: 26,
+    paddingTop: 18,
+    alignItems: 'center',
+  },
+  skeletonCover: {
+    marginRight: 18,
   },
   rail: {
     paddingLeft: 26,

@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, Pressable, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/icon';
 import { usePalette } from '@/hooks/use-palette';
 import { useThreads } from '@/hooks/use-threads';
 import { StoryCard } from '@/components/story-card';
+import { StoryCardSkeleton } from '@/components/story-card-skeleton';
 import { FONTS, SIZES } from '@/constants/colors';
 
 
@@ -42,7 +43,11 @@ export default function StoriesScreen() {
       </View>
 
       {isLoading ? (
-        <ActivityIndicator color={c.thread} style={{ marginTop: 24 }} />
+        <View style={styles.grid}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <StoryCardSkeleton key={i} width={cardWidth} />
+          ))}
+        </View>
       ) : threads.length === 0 ? (
         <View style={styles.empty}>
           <Text style={[styles.emptyTitle, { color: c.inkSoft }]}>{t('empty.stories.title')}</Text>
