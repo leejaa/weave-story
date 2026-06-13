@@ -70,5 +70,14 @@
   },
   "auth": {
     "sessionExpiredBanner": "セッションの有効期限が切れました。もう一度ログインしてください。"
+  },
+  "a11y": {
+    "back": "戻る",
+    "close": "閉じる",
+    "share": "シェア",
+    "report": "報告",
+    "profile": "プロフィール",
+    "addCredits": "クレジットを追加",
+    "submitChoice": "選択を確定"
   }
 }

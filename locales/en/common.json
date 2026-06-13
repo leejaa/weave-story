@@ -70,5 +70,14 @@
   },
   "auth": {
     "sessionExpiredBanner": "Your session expired. Please sign in again."
+  },
+  "a11y": {
+    "back": "Back",
+    "close": "Close",
+    "share": "Share",
+    "report": "Report",
+    "profile": "Profile",
+    "addCredits": "Add credits",
+    "submitChoice": "Confirm choice"
   }
 }

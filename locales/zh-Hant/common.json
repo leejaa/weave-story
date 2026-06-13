@@ -70,5 +70,14 @@
   },
   "auth": {
     "sessionExpiredBanner": "登入階段已過期，請重新登入。"
+  },
+  "a11y": {
+    "back": "返回",
+    "close": "關閉",
+    "share": "分享",
+    "report": "檢舉",
+    "profile": "個人檔案",
+    "addCredits": "儲值點數",
+    "submitChoice": "確認選擇"
   }
 }

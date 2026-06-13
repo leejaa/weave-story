@@ -70,5 +70,14 @@
   },
   "auth": {
     "sessionExpiredBanner": "세션이 만료되어 로그아웃되었어요. 다시 로그인해 주세요."
+  },
+  "a11y": {
+    "back": "뒤로",
+    "close": "닫기",
+    "share": "공유하기",
+    "report": "신고하기",
+    "profile": "프로필",
+    "addCredits": "크레딧 충전",
+    "submitChoice": "선택 확정"
   }
 }

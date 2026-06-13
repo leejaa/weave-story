@@ -60,7 +60,11 @@ export function ReadingChoiceScreen({ threadId, chapterNumber, onClose, onComple
   if (!data || !chapter || options.length === 0) {
     return (
       <View style={[styles.empty, { backgroundColor: c.paper, paddingTop: insets.top + 14 }]}>
-        <Pressable onPress={onClose} style={[styles.closeButton, { backgroundColor: c.paperRaised, borderColor: c.rule }]}>
+        <Pressable
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t('common:a11y.back', 'Back')}
+          style={[styles.closeButton, { backgroundColor: c.paperRaised, borderColor: c.rule }]}>
           <Icon name="chevron-left" size={17} color={c.inkSoft} />
         </Pressable>
         <Text style={[styles.emptyText, { color: c.inkSoft }]}>
@@ -81,7 +85,11 @@ export function ReadingChoiceScreen({ threadId, chapterNumber, onClose, onComple
       />
 
       <View style={[styles.header, { paddingTop: insets.top + 12, borderBottomColor: c.rule }]}>
-        <Pressable onPress={onClose} style={[styles.closeButton, { backgroundColor: c.paperRaised, borderColor: c.rule }]}>
+        <Pressable
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t('common:a11y.back', 'Back')}
+          style={[styles.closeButton, { backgroundColor: c.paperRaised, borderColor: c.rule }]}>
           <Icon name="chevron-left" size={17} color={c.inkSoft} />
         </Pressable>
         <View style={styles.headerText}>

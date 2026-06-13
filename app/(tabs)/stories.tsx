@@ -18,6 +18,7 @@ export default function StoriesScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { data: threads = [], isLoading } = useThreads();
 
   const cardWidth = (width - H_PADDING * 2 - GRID_GAP) / 2;
@@ -37,7 +38,11 @@ export default function StoriesScreen() {
 
       <View style={styles.header}>
         <Text style={[styles.screenTitle, { color: c.ink }]}>{t('screenTitle')}</Text>
-        <Pressable onPress={() => router.push('/profile')} hitSlop={12}>
+        <Pressable
+          onPress={() => router.push('/profile')}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={tc('a11y.profile')}>
           <Icon name="user" size={22} color={c.inkSoft} />
         </Pressable>
       </View>

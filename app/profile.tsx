@@ -66,7 +66,12 @@ export default function ProfileScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.paper, paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
 
-      <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
+      <Pressable
+        onPress={() => router.back()}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel={t('common:a11y.back', 'Back')}
+        style={styles.backBtn}>
         <Icon name="chevron-left" size={24} color={c.inkSoft} />
       </Pressable>
 

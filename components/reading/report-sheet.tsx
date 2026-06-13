@@ -29,7 +29,12 @@ export function ReportSheet({ visible, submitting, onClose, onSubmit }: Props) {
           <Text style={[styles.title, { color: c.ink, fontFamily: FONTS.display }]}>
             {t('report.title')}
           </Text>
-          <Pressable onPress={onClose} hitSlop={8} disabled={submitting}>
+          <Pressable
+            onPress={onClose}
+            hitSlop={8}
+            disabled={submitting}
+            accessibilityRole="button"
+            accessibilityLabel={t('common:a11y.close', 'Close')}>
             <Icon name="close" size={20} color={c.inkFaint} />
           </Pressable>
         </View>

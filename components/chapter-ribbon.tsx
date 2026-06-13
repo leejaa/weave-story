@@ -20,12 +20,15 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport,
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('reading');
+  const { t: tc } = useTranslation('common');
 
   return (
     <View style={[styles.ribbon, { backgroundColor: c.paper, borderBottomColor: c.rule, paddingTop: insets.top + 10 }]}>
       <View style={styles.topRow}>
         <Pressable
           onPress={onBack}
+          accessibilityRole="button"
+          accessibilityLabel={tc('a11y.back')}
           style={[styles.backButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
           <Icon name="chevron-left" size={16} color={c.inkSoft} />
         </Pressable>
@@ -43,6 +46,8 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport,
           <Pressable
             onPress={onShare}
             hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={tc('a11y.share')}
             style={[styles.reportButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
             <Icon name="share" size={15} color={c.inkFaint} />
           </Pressable>
@@ -52,6 +57,8 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport,
           <Pressable
             onPress={onReport}
             hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={tc('a11y.report')}
             style={[styles.reportButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
             <Icon name="flag" size={15} color={c.inkFaint} />
           </Pressable>
