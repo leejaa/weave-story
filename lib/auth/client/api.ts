@@ -92,6 +92,24 @@ export async function authFetch(input: string, init: RequestInit = {}): Promise<
   return res;
 }
 
+// 로그아웃: 서버 세션(리프레시 토큰)을 폐기한 뒤 로컬 토큰을 지운다.
+// 서버 폐기는 best-effort — 오프라인이어도 로컬은 항상 정리한다.
+export async function logout(): Promise<void> {
+  const refreshToken = await tokenStorage.getRefreshToken();
+  if (refreshToken) {
+    try {
+      await fetch(`${BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+    } catch {
+      // 네트워크 오류는 무시 — 로컬 토큰은 아래에서 정리된다.
+    }
+  }
+  await tokenStorage.clear();
+}
+
 export async function deleteAccount(): Promise<void> {
   const res = await authFetch('/api/me', { method: 'DELETE' });
   if (!res.ok) {

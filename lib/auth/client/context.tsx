@@ -1,6 +1,6 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { signInWithApple, signInWithGoogle, signInWithDemo, setSignedOutCallback, deleteAccount } from './api';
+import { signInWithApple, signInWithGoogle, signInWithDemo, setSignedOutCallback, deleteAccount, logout } from './api';
 import { clearStaleTokensOnFreshInstall } from './install-guard';
 import { tokenStorage } from './storage';
 import { trackLogin, identifyUser } from '@/lib/analytics';
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    await tokenStorage.clear();
+    await logout(); // 서버 세션 폐기 + 로컬 토큰 정리
     setState('unauthenticated');
     void identifyUser(null);
   }, []);

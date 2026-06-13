@@ -136,6 +136,17 @@ authRouter.post('/demo', async (c) => {
   return c.json({ accessToken, refreshToken: rawRefreshToken });
 });
 
+// Revoke a session on logout — deletes the server-side refresh token so a leaked
+// token can't be reused after the user signs out. Idempotent: always returns ok.
+authRouter.post('/logout', async (c) => {
+  const { refreshToken } = await c.req.json().catch(() => ({}));
+  if (typeof refreshToken === 'string' && refreshToken) {
+    const db = makeDb(c.env.DATABASE_URL);
+    await db.delete(sessions).where(eq(sessions.refreshTokenHash, await hashRefreshToken(refreshToken)));
+  }
+  return c.json({ ok: true });
+});
+
 authRouter.post('/refresh', async (c) => {
   const { refreshToken } = await c.req.json();
   if (!refreshToken) return c.json({ error: 'refreshToken required' }, 400);
