@@ -40,17 +40,38 @@ export async function sendTossChapterReadyPush(
     const userKey = await tossUserKeyFor(db, row.userId);
     if (!userKey) return; // 토스 유저 아님(Expo/FCM 경로로 발송됨)
 
+    const payload = {
+      templateSetCode,
+      // 콘솔 템플릿이 사용하는 변수. 템플릿 등록 시 키를 맞춰주세요.
+      context: { storyTitle: row.title ?? '이야기', path: `/reading/${params.threadId}` },
+    };
+
     const res = await env.TOSS_MTLS.fetch(`${TOSS_API}/api-partner/v1/apps-in-toss/messenger/send-message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-toss-user-key': userKey },
-      body: JSON.stringify({
-        templateSetCode,
-        // 콘솔 템플릿이 사용하는 변수. 템플릿 등록 시 키를 맞춰주세요.
-        context: { storyTitle: row.title ?? '이야기', path: `/reading/${params.threadId}` },
-      }),
+      body: JSON.stringify(payload),
     });
-    if (!res.ok) {
-      console.warn(`[toss-push] send-message failed: ${res.status} ${await res.text()}`);
+
+    // 토스 API는 HTTP 200이어도 본문이 에러 엔벨로프({ resultType:'FAIL', ... })일 수 있다.
+    // (토스 로그인 때 동일 함정) → 본문을 파싱해 SUCCESS 여부로 판정.
+    const bodyText = await res.text();
+    let resultType: string | undefined;
+    try {
+      resultType = (JSON.parse(bodyText) as { resultType?: string })?.resultType;
+    } catch {
+      /* 비 JSON 응답 */
+    }
+    const ok = res.ok && resultType === 'SUCCESS';
+
+    if (ok) {
+      // 첫 실발송 스키마 확정용 로그(저빈도, best-effort). 안정화 후 축소 가능.
+      console.log(`[toss-push] sent ok status=${res.status} ctxKeys=${Object.keys(payload.context).join(',')}`);
+    } else {
+      // 요청 필드명(context/landing 등)이 콘솔 템플릿과 어긋나면 여기서 전체 응답으로 드러난다.
+      console.warn(
+        `[toss-push] send-message NOT ok status=${res.status} resultType=${resultType ?? 'n/a'} ` +
+          `req=${JSON.stringify(payload)} res=${bodyText.slice(0, 600)}`,
+      );
     }
   } catch (err) {
     console.warn('[toss-push] error', err);

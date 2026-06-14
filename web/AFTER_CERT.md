@@ -15,10 +15,16 @@
 - **IAP 서버**: `POST /api/purchases/toss`(orderId 멱등, sku→credits, getIapOrderStatus 검증 로깅+`TOSS_IAP_ENFORCE_VERIFY` 플래그). `lib/purchases/toss-iap.ts`.
 - **IAP 클라**: `web/src/features/purchase/*`(usePurchase: 구매+중단주문 복원), ProfilePage 충전 UI.
 - **푸시 서버**: `lib/notify/toss-push.ts`(send-message, x-toss-user-key, mTLS) → consumer에서 챕터 완성 시 토스 유저에게 발송(모더레이션 숨김 아닐 때). 기존 FCM은 그대로.
+  - 2026-06-14: 응답 엔벨로프(`resultType==='SUCCESS'`) 판정 + 첫 실발송 요청/응답 전체 로깅 추가(스키마 확정용). **워커 배포 완료** — 시크릿만 설정하면 즉시 켜짐(새 `.ait` 불필요).
 
 ### ⬜ 남음 (대부분 콘솔/시크릿 — 사용자)
 - **(콘솔) IAP 소비성 상품 등록**: SKU `credits_starter_3`(3), `credits_value_10`(10). 서버 `TOSS_CREDITS_PER_SKU`와 일치 필수.
-- **(콘솔) 메시지 템플릿 등록 + 검수(2~3일)** → 발급된 `templateSetCode`를 `TOSS_MESSAGE_TEMPLATE_CODE`로 설정(미설정 시 토스 푸시 skip). 템플릿 변수: `storyTitle`, 랜딩 `/reading/{threadId}`.
+- **(콘솔) 메시지 템플릿 등록 + 검수(2~3일)** → 발급된 `templateSetCode`를 `TOSS_MESSAGE_TEMPLATE_CODE`로 설정. 푸시 켜는 절차:
+  1. 콘솔 → 메시지(스마트 발송) → **기능성 메시지** 템플릿 등록. 본문 예: `「{storyTitle}」 다음 이야기가 준비됐어요`. 변수 키 **`storyTitle`** 포함(코드 `context.storyTitle`과 일치 필수).
+  2. 랜딩(딥링크): 미니앱 경로 **`/reading/{threadId}`**. 콘솔이 요구하는 랜딩 필드명이 `path`가 아니면, 첫 발송 후 워커 로그(`[toss-push]`)의 응답으로 확인해 `toss-push.ts`의 `context` 키를 맞춘다.
+  3. 검수 통과 → `templateSetCode` 발급 → `cd workers/api && npx wrangler secret put TOSS_MESSAGE_TEMPLATE_CODE` (값 입력은 사용자가 직접).
+  4. 검증: 이야기 생성 → 워커 로그에서 `[toss-push] sent ok` 확인. NOT ok면 같은 로그에 `req=/res=` 전체가 찍혀 필드명 교정 가능.
+  - ⚠️ **딥링크 랜딩 검증**: 웹 클라는 `BrowserRouter`만 사용(별도 스킴 파싱 없음). Toss가 미니앱을 `/reading/...` 경로로 직접 열면 그대로 라우팅되지만, 커스텀 스킴/쿼리로 넘기면 클라에 진입경로 파싱 추가 필요(→ 새 `.ait`). E2E에서 확인.
 - **(시크릿, 선택) PII 복호화**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`. 미설정이어도 로그인 동작(name/email만 비움).
 - **(프로덕션 전) IAP 검증 강제**: 첫 샌드박스 주문 로그로 getIapOrderStatus 실제 스키마 확인 → `toss-iap.ts`의 경로/`looksPaid` 확정 → `TOSS_IAP_ENFORCE_VERIFY='true'`.
 - **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 로그인 → 이야기 생성→푸시→딥링크, 충전(샌드박스).
