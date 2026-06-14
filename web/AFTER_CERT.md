@@ -22,7 +22,7 @@
 - **(콘솔) 메시지 템플릿 — 2026-06-14 등록·검토요청 완료(검토중, 영업일 3일내 이메일)**. 캠페인 "기능성_새 챕터 준비 완료", 그룹 ID 7757.
   - **발송 코드(=`TOSS_MESSAGE_TEMPLATE_CODE` 값): `weave-story-chapter_ready`** ← 콘솔이 앱이름 접두사 자동 부착. 정확히 이 값 사용.
   - 소재: 제목 `새 이야기`(고정, ≤7자), 내용 `{{ storyTitle }} 다음 이야기가 준비됐어요.`(변수 `{{ storyTitle }}` ✅ 코드 `context.storyTitle`과 일치, 문장 끝 `~요.` 필수), 이동 URL `intoss://weave-story/stories`(정적 — threadId 못 넣어 내 서재로 랜딩).
-  - 승인 후: `cd workers/api && npx wrangler secret put TOSS_MESSAGE_TEMPLATE_CODE` → 값 `weave-story-chapter_ready` 입력(사용자 직접).
+  - 시크릿 `TOSS_MESSAGE_TEMPLATE_CODE` = `weave-story-chapter_ready` **2026-06-14 설정 완료**(승인 전 미리). → 템플릿 승인되는 순간 자동으로 푸시 켜짐(추가 작업 없음). 승인 전 발송 시도는 실패로그(warn)만, 무해.
   - 검증: 이야기 생성 → 워커 로그 `[toss-push] sent ok` 확인. NOT ok면 같은 로그 `req=/res=` 전체로 필드명(`templateSetCode`/`context`) 교정 → 워커 재배포(`.ait` 무관).
   - ⚠️ 미확인: **API 발송 가이드의 정확한 요청 필드명**(우리 가정: `templateSetCode`+`context`). 첫 발송 로그로 확정.
   - ⚠️ 딥링크 랜딩: 웹 클라 `BrowserRouter`만 사용. Toss가 `intoss://weave-story/stories`를 `/stories` 경로로 열면 그대로 라우팅. 아니면 진입경로 파싱 추가(→ 새 `.ait`). E2E 확인.
