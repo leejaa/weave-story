@@ -38,6 +38,10 @@ Set via `cd workers/api && npx wrangler secret put <NAME>`. List names with
 | `GOOGLE_IOS_CLIENT_ID` / `GOOGLE_WEB_CLIENT_ID` | Google Sign-In token verification | GCP project `weave-story-496101` → OAuth clients |
 | `DEMO_LOGIN_CODE` | Review-only demo login (`/api/auth/demo`) | Any chosen code; rotate freely |
 | `REVENUECAT_SECRET_KEY` | RevenueCat REST API | RevenueCat dashboard → API keys |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | 운영자 알림(가입·결제·서버오류·환불) | @BotFather 봇 토큰 / 채팅 ID |
+| `TOSS_MESSAGE_TEMPLATE_CODE` *(선택)* | 앱인토스 스마트발송 푸시 템플릿 코드 | 앱인토스 콘솔 → 스마트 발송 캠페인(검수 후) |
+| `TOSS_AAD_STRING` / `TOSS_DECRYPTION_KEY` *(선택)* | 토스 로그인 PII(name/email) AES-256-GCM 복호화 | 앱인토스 콘솔 토스로그인 설정 시 이메일로 발급. 미설정이면 userKey만 사용(로그인 정상) |
+| `TOSS_IAP_ENFORCE_VERIFY` *(선택)* | 'true'면 IAP 지급 전 getIapOrderStatus 통과 강제(프로덕션). 미설정은 로깅만 | wrangler.toml var 또는 secret |
 
 **Sign in with Apple revocation** (set 2026-06-04): `APPLE_SIGNIN_TEAM_ID` =
 `UYGG4AXKH5`, `APPLE_SIGNIN_KEY_ID` = `GTT3835T92`, `APPLE_SIGNIN_PRIVATE_KEY` =
@@ -47,6 +51,13 @@ contents of the "Sign in with Apple" key `~/Downloads/AuthKey_GTT3835T92.p8`
 Sign in with Apple enabled for App ID `com.leejahun.weavestory`.
 
 **Non-secret Worker vars** (`workers/api/wrangler.toml [vars]`): `USE_STORY_HARNESS="true"`.
+
+**mTLS certificate binding** (`workers/api/wrangler.toml [[mtls_certificates]]`): `TOSS_MTLS`
+= cert id `6a7f22e1-e05b-40d0-ba3c-aff1b5d6735a` (`weave-toss-mtls`, 발급자 Toss appsintoss
+Root CA, 만료 2027-07-09). 앱인토스 파트너 API(로그인·결제·푸시) 호출에 사용. 재발급:
+앱인토스 콘솔 mTLS 인증서 → 새 발급 → `npx wrangler mtls-certificate upload --cert
+.secrets/toss-mtls-public.crt --key .secrets/toss-mtls-private.key --name <name>` → 새 id로
+바인딩 교체. **Rate limiting / mTLS 바인딩은 무료, 시크릿 아님(콘솔/wrangler에서 관리).**
 
 ---
 
@@ -60,6 +71,7 @@ Sign in with Apple enabled for App ID `com.leejahun.weavestory`.
 | `.secrets/play-sa.json` | Same Play service-account key — referenced by `eas.json` submit profile (`eas submit -p android` → `alpha` track) | copy of the above |
 | `.secrets/fcm-v1-service-account.json` | **FCM V1** service-account key (Firebase `weave-story-app`) — Android push; uploaded to EAS | Firebase console → `weave-story-app` → Project settings → Service accounts → Generate new private key |
 | `.secrets/AuthKey_D7J7X6ZD28.p8` | **APNs** auth key **D7J7X6ZD28** (Sandbox & Production, Team Scoped) — iOS push; uploaded to EAS push key | developer.apple.com → Keys → new key with APNs (downloadable once); max 2 APNs keys/account |
+| `.secrets/toss-mtls-public.crt` / `.secrets/toss-mtls-private.key` | 앱인토스 **mTLS 클라 인증서**(CF에 `TOSS_MTLS`로 업로드됨, id `6a7f22e1…`) | 앱인토스 콘솔 mTLS 인증서 → 재발급 → CF 재업로드 |
 | `google-services.json` (repo root, **committed**) | Firebase Android config (sender id) — embedded in build via `android.googleServicesFile` | `firebase apps:sdkconfig ANDROID <appId> --project weave-story-app` |
 | `.env.local` | Local dev env (see §C) | Recreate from this doc + consoles |
 

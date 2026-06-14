@@ -45,3 +45,8 @@ app-example
 /ios
 /android
 .secrets/
+
+# tooling caches / artifacts
+.playwright-mcp/
+**/__pycache__/
+web/.granite/

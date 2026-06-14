@@ -2,12 +2,17 @@
 
 기존 React Native(Expo) 앱 "Weave Story"(AI 인터랙티브 소설)를 **앱인토스 미니앱**으로 출시하기 위한 별도 웹앱. `web/` 하위에 React+Vite로 신규 구현하며, 기존 앱의 화면/디자인/에셋을 충실히 재현한다.
 
-> ## 🔔 현재 상태 (2026-06-11)
-> - **앱인토스 1차 제출 → 반려.** 사유: "**앱 이름은 한국어로 작성해 주세요**" — 콘솔 "한국어 앱 이름"에 영어(`Weave Story`)를 넣어서. (기능/내용 문제 아님)
->   - **결정: 한국어 앱 이름 = `실마리`** (실 한 올이 풀려나가듯 시작되는 이야기 + weave/thread 브랜드 DNA. 영어명 `Weave Story`는 유지.)
->   - ⬜ **(사용자/다음 세션) 할 일**: 앱인토스 콘솔 → 기본 정보 → "한국어 앱 이름" = `실마리` 입력 → 재제출. 부제(`AI가 써주는 나만의 인터랙티브 소설`)·영어명은 그대로.
-> - ✅ **로딩 모션 BookFlip 통일** — 페이지 로드/전환/생성중/쓰는중 전부 CSS 3D 책장넘김(BookFlip)으로 교체, `lottie-react`/`lottie-web` 의존성 완전 제거(LoginPage 청크 610→245kB). (커밋 `2737afa`·`678fa56`·`d8d0df1`)
-> - ✅ **챕터 가로 스와이프(다음장) 버그 수정** — 본문/선택지 내부 스크롤 컨테이너의 `touch-action` 미지정(기본 auto)이 가로 제스처를 삼키던 문제. `.scroll`(TextPage)·`.page`(ChoicePage)에 `touch-action: pan-y` 추가. (커밋 `a8f4874`) ⬜ 실기기 최종확인.
+> ## 🔔 현재 상태 (2026-06-14)
+> - 앱 이름: 한국어 **실마리** / 영어 **Weave Story**(확정·콘솔 반영).
+> - ✅ **토스 로그인 실연동** — mTLS 인증서 발급·CF 업로드(`TOSS_MTLS`) + `POST /api/auth/toss`(generate-token+login-me, 응답 `{success}` 봉투 파싱, userKey 계정 upsert). 토스 앱 E2E 로그인 성공. 임시 데모로그인 제거.
+> - ✅ **인앱결제(IAP)** — `POST /api/purchases/toss`(orderId 멱등) + `usePurchase`(구매+중단주문 복원), 프로필 충전. 콘솔 상품 `credits_starter_3`(3)·`credits_value_10`(10) 등록. ⬜ 샌드박스 결제 E2E + 프로덕션 전 `TOSS_IAP_ENFORCE_VERIFY`.
+> - ✅ **푸시** — 챕터 완성 시 토스 유저 `send-message`(mTLS). ⬜ 콘솔 메시지 템플릿 검수 후 `TOSS_MESSAGE_TEMPLATE_CODE` 설정해야 실제 발송.
+> - ✅ **관측성** — `@sentry/react`(미처리 에러·5xx·네트워크 자동수집, RN 프로젝트 공유 + `app:appsintoss` 태그). 토스 라우트 인프라 오류 텔레그램 알림.
+> - ✅ **성능** — 배경 비디오 지연로드(포스터 즉시); setup/미리보기 배경 2MB PNG→로컬 200KB JPEG; 샘플 커버 R2 JPEG 300KB(?v=3); cover-image 워커 생성커버 JPEG화.
+> - ✅ **노출 자산 'AI' 제거** — 썸네일·setup 스크린샷·부제, 독자주도 포지셔닝.
+> - ✅ 로딩 모션 BookFlip 통일, 챕터 가로 스와이프 버그 수정(이전 세션).
+> - ⬜ **다음**: 새 `.ait`(deploymentId 019ec591) 재업로드 → 토스 앱 테스트 → 검토 요청(출시). 인증서 후속 체크리스트는 [AFTER_CERT.md](./AFTER_CERT.md).
+> - ⚠️ **OTA 없음**: 클라(web) 변경은 매번 `.ait` 재빌드+제출(테스트는 즉시, 프로덕션은 검토 최대 3영업일). 백엔드(워커) 변경은 즉시 반영.
 
 ## 스택
 - React 18.3 · Vite 5 · TypeScript · react-router-dom v6 (BrowserRouter, CSR)

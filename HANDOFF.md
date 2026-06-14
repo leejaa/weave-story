@@ -1,10 +1,35 @@
 # Weave Story Handoff
 
-Last updated: 2026-06-10
+Last updated: 2026-06-14
 
 > **Secrets / env / credentials:** see [`SECRETS_AND_ENV.md`](./SECRETS_AND_ENV.md)
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
+
+## 2026-06-14 — 백엔드 하드닝 · 앱인토스 풀 연동 · 성능/관측성
+
+대규모 세션. 항목별 요약(상세는 git log):
+
+### 백엔드 하드닝 (워커, Expo+web 공용)
+- **P0**: 9개 테이블 인덱스 + 입력 검증(prompt/customInput/choiceIndex 길이·범위); UGC 모더레이션(생성 후 Haiku 분류 차단 + 신고 자동숨김 + 본문 스크럽 + 텔레그램); 로그아웃 시 서버 세션(리프레시 토큰) 폐기; 레이트리밋(AUTH 30/60s IP, GEN 12/60s userId, CF 네이티브 바인딩).
+- **견고성**: 비-UUID path/body id → 500 대신 404(`lib/validation.ts`); 모더레이션 신고 임계값 1(비공개 콘텐츠) + 소유권 검증, 생성 자동숨김 시 크레딧 환원.
+- **환불 처리**: Apple App Store Server Notifications V2 웹훅(`/api/store-notifications/apple`, Apple API 재확인) + Google Voided Purchases cron(매일 00:30 UTC). schema `purchase_grants.status/refunded_at`. ASC 서버알림 URL 등록 완료.
+- **일일 보상**: `POST /api/me/daily-reward`(KST 날짜당 1크레딧, 멱등).
+- **테스트**: 돈 경로 vitest 통합테스트(지급 멱등·환불·일일보상·모더레이션). `cd workers/api && TEST_DATABASE_URL=... npm test`.
+
+### 클라(Expo) UX/성장 — OTA 반영 (runtime 1.0.1·1.0.2 양쪽)
+- 생성 실패 안내(429/5xx/네트워크), 세션 만료 로그인 배너, 목록 스켈레톤, 이야기 텍스트 공유, 아이콘 a11y 라벨, 완료 분석 이벤트(story_completed).
+- **iOS 1.0.2 출시 완료**(READY_FOR_SALE). OTA 듀얼-런타임 절차: app.json version을 라이브 런타임마다 임시 변경 후 `eas update`.
+- **ASO**: 보이는 카피에서 'AI' 제거(독자주도 포지셔닝), Apple 키워드 필드엔 검색용 유지. Play 리스팅 4개 언어 라이브 반영, Apple 프로모션 갱신. (부제/키워드/설명은 1.0.3에 적용 — store-copy.json 보관)
+
+### 앱인토스 미니앱 (web/ — 별도 React+Vite, Expo와 독립)
+- **토스 로그인**: mTLS 클라 인증서 CF 업로드(`TOSS_MTLS` 바인딩) + `POST /api/auth/toss`(generate-token+login-me, 응답 `{success}` 봉투 파싱, userKey로 계정 upsert). 임시 데모로그인 제거.
+- **인앱결제(IAP)**: `POST /api/purchases/toss`(orderId 멱등) + 클라 `usePurchase`(구매+중단주문 복원), 프로필 충전 UI. SKU `credits_starter_3`(3)/`credits_value_10`(10). 콘솔 상품 등록 완료.
+- **푸시**: 챕터 완성 시 토스 유저 `send-message`(mTLS). `TOSS_MESSAGE_TEMPLATE_CODE` 설정 시 동작(콘솔 템플릿 검수 필요).
+- **관측성**: web에 `@sentry/react`(미처리 에러·5xx·네트워크 자동수집, RN 프로젝트 공유+`app:appsintoss` 태그). 토스 라우트 인프라 오류 텔레그램 알림.
+- **성능**: 배경 비디오 지연로드(포스터 즉시); setup/미리보기 배경 PNG 2MB→로컬 JPEG 200KB; 샘플 커버 10장 R2 JPEG 300KB(?v=3); cover-image 워커가 생성 커버를 JPEG로 출력.
+- **프로필**: PII 미복호화 시 UUID 대신 "실마리 독자" + 기본 아이콘.
+- 빌드/업로드: `cd web && npm run build:ait` → `web/weave-story.ait` → 콘솔 앱 출시. **OTA 없음 — 클라 변경은 .ait 재제출**(백엔드 변경은 즉시). 인증서 후속 체크리스트 [`web/AFTER_CERT.md`](./web/AFTER_CERT.md).
 
 ## 2026-06-11 — AI 광고 영상 프리프로덕션 시작
 
