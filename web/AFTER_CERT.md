@@ -6,6 +6,11 @@
 ## 0. 지금 상태 요약
 - API 서버: `https://weave-story-api.leejahun0.workers.dev` (CF Worker, Expo와 동일 백엔드). 인증=Bearer JWT(HS256, `JWT_SECRET`), claim `{ sub: userId }`.
 
+### 배포 자동화 (2026-06-14)
+- **`.ait` 업로드는 CLI로 자동화됨**: `npm run deploy:ait -- "메모"` (= `scripts/deploy-ait.sh`: `ait build` + `ait deploy`). 콘솔 수동 드래그-업로드 대체.
+- **콘솔 API 키**: 콘솔 → API 키 → 발급(전체/특정 앱 권한). 키는 **레포에 저장하지 않음** — 사용자가 `cd web && npx ait token add`(프롬프트 입력, 로컬 프로필 저장) 1회. CI는 `AIT_API_KEY` 환경변수.
+- ⚠️ **검토 요청·출시는 여전히 콘솔 수동**(플랫폼이 API 미제공). deploy는 업로드(deployment 생성)까지만.
+
 ### ✅ 완료 (2026-06-14, 인증서 발급 후)
 - **mTLS**: CF에 클라 인증서 업로드(`weave-toss-mtls`, id `6a7f22e1-...`) → `TOSS_MTLS` 바인딩(wrangler.toml). `.secrets/toss-mtls-*.{crt,key}` 보관.
 - **1-B `/api/auth/toss` 구현·배포(06acb684)**: mTLS로 generate-token+login-me 호출 → userKey로 provider='toss' 계정 upsert + JWT 발급. 더미코드 스모크 401 확인.
