@@ -2,6 +2,13 @@ import { neon } from '@neondatabase/serverless';
 import { createGateway } from '@ai-sdk/gateway';
 import { generateImage } from 'ai';
 
+// 커버를 PNG(~2MB) 대신 압축 JPEG(~300KB)로 생성·저장 — 로딩 속도/저장 비용↓.
+// 커버는 장식용 작은 이미지라 quality medium로 충분(생성 비용도 절감).
+const GPT_IMAGE_OPTS = {
+  openai: { quality: 'medium', output_format: 'jpeg', output_compression: 80 },
+} as const;
+const COVER_CONTENT_TYPE = 'image/jpeg';
+
 export interface Env {
   COVER_IMAGES: R2Bucket;
   COVER_QUEUE: Queue<CoverJobMessage>;
@@ -161,9 +168,10 @@ async function handleSingleCard(
     model: gateway.imageModel('openai/gpt-image-2'),
     prompt: card.imagePrompt,
     size: '1024x1024',
+    providerOptions: GPT_IMAGE_OPTS,
   });
   await env.COVER_IMAGES.put(r2Key, image.uint8Array, {
-    httpMetadata: { contentType: 'image/png' },
+    httpMetadata: { contentType: COVER_CONTENT_TYPE },
   });
   console.log(`[cover-image/sample] ✓ ${card.key}`);
   return Response.json({ ...card, imageUrl: `${R2_PUBLIC_URL}/${r2Key}` });
@@ -187,9 +195,10 @@ async function handleSampleCards(env: Env, refresh = false): Promise<Response> {
         model: gateway.imageModel('openai/gpt-image-2'),
         prompt: card.imagePrompt,
         size: '1024x1024',
+        providerOptions: GPT_IMAGE_OPTS,
       });
       await env.COVER_IMAGES.put(r2Key, image.uint8Array, {
-        httpMetadata: { contentType: 'image/png' },
+        httpMetadata: { contentType: COVER_CONTENT_TYPE },
       });
       console.log(`[cover-image/sample] ✓ ${card.key}`);
       return { ...card, imageUrl: `${R2_PUBLIC_URL}/${r2Key}` };
@@ -252,12 +261,13 @@ export default {
           model: gateway.imageModel('openai/gpt-image-2'),
           prompt: imagePrompt,
           size: '1024x1024',
+          providerOptions: GPT_IMAGE_OPTS,
         });
         console.log(`[cover-image] image generated (${image.uint8Array.byteLength} bytes)`);
 
         const key = `covers/${storyId}.png`;
         await env.COVER_IMAGES.put(key, image.uint8Array, {
-          httpMetadata: { contentType: 'image/png' },
+          httpMetadata: { contentType: COVER_CONTENT_TYPE },
         });
         console.log(`[cover-image] uploaded to R2: ${key}`);
 
