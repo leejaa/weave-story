@@ -59,6 +59,11 @@
   font-size: 22px;
   color: var(--color-paper);
 }
+.avatarIcon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-paper);
+}
 .displayName {
   font-family: var(--font-sans);
   font-weight: 600;
