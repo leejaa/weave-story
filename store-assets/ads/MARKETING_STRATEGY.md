@@ -1,6 +1,6 @@
 # Weave Story Marketing Strategy
 
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
 ## 목적
 
@@ -23,6 +23,7 @@ Weave Story의 성장을 위해 `포지셔닝`, `획득`, `활성화`, `리텐�
   까지 이어지는 구조를 만들어야 한다.
 - 현재 예산 제약상 유료 집행은 전제하지 않는다. 초기 전략은 `오가닉 발견 + 무료 스토어 최적화
   + 커뮤니티 침투 + 공유 루프` 중심으로 설계한다.
+- 2026-06-14 기준, 오가닉 숏폼 테스트용 15초 영상 2종(`choice-ko`, `romance-ko`)의 1차 로컬 렌더 마스터가 준비되었다.
 
 ## 시장 인사이트 (2026-06-13 기준)
 
@@ -524,26 +525,26 @@ Weave Story의 성장을 위해 `포지셔닝`, `획득`, `활성화`, `리텐�
 - 주 5회 발행, 총 10개
 - `로맨스 우선 6개`, `범용 브랜드 2개`, `판타지 2개`
 - `15초 훅형 7개`, `30~90초 설명형 3개`
-- 브랜드 계정과 창업자/팀원 계정을 혼합 운영
+- 브랜드 계정 문법과 창업자 관점 메시지를 혼합 운영
 - 모든 영상은 TikTok, Reels, Shorts에 공통 배포
 
 | 주차 | 요일 | 포맷 | 주체 | 타깃 | 첫 문장/훅 | 핵심 내용 | CTA |
 |---|---|---|---|---|---|---|---|
 | 1주차 | 월 | 15초 훅형 | 브랜드 | 로맨스 | `서브남 루트가 없으면, 내가 만들면 됨.` | 정해진 선택지 A/B를 거부하고 새 루트를 여는 한 장면 중심 편집 | `프로필에서 확인` |
-| 1주차 | 화 | 45초 설명형 | 창업자 | 범용 | `왜 우리는 선택지만 고르는 스토리 앱을 만들고 싶지 않았냐면.` | 기존 인터랙티브 스토리의 한계와 `직접 만드는 루트` 차별점 설명 | `궁금하면 앱 페이지 보기` |
+| 1주차 | 화 | 45초 설명형 | 브랜드/창업자 관점 | 범용 | `왜 우리는 선택지만 고르는 스토리 앱을 만들고 싶지 않았냐면.` | 기존 인터랙티브 스토리의 한계와 `직접 만드는 루트` 차별점 설명 | `궁금하면 앱 페이지 보기` |
 | 1주차 | 수 | 15초 훅형 | 브랜드 | 로맨스 | `메인 남주 말고 다른 루트 타고 싶었던 적 있지.` | 독자의 공감 불만을 바로 찌르고 Weave Story가 그 욕망을 풀어준다는 구조 | `원하는 루트 직접 만들기` |
-| 1주차 | 목 | 15초 훅형 | 팀원/창업자 | 범용 | `선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.` | facecam 또는 텍스트 오버레이 중심의 짧은 주장형 영상 | `어떤 루트 만들지 상상해보기` |
-| 1주차 | 금 | 30초 후기형 | 창업자 | 로맨스 | `내가 원했던 건 결말 선택이 아니라 감정선 자체를 바꾸는 거였음.` | 개인 경험형 톤으로 왜 이 제품을 만들었는지 말하는 스토리 | `댓글로 원하는 루트 남기기` |
+| 1주차 | 목 | 15초 훅형 | 브랜드/창업자 관점 | 범용 | `선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.` | 키네틱 타이포 또는 AI 비주얼 중심의 짧은 주장형 영상 | `어떤 루트 만들지 상상해보기` |
+| 1주차 | 금 | 30초 후기형 | 창업자 관점 | 로맨스 | `내가 원했던 건 결말 선택이 아니라 감정선 자체를 바꾸는 거였음.` | 개인 경험형 톤으로 왜 이 제품을 만들었는지 말하는 스토리 | `댓글로 원하는 루트 남기기` |
 | 2주차 | 월 | 15초 훅형 | 브랜드 | 판타지 | `정해진 퀘스트 말고, 내 세계선을 열고 싶을 때.` | 판타지 독자용으로 `세계선`과 `모험` 욕망을 짧게 압축 | `새 세계선 확인` |
-| 2주차 | 화 | 60초 설명형 | 창업자 | 범용 | `이건 소설 추천 앱이 아니라, 네가 전개를 바꾸는 독서 경험이다.` | 제품 포지셔닝을 명확히 설명하고 `AI`보다 독자 주도성을 강조 | `앱 페이지에서 더 보기` |
+| 2주차 | 화 | 60초 설명형 | 브랜드/창업자 관점 | 범용 | `이건 소설 추천 앱이 아니라, 네가 전개를 바꾸는 독서 경험이다.` | 제품 포지셔닝을 명확히 설명하고 `AI`보다 독자 주도성을 강조 | `앱 페이지에서 더 보기` |
 | 2주차 | 수 | 15초 질문형 | 브랜드 | 로맨스 | `왜 항상 정해진 커플만 봐야 하지?` | 댓글 논쟁을 유도하는 질문형 포맷, 관계 선택과 감정선 중심 | `너라면 어떤 루트?` |
 | 2주차 | 목 | 15초 훅형 | 브랜드 | 범용 | `읽는 순간마다, 이야기가 내 쪽으로 꺾이면?` | 몰입 중심, 시네마틱 장면형, 브랜드 감정선 강화 | `직접 이야기 만들기` |
-| 2주차 | 금 | 30~45초 후기형 | 팀원/초기 사용자 톤 | 판타지 | `남이 짜둔 모험보다 내가 여는 루트가 더 궁금했다.` | 판타지 성향 독자가 반응할 수 있는 체험 후기형 메시지 | `네 세계선도 열어보기` |
+| 2주차 | 금 | 30~45초 후기형 | 사용자 후기 톤 | 판타지 | `남이 짜둔 모험보다 내가 여는 루트가 더 궁금했다.` | 판타지 성향 독자가 반응할 수 있는 체험 후기형 메시지 | `네 세계선도 열어보기` |
 
 #### 첫 10개 발행 후 확인할 항목
 
 1. 로맨스와 판타지 중 어느 쪽이 `저장/댓글`보다 `스토어 이동`을 더 잘 만드는가
-2. 창업자 설명형이 신뢰를 만들었는지, 아니면 너무 길게 느껴졌는지
+2. 창업자 관점 설명형이 신뢰를 만들었는지, 아니면 너무 길게 느껴졌는지
 3. 질문형 포맷이 댓글은 많지만 설치 의도는 약한지 여부
 4. `프로필에서 확인`보다 `댓글로 루트 남기기` 같은 참여 CTA가 더 강한지 여부
 
@@ -554,6 +555,316 @@ Weave Story의 성장을 위해 `포지셔닝`, `획득`, `활성화`, `리텐�
 - `서브남 루트 만들 수 있으면 누구부터 살릴 건데`
 - `판타지면 세계선부터 바꿀래, 엔딩부터 바꿀래?`
 
+### 1주차 AI 제작 대본 v1
+
+운영 기준:
+
+- 실사 촬영 대신 `AI 정지 이미지 + AI 모션 + 키네틱 타이포 + TTS` 조합을 기본으로 한다.
+- 브랜드 영상은 텍스트 오버레이, 종이, 책, 잉크, 메모 같은 오브젝트 기반 AI 비주얼로 커버한다.
+- 창업자 관점 메시지는 실제 출연 대신 1인칭 대본과 차분한 TTS 또는 AI 보이스오버로 전달한다.
+- 모든 영상은 첫 1초 안에 핵심 문장이 보여야 한다.
+
+권장 제작 조합:
+
+- 비주얼: 승인된 광고 스타일 프레임, 스토리보드 패널, 추가 생성 정지 이미지
+- 모션: 이미지 팬/줌, 잉크 번짐 전환, 페이지 전환, 텍스트 키네틱 애니메이션
+- 음성: TTS 또는 AI 보이스오버
+- 편집: CapCut, Premiere, Final Cut 중 무엇이든 가능
+
+#### 월요일: 로맨스 훅형 15초
+
+목표:
+
+- 로맨스 독자의 즉각적인 공감 반응 확보
+
+첫 문장:
+
+`서브남 루트가 없으면, 내가 만들면 됨.`
+
+제작 구성:
+
+1. 0-2초: 검은 배경 또는 책/노트 위에 큰 자막 노출
+2. 2-6초: 손으로 `A 루트`, `B 루트`라고 적힌 메모 두 장을 밀어냄
+3. 6-11초: 빈 종이에 `내 루트`를 쓰고 동그라미 표시
+4. 11-15초: 앱 이름 또는 프로필 CTA 자막
+
+내레이션 대본:
+
+```text
+서브남 루트가 없으면,
+정해진 선택지 고를 필요 없음.
+내가 원하는 전개를 직접 만들면 됨.
+```
+
+자막 문구:
+
+```text
+서브남 루트가 없으면
+내가 만들면 됨
+
+정해진 선택 말고
+직접 새 루트 만들기
+```
+
+컷 메모:
+
+- 손동작은 빠르게
+- 1컷당 1문장만
+- 배경음은 긴장감보단 단정한 비트
+
+CTA:
+
+`프로필에서 확인`
+
+제작 난이도:
+
+- 매우 낮음
+
+편집 타임라인:
+
+| 구간 | 자막 | 화면 | 편집 메모 |
+|---|---|---|---|
+| 0.0-1.2초 | `서브남 루트가 없으면` | 검은 배경 또는 종이 배경 위 큰 텍스트 | 첫 프레임부터 큰 글자, 즉시 읽히게 중앙 배치 |
+| 1.2-2.4초 | `내가 만들면 됨` | 같은 배경, 2줄 자막으로 교체 | 2번째 문장은 더 크게, 리듬감 있게 컷 |
+| 2.4-4.8초 | `A 루트` `B 루트` | 손으로 메모 두 장을 화면 밖으로 밀어냄 | 손동작 빠르게, 효과음 있으면 종이 밀리는 소리 |
+| 4.8-7.8초 | `정해진 선택 말고` | 빈 종이 위에 펜으로 쓰기 시작 | 상단 자막 고정, 아래에서 손동작 진행 |
+| 7.8-10.8초 | `직접 새 루트 만들기` | `내 루트`라고 쓰고 동그라미 표시 | 마지막 글자 쓰는 순간 자막 교체 |
+| 10.8-13.2초 | `없는 루트는` `직접 여는 쪽` | 완성된 종이를 잠깐 클로즈업 | 2줄 자막, 중심 정렬 |
+| 13.2-15.0초 | `프로필에서 확인` | 심플한 엔드프레임 또는 앱 이름 | CTA만 남기고 화면 정리 |
+
+#### 화요일: 창업자 설명형 45초
+
+목표:
+
+- 제품 차별점 이해도 확보
+
+첫 문장:
+
+`왜 우리는 선택지만 고르는 스토리 앱을 만들고 싶지 않았냐면.`
+
+제작 구성:
+
+1. 0-3초: 큰 타이포와 함께 첫 문장 노출
+2. 3-15초: 갈림길, A/B 선택지, 닫힌 루트 같은 AI 비주얼
+3. 15-30초: 빈 페이지 위에 새 루트가 생기는 AI 비주얼
+4. 30-45초: 브랜드 문장과 CTA 마감
+
+내레이션 대본:
+
+```text
+왜 우리는 선택지만 고르는 스토리 앱을 만들고 싶지 않았냐면,
+많은 인터랙티브 스토리는 결국 누가 짜놓은 갈림길 안에서만 움직여야 하거든요.
+근데 독자는 진짜로 원하는 전개가 따로 있을 때가 많아요.
+우리는 그걸 직접 만들 수 있는 쪽이 더 재밌다고 봤어요.
+정해진 선택지를 누르는 게 아니라,
+내가 새 이야기를 여는 독서 경험을 만들고 싶었습니다.
+```
+
+자막 문구:
+
+```text
+왜 선택지만 고르는 스토리 앱이 싫었냐면
+
+남이 짜둔 갈림길 안에서만 움직여야 했기 때문
+
+우리가 원한 건
+직접 새 이야기를 여는 독서 경험
+```
+
+컷 메모:
+
+- 점프컷 대신 타이포 컷 전환 허용
+- 중간에 `남이 짜둔 갈림길` `직접 새 이야기` 키워드만 크게 강조
+- 지나치게 기업 홍보 영상처럼 보이지 않게 문장 톤은 대화형 유지
+
+CTA:
+
+`궁금하면 앱 페이지 보기`
+
+제작 난이도:
+
+- 낮음
+
+#### 수요일: 로맨스 공감형 15초
+
+목표:
+
+- 로맨스 독자의 댓글 반응 유도
+
+첫 문장:
+
+`메인 남주 말고 다른 루트 타고 싶었던 적 있지.`
+
+제작 구성:
+
+1. 0-2초: 큰 자막
+2. 2-7초: 손가락으로 `메인 남주`를 지우고 `다른 루트`를 체크하는 화면
+3. 7-12초: `왜 그 루트는 항상 없지?` 자막
+4. 12-15초: `직접 만들면 됨` 자막
+
+내레이션 대본:
+
+```text
+메인 남주 말고
+다른 루트 타고 싶었던 적 있지.
+근데 항상 그 전개는 없잖아.
+그래서 직접 만드는 쪽이 더 재밌음.
+```
+
+자막 문구:
+
+```text
+메인 남주 말고
+다른 루트 타고 싶었던 적 있지
+
+근데 항상 그 전개는 없음
+
+그러면 직접 만들면 됨
+```
+
+컷 메모:
+
+- 공감형이므로 표정 이모지, 과장 효과는 넣지 않는다
+- 댓글 유도용으로 마지막 1초는 질문 자막으로 마감
+
+CTA:
+
+`너라면 누구 루트 탈 건데?`
+
+제작 난이도:
+
+- 매우 낮음
+
+#### 목요일: 범용 주장형 15초
+
+목표:
+
+- 브랜드의 핵심 논리를 짧게 각인
+
+첫 문장:
+
+`선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.`
+
+제작 구성:
+
+1. 0-3초: 검은 배경 또는 종이 배경 위 큰 텍스트
+2. 3-8초: 손으로 `A`, `B` 카드를 치움
+3. 8-12초: `C` 또는 `my route` 카드 등장
+4. 12-15초: 브랜드 문장 자막
+
+내레이션 대본:
+
+```text
+선택지 둘 다 별로면?
+그중 하나를 억지로 고를 필요 없죠.
+그냥 내가 새 루트를 만들면 됨.
+```
+
+자막 문구:
+
+```text
+선택지 둘 다 별로면?
+
+억지로 고르지 말고
+
+내가 새 루트 만들면 됨
+```
+
+컷 메모:
+
+- 텍스트 대비 강하게
+- 플랫폼 첫 화면에서 바로 읽히게 큰 글자 사용
+
+CTA:
+
+`어떤 루트 만들지 상상해보기`
+
+제작 난이도:
+
+- 매우 낮음
+
+편집 타임라인:
+
+| 구간 | 자막 | 화면 | 편집 메모 |
+|---|---|---|---|
+| 0.0-1.5초 | `선택지 둘 다 별로면?` | 검은 배경 또는 종이 배경 큰 텍스트 | 반드시 첫 1초 안에 질문 노출 |
+| 1.5-3.5초 | `억지로 고르지 말고` | `A`, `B` 카드가 보이는 화면 | 질문 다음 바로 해결 논리로 넘어감 |
+| 3.5-6.0초 | `A` `B` | 손으로 두 카드를 치움 | 카드가 화면 밖으로 확실히 사라져야 함 |
+| 6.0-8.8초 | `내가` `새 루트 만들면 됨` | `C` 또는 `my route` 카드 등장 | `새 루트` 문구는 더 크게 강조 |
+| 8.8-11.8초 | `정해진 선택보다` | `C` 카드 클로즈업 또는 손으로 집어듦 | 텍스트 대비 강하게 |
+| 11.8-13.8초 | `직접 만드는 쪽` | 카드 또는 종이를 앞으로 당김 | 미세한 줌인 가능 |
+| 13.8-15.0초 | `어떤 루트 만들지 상상해보기` | 심플한 마감 화면 | CTA는 한 줄로 짧게 |
+
+#### 금요일: 창업자 후기형 30초
+
+목표:
+
+- 제품을 만든 개인적 동기를 통해 신뢰 확보
+
+첫 문장:
+
+`내가 원했던 건 결말 선택이 아니라 감정선 자체를 바꾸는 거였음.`
+
+제작 구성:
+
+1. 0-4초: 첫 문장을 큰 자막과 TTS로 시작
+2. 4-12초: 관계선, 끊긴 실, 닫힌 문 같은 AI 비주얼
+3. 12-22초: 이어지는 선, 새 페이지, 새로운 관계선 비주얼
+4. 22-30초: 댓글 CTA와 브랜드 문장 마감
+
+내레이션 대본:
+
+```text
+내가 원했던 건 결말 선택이 아니라
+감정선 자체를 바꾸는 거였어요.
+누구를 좋아하게 되는지,
+어떤 관계가 이어지는지,
+그 흐름 자체를 내가 만질 수 있으면 좋겠다고 생각했거든요.
+그래서 Weave Story는
+정해진 루트를 고르는 앱보다
+직접 새 이야기를 만드는 쪽으로 가고 있습니다.
+```
+
+자막 문구:
+
+```text
+내가 원했던 건 결말 선택이 아니라
+감정선 자체를 바꾸는 것
+
+누구를 좋아하게 되는지
+어떤 관계가 이어지는지
+
+그걸 직접 만들고 싶었다
+```
+
+컷 메모:
+
+- 진정성 있는 톤 유지
+- 말이 빠르면 안 됨
+- 마지막 CTA는 참여형으로 끝낸다
+
+CTA:
+
+`댓글로 원하는 루트 남기기`
+
+제작 난이도:
+
+- 낮음
+
+#### 공통 편집 규칙
+
+- 자막은 한 줄 최대 12자 안팎으로 끊는다.
+- 첫 1초에는 반드시 `문제`, `욕망`, `반전` 중 하나가 드러나야 한다.
+- 앱 기능 설명은 길게 넣지 않는다. 한 영상당 한 주장만 남긴다.
+- 마지막 CTA는 `설치`보다 `반응`을 유도하는 쪽이 오가닉에 유리하다.
+
+#### AI 제작 주의점
+
+- 실제 사람 얼굴을 무리하게 생성해 말하게 하기보다, 오브젝트 기반 비주얼과 TTS가 더 안정적이다.
+- 보이스는 지나치게 광고톤인 TTS보다 차분한 내레이션 톤이 낫다.
+- AI 비주얼은 한 영상 안에서 2~4장 정도로 제한하고, 편집과 타이포로 리듬을 만든다.
+- 영상마다 비주얼 스타일이 흔들리지 않도록 광고용 승인 스타일을 공통 레퍼런스로 쓴다.
+
 ### 다음 30일의 성공 기준
 
 1. 반응이 명확한 세그먼트 1개 확보
@@ -561,6 +872,940 @@ Weave Story의 성장을 위해 `포지셔닝`, `획득`, `활성화`, `리텐�
 3. 스토어 전환이 더 높은 메시지 프레이밍 1개 확보
 4. 커뮤니티에서 반복적으로 먹히는 표현 5개 확보
 5. 무료로 언급해줄 가능성이 있는 creator 또는 초기 옹호자 5명 확보
+
+## 글로벌 숏폼 제작 구조
+
+기본 판단:
+
+- 글로벌 타깃이라고 해서 국가별로 영상 전체를 처음부터 따로 만들 필요는 없다.
+- Weave Story는 `비주얼 마스터 1개 + 언어 레이어 분기` 구조가 가장 효율적이다.
+- 본편 비주얼, 모션, 리듬은 공통으로 두고, 텍스트, TTS, CTA만 언어별로 교체한다.
+- 단, 숏폼 카피 설계의 출발점은 이제 `한국어 초안 후 번역`이 아니라 `영어 훅 마스터`로 둔다.
+
+### 영어 퍼스트 운영 원칙
+
+- 글로벌 숏폼은 영어권 Shorts/Reels/TikTok 문법을 먼저 기준으로 잡는다.
+- 다른 언어는 영어 카피의 의미 번역이 아니라, `멈추게 하는 리듬`을 현지화하는 방식으로 파생한다.
+- 초반 1초는 감성보다 `불만`, `욕망`, `반전`이 먼저 와야 한다.
+- Weave Story는 `AI app`보다 `I can change the story`를 파는 편이 훨씬 강하다.
+- 따라서 첫 문장은 설명보다 반응을 만들어야 하고, 두 번째 문장부터 의미를 보강한다.
+
+### 영어 훅 문법
+
+- 길이: 첫 문장은 3~7단어가 가장 좋다.
+- 톤: 구어체, 명확함, 약간의 대담함.
+- 구조: `problem -> refusal -> agency -> brand`
+- 금지: 너무 시적이거나, 너무 기능 설명 같거나, 게임 광고처럼 과장된 표현.
+
+우선적으로 테스트할 훅 타입:
+
+1. 불만형: `What if both options suck?`
+2. 욕망형: `No route you want? Make one.`
+3. 반항형: `Why follow the ending you hate?`
+
+### 영어 훅 후보 v1
+
+범용 훅:
+
+- `What if both options suck?`
+- `No route you want? Make one.`
+- `Why follow the ending you hate?`
+- `If the story won't give it to you, take it.`
+- `Read it? No. Rewrite it.`
+
+로맨스 훅:
+
+- `No love interest you want?`
+- `Why settle for their route?`
+- `Make the chemistry you want.`
+- `If the romance is wrong, change it.`
+
+판단:
+
+- 글로벌 마스터 1순위는 `BOTH OPTIONS SUCK?`
+- 로맨스 세그먼트 1순위는 `HATE THEIR ROUTE?`
+- 둘 다 `스크롤 정지 -> 의미 해석 -> 제품 연결` 순서가 자연스럽다.
+
+### 왜 이 구조가 맞는가
+
+1. 제작 리소스를 크게 줄일 수 있다.
+2. 브랜드 톤과 세계관 일관성이 유지된다.
+3. 어떤 언어/메시지가 반응하는지 비교하기 쉽다.
+4. 무예산 또는 저예산 운영에 적합하다.
+
+### 공통 마스터로 유지할 것
+
+- 화면 비율
+- 비주얼 스타일
+- AI 이미지 자산
+- 모션 구조
+- 컷 편집 리듬
+- 배경음악
+- 효과음
+
+### 언어별로 교체할 것
+
+- 첫 1초 훅 자막
+- 키네틱 타이포 문구
+- TTS 또는 보이스오버
+- 마지막 CTA
+- 설명문과 해시태그
+- 스토어 링크 분기
+
+### 1차 권장 언어 구조
+
+| 언어 | 역할 |
+|---|---|
+| 영어 | 글로벌 기본 마스터용 언어 |
+| 한국어 | 국내 테스트 및 초기 운영 |
+| 일본어 | 장르 독자 적합성 검증용 |
+
+참고:
+
+- 광고 제작 문서 기준으로는 이미 `ko / en / ja / zh-Hant` 4개 언어 1차 컷이 존재한다.
+- 숏폼 운영에서는 우선 `en / ko / ja` 3축으로 단순화해도 충분하다.
+
+### 첫 영상 2개의 글로벌 제작 원칙
+
+#### 영상 1
+
+원본 콘셉트:
+
+`서브남 루트가 없으면, 내가 만들면 됨.`
+
+운영 판단:
+
+- 한국어/일본어에는 잘 맞는다.
+- 영어권에서는 `서브남` 같은 로컬 장르 용어보다 더 직관적인 번역이 필요하다.
+
+권장 언어별 문구:
+
+| 언어 | 첫 문장 |
+|---|---|
+| 한국어 | `서브남 루트가 없으면, 내가 만들면 됨.` |
+| 영어 | `No route you want? Make one.` |
+| 일본어 | `欲しいルートがないなら、自分で作ればいい。` |
+
+#### 영상 2
+
+원본 콘셉트:
+
+`선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.`
+
+운영 판단:
+
+- 이 메시지는 언어권에 상관없이 가장 범용적으로 쓸 수 있다.
+- 글로벌 마스터 1순위로 적합하다.
+
+권장 언어별 문구:
+
+| 언어 | 첫 문장 |
+|---|---|
+| 한국어 | `선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.` |
+| 영어 | `What if both options suck?` |
+| 일본어 | `どっちの選択肢も違うなら、新しいルートを作ればいい。` |
+
+### 영어 15초 스크립트 초안
+
+#### Choice master
+
+- 0.0–1.4s: `What if both options suck?`
+- 1.4–4.0s: `You don't have to pick one.`
+- 4.0–8.0s: `Skip the given route.`
+- 8.0–12.0s: `Make your own story instead.`
+- 12.0–15.0s: `Weave Story`
+
+#### Romance master
+
+- 0.0–1.4s: `No love interest you want?`
+- 1.4–4.0s: `Then don't follow their route.`
+- 4.0–8.5s: `Take the story where you want it.`
+- 8.5–12.5s: `Build your own chemistry.`
+- 12.5–15.0s: `Weave Story`
+
+운영 메모:
+
+- 영어 마스터는 짧고 공격적으로, 한국어/일본어 파생은 의미보다 리듬을 우선한다.
+- 지금까지 만든 한국어 숏폼은 카피 톤 참고용 프로토타입으로 보고, 실제 글로벌 테스트는 영어 훅 마스터를 기준으로 다시 조정한다.
+
+### 영어 훅 압축안 v2
+
+#### Choice 후보 3안
+
+1. `BOTH OPTIONS SUCK?`
+2. `You hate both endings?`
+3. `Why pick a route you don't want?`
+
+판단:
+
+- 1안이 가장 강하다.
+- 첫 단어가 바로 갈등을 만들고, 의미 해석이 빠르다.
+- 글로벌 숏폼 1차 메인 테스트는 1안으로 간다.
+
+권장 15초 스크립트:
+
+- 0.0–1.3s: `BOTH OPTIONS SUCK?`
+- 1.3–3.8s: `You don't have to choose one.`
+- 3.8–7.8s: `Skip the route they gave you.`
+- 7.8–12.0s: `Make your own story instead.`
+- 12.0–15.0s: `Weave Story`
+
+#### Romance 후보 3안
+
+1. `HATE THEIR ROUTE?`
+2. `Not your ship?`
+3. `Wrong love interest?`
+
+판단:
+
+- 1안이 가장 강하고 제품의 `route` 개념과 직접 연결된다.
+- 2안은 fandom 톤은 좋지만 글로벌 대중성은 조금 좁다.
+- 로맨스 세그먼트 1차 메인 테스트는 1안으로 간다.
+
+권장 15초 스크립트:
+
+- 0.0–1.3s: `HATE THEIR ROUTE?`
+- 1.3–4.0s: `Then don't follow their route.`
+- 4.0–8.2s: `Take the story where you want it.`
+- 8.2–12.2s: `Build the chemistry you want.`
+- 12.2–15.0s: `Weave Story`
+
+### 영어 훅 운용 규칙
+
+- 첫 문장은 7단어를 넘기지 않는다.
+- `AI`, `interactive`, `generated` 같은 설명 단어는 첫 3초에서 제외한다.
+- 첫 문장은 문제를 던지고, 둘째 문장부터 해결감을 준다.
+- CTA는 마지막 3초까지 숨기고, 브랜드명은 짧고 단단하게 쓴다.
+
+### 제작 파일 구조 권장안
+
+- `master_visual.mp4`
+- `master_music.wav`
+- `text_ko.srt`
+- `text_en.srt`
+- `text_ja.srt`
+- `vo_ko.wav`
+- `vo_en.wav`
+- `vo_ja.wav`
+- `endcard_ko.png`
+- `endcard_en.png`
+- `endcard_ja.png`
+
+핵심 원칙:
+
+- 비주얼 타임라인은 공통으로 유지한다.
+- 언어별로 교체되는 자산을 분리 저장한다.
+- 편집 프로젝트도 언어 레이어만 교체 가능하게 구성한다.
+
+### 플랫폼 업로드 원칙
+
+- TikTok / Reels / Shorts에 같은 비주얼 마스터를 사용한다.
+- 플랫폼별로는 설명문과 링크만 조정한다.
+- 같은 영상이라도 국가 타깃에 따라 훅 문장은 해당 언어로 바꾼다.
+
+### 지금 가장 합리적인 제작 순서
+
+1. 범용 메시지 영상 1개를 `텍스트 분리 가능한 비주얼 마스터`로 제작
+2. 그 마스터를 `영어 / 한국어 / 일본어` 3종으로 분기
+3. 같은 구조로 로맨스 특화 훅 영상 1개 추가 제작
+4. 각 언어권 반응 차이를 본 뒤 별도 국가 맞춤 훅 제작 여부 결정
+
+### 지금 하지 말아야 할 것
+
+- 국가마다 처음부터 비주얼 전체를 새로 만드는 것
+- 영어 버전 하나를 그대로 모든 시장에 밀어붙이는 것
+- 비주얼 안에 텍스트를 박아서 후반 수정이 어렵게 만드는 것
+
+### 현재 권장 결론
+
+- 첫 제작은 `범용 훅 1개 + 로맨스 훅 1개`
+- 각 영상은 `공통 비주얼 마스터 + 3개 언어 레이어`
+- 국가별 완전 분기 제작은 반응 차이가 확인된 뒤에만 진행한다
+
+## 첫 영상 2개 프롬프트 세트
+
+기본 원칙:
+
+- 영상마다 AI 비주얼은 2~4장만 사용한다.
+- 실사 인물 lip-sync보다 오브젝트, 종이, 잉크, 선택지, 페이지 중심 비주얼이 더 안정적이다.
+- 텍스트는 영상 파일 안에 박지 말고 편집 단계에서 오버레이한다.
+- 승인된 광고 작화 언어인 `투명 수채화 + 가는 잉크 드로잉 + 종이 질감 + 성인용 일러스트 소설 톤`을 유지한다.
+
+### 영상 1. 범용 훅
+
+핵심 문장:
+
+- 한국어: `선택지 둘 다 별로면? 그냥 새 루트 만들면 됨.`
+- 영어: `If both choices are wrong, make a new route.`
+- 일본어: `どっちの選択肢も違うなら、新しいルートを作ればいい。`
+
+목표:
+
+- Weave Story의 핵심 논리를 가장 짧고 명확하게 전달한다.
+
+#### 이미지 프롬프트 A
+
+용도:
+
+- 오프닝 프레임
+
+```text
+Create a vertical 9:16 illustration in a sophisticated adult storybook style.
+
+A large warm ivory page is seen from above like a desk or book spread. Two clear branching
+choices are visible on the page, marked as two elegant diverging paths or labeled route cards,
+both unfinished and emotionally unconvincing. A thin forest-green ink thread runs between them,
+hesitating at the split.
+
+The scene should feel like a contemporary illustrated novel for adults: transparent watercolor,
+fine expressive ink drawing, subtle paper grain, restrained elegance, generous negative space,
+and no childish cuteness. Use forest-green ink, ivory paper, and soft muted supporting colors.
+
+Do not add readable typography or UI. Leave clean space for kinetic text overlay.
+```
+
+#### 이미지 프롬프트 B
+
+용도:
+
+- 거부 장면
+
+```text
+Create a vertical 9:16 illustration in the same adult storybook watercolor style.
+
+Seen from above, two route cards or branching paper paths are being pushed aside by a human hand.
+The hand is decisive but calm, not aggressive. The forest-green ink thread bends away from both
+choices as if refusing them. The paper surface remains warm ivory, with subtle shadows and elegant
+ink textures.
+
+No readable text, no logos, no UI, no collage layout. Leave negative space for subtitle overlays.
+```
+
+#### 이미지 프롬프트 C
+
+용도:
+
+- 새 루트 생성 장면
+
+```text
+Create a vertical 9:16 illustration in the same refined watercolor-and-ink storybook style.
+
+A blank ivory page is now being marked by a human hand drawing a new route in deep forest-green
+ink. The new line curves confidently and becomes the clearest visual focus. The rejected previous
+choices remain pushed aside and out of focus at the edges. The atmosphere should feel inventive,
+calm, and empowering rather than chaotic.
+
+Maintain subtle paper grain, expressive fine ink lines, adult proportions, and elegant restrained
+color. Leave room for kinetic text overlays.
+```
+
+#### 모션 지시문
+
+```text
+Use slow push-ins, subtle parallax, and paper-like camera drift.
+Frame 1: hold the split choices with slight tension.
+Frame 2: transition with a quick paper-slide motion as both choices are pushed away.
+Frame 3: reveal the new route with a clean ink-drawing motion and a slight zoom toward the new line.
+Keep motion minimal and elegant; avoid flashy VFX or synthetic 3D movement.
+```
+
+#### TTS 대본
+
+한국어:
+
+```text
+선택지 둘 다 별로면?
+그중 하나를 억지로 고를 필요 없죠.
+그냥 내가 새 루트를 만들면 됩니다.
+```
+
+영어:
+
+```text
+If both choices are wrong,
+you do not have to force yourself to pick one.
+You can make a new route.
+```
+
+일본어:
+
+```text
+どっちの選択肢も違うなら、
+無理にどちらかを選ばなくていい。
+新しいルートを作ればいい。
+```
+
+#### 자막 문구
+
+한국어:
+
+```text
+선택지 둘 다 별로면?
+
+억지로 고르지 말고
+
+내가 새 루트 만들면 됨
+```
+
+영어:
+
+```text
+If both choices are wrong
+
+don’t force a choice
+
+make your own route
+```
+
+일본어:
+
+```text
+どっちも違うなら
+
+無理に選ばなくていい
+
+新しいルートを作ればいい
+```
+
+### 영상 2. 로맨스 훅
+
+핵심 문장:
+
+- 한국어: `서브남 루트가 없으면, 내가 만들면 됨.`
+- 영어: `If the route you want doesn’t exist, make your own.`
+- 일본어: `欲しいルートがないなら、自分で作ればいい。`
+
+목표:
+
+- 로맨스 독자의 즉각적인 공감과 댓글 반응을 만든다.
+
+#### 이미지 프롬프트 A
+
+용도:
+
+- 오프닝 감정 프레임
+
+```text
+Create a vertical 9:16 illustration in a sophisticated adult watercolor storybook style.
+
+An open warm ivory page suggests a romance scene that feels incomplete. Two emotional paths are
+hinted at through symbolic details rather than explicit characters: a bouquet left aside, a train
+ticket, a letter never opened, and a fading path of forest-green ink connecting and then stopping.
+The mood is wistful and unresolved, aimed at adult romance readers.
+
+Use transparent watercolor, fine ink drawing, subtle paper grain, and elegant restrained color.
+No readable text, no logos, no UI. Leave room for overlay captions.
+```
+
+#### 이미지 프롬프트 B
+
+용도:
+
+- 아쉬운 루트 거부 장면
+
+```text
+Create a vertical 9:16 illustration in the same refined adult storybook style.
+
+A human hand gently pulls away a prewritten romance path made of paper fragments and ink symbols.
+The existing route feels emotionally unsatisfying, as if it belongs to someone else's story.
+The forest-green thread withdraws from it. Include romantic symbolic objects such as a sealed letter,
+petals, or a train platform detail, but keep the focus on the act of refusing the given route.
+
+No readable text, no UI, no melodramatic exaggeration.
+```
+
+#### 이미지 프롬프트 C
+
+용도:
+
+- 새 감정선 생성 장면
+
+```text
+Create a vertical 9:16 illustration in the same elegant watercolor-and-ink adult storybook style.
+
+On an ivory page, a new romance route is being drawn in deep forest-green ink by a human hand.
+The line feels intimate and intentional, forming a new emotional path from scattered symbolic
+fragments. The image should communicate "I choose a different emotional arc" without explicit text.
+The tone should feel warm, self-directed, and quietly thrilling.
+
+Maintain subtle paper grain, fine ink detail, and room for text overlays.
+```
+
+#### 모션 지시문
+
+```text
+Keep the motion intimate and restrained.
+Frame 1: gentle slow zoom into the unresolved romance symbols.
+Frame 2: a soft paper-and-ink pullback as the given route is moved aside.
+Frame 3: the new route draws itself across the page with a delicate ink-writing animation.
+No dramatic camera shakes, no glossy fantasy effects.
+```
+
+#### TTS 대본
+
+한국어:
+
+```text
+서브남 루트가 없으면,
+정해진 전개에 맞출 필요 없습니다.
+내가 원하는 감정선을 직접 만들면 됩니다.
+```
+
+영어:
+
+```text
+If the route you want does not exist,
+you do not have to settle for the given one.
+You can make the emotional path you wanted.
+```
+
+일본어:
+
+```text
+欲しいルートがないなら、
+用意された展開に合わせなくていい。
+自分の欲しい感情線を作ればいい。
+```
+
+#### 자막 문구
+
+한국어:
+
+```text
+서브남 루트가 없으면
+
+정해진 전개 말고
+
+내가 직접 만들면 됨
+```
+
+영어:
+
+```text
+If the route you want is missing
+
+don’t settle for the given story
+
+make your own
+```
+
+일본어:
+
+```text
+欲しいルートがないなら
+
+用意された展開じゃなく
+
+自分で作ればいい
+```
+
+### 공통 제작 메모
+
+- 첫 프레임부터 문장이 읽혀야 하므로, 이미지 자체는 과하게 복잡하면 안 된다.
+- 비주얼 안에 실제 텍스트를 생성하지 말고, 오버레이용 여백을 항상 남긴다.
+- 언어별 버전은 이미지 재생성이 아니라 TTS와 자막만 교체하는 것을 기본 원칙으로 한다.
+- 로맨스 훅은 한국어/일본어 우선 테스트, 범용 훅은 영어 포함 전시장 공통 테스트에 적합하다.
+
+## 첫 영상 2개 최종 편집 시트
+
+목표:
+
+- 지금 생성한 6장의 이미지를 바로 Shorts 2개로 조립할 수 있게 한다.
+- 편집 툴에서 바로 사용할 수 있도록 `타임코드`, `이미지`, `자막`, `TTS`, `모션`을 고정한다.
+
+공통 편집 규칙:
+
+- 전체 길이: `15초`
+- 비율: `1080x1920`, `9:16`
+- 이미지 전환: 하드컷보다 `짧은 잉크 번짐`, `종이 슬라이드`, `미세 줌인` 우선
+- TTS는 차분하고 단정하게, 과한 광고톤 금지
+- 음악은 낮게 깔고 TTS 가독성 우선
+
+### 영상 A. 범용 훅 15초
+
+사용 이미지:
+
+1. [choice-open.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/choice-open.png)
+2. [choice-reject.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/choice-reject.png)
+3. [choice-new-route.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/choice-new-route.png)
+
+한국어 TTS:
+
+```text
+선택지 둘 다 별로면?
+그중 하나를 억지로 고를 필요 없죠.
+그냥 내가 새 루트를 만들면 됩니다.
+```
+
+영어 TTS:
+
+```text
+If both choices are wrong,
+you do not have to force yourself to pick one.
+You can make a new route.
+```
+
+일본어 TTS:
+
+```text
+どっちの選択肢も違うなら、
+無理にどちらかを選ばなくていい。
+新しいルートを作ればいい。
+```
+
+편집 타임라인:
+
+| 구간 | 이미지 | 자막 | TTS | 모션 |
+|---|---|---|---|---|
+| 0.0-1.6초 | `choice-open` | `선택지 둘 다 별로면?` | `선택지 둘 다 별로면?` | 아주 느린 줌인 |
+| 1.6-3.8초 | `choice-open` | `둘 중 하나 고를 필요 없음` | `그중 하나를` | 미세 패럴랙스 |
+| 3.8-6.2초 | `choice-reject` | `억지로 맞출 필요 없음` | `억지로 고를 필요 없죠.` | 종이 슬라이드 전환 |
+| 6.2-9.4초 | `choice-reject` | `주어진 루트 말고` | 없음 | 손 부분 쪽으로 짧은 푸시인 |
+| 9.4-12.6초 | `choice-new-route` | `내가 새 루트 만들면 됨` | `그냥 내가 새 루트를` | 잉크 번짐 전환 후 줌인 |
+| 12.6-15.0초 | `choice-new-route` | `프로필에서 확인` | `만들면 됩니다.` | 잔잔한 홀드 |
+
+권장 자막 줄바꿈:
+
+```text
+선택지 둘 다
+별로면?
+
+둘 중 하나
+고를 필요 없음
+
+내가 새 루트
+만들면 됨
+```
+
+### 영상 B. 로맨스 훅 15초
+
+사용 이미지:
+
+1. [romance-open.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/romance-open.png)
+2. [romance-reject.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/romance-reject.png)
+3. [romance-new-route.png](https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/ads/shorts/romance-new-route.png)
+
+한국어 TTS:
+
+```text
+서브남 루트가 없으면,
+정해진 전개에 맞출 필요 없습니다.
+내가 원하는 감정선을 직접 만들면 됩니다.
+```
+
+영어 TTS:
+
+```text
+If the route you want does not exist,
+you do not have to settle for the given one.
+You can make the emotional path you wanted.
+```
+
+일본어 TTS:
+
+```text
+欲しいルートがないなら、
+用意された展開に合わせなくていい。
+自分の欲しい感情線を作ればいい。
+```
+
+편집 타임라인:
+
+| 구간 | 이미지 | 자막 | TTS | 모션 |
+|---|---|---|---|---|
+| 0.0-1.8초 | `romance-open` | `서브남 루트가 없으면` | `서브남 루트가 없으면,` | 천천히 줌인 |
+| 1.8-4.2초 | `romance-open` | `없는 전개에 맞출 필요 없음` | `정해진 전개에` | 꽃/티켓 디테일 쪽 미세 이동 |
+| 4.2-7.4초 | `romance-reject` | `주어진 감정선 말고` | `맞출 필요 없습니다.` | 부드러운 종이 전환 |
+| 7.4-10.2초 | `romance-reject` | `내가 원하는 쪽으로` | 없음 | 손동작 영역 푸시인 |
+| 10.2-13.2초 | `romance-new-route` | `내 감정선은 내가 만든다` | `내가 원하는 감정선을` | 잉크 생성 연상 전환 |
+| 13.2-15.0초 | `romance-new-route` | `너라면 어떤 루트?` | `직접 만들면 됩니다.` | 짧은 홀드 |
+
+권장 자막 줄바꿈:
+
+```text
+서브남 루트가
+없으면
+
+주어진 전개에
+맞출 필요 없음
+
+내 감정선은
+내가 만든다
+```
+
+### 언어별 교체 규칙
+
+- 비주얼 타임라인은 공통으로 유지한다.
+- 교체하는 것은 `TTS`, `자막`, `마지막 CTA`뿐이다.
+- 한국어/일본어는 로맨스 훅이 강하고, 영어권은 범용 훅을 먼저 테스트한다.
+
+### 바로 편집에 넘길 때 체크할 것
+
+1. 첫 1초 안에 핵심 문장이 충분히 크게 보이는가
+2. 이미지 전환이 너무 많지 않은가
+3. 자막이 이미지 디테일을 가리지 않는가
+4. CTA가 설치 강요보다 참여 유도에 더 가깝게 마감되는가
+
+## 플랫폼별 계정 설정안
+
+계정 운영 원칙:
+
+- 새 계정 생성보다 기존 여백 계정 리브랜딩을 우선한다.
+- 모든 플랫폼에서 가능한 한 동일한 핸들, 동일한 프로필 이미지, 동일한 핵심 문장을 사용한다.
+- 링크는 한곳으로 모으되, 스토어 유입 추적을 위해 플랫폼별 링크 파라미터 또는 분기 링크를 사용한다.
+- YouTube는 가능하면 같은 Google 계정 아래 `Brand Account` 채널로 분리한다.
+
+### 공통 권장값
+
+| 항목 | 권장안 |
+|---|---|
+| 핸들 1순위 | `@weavestory` |
+| 핸들 2순위 | `@weave.story` |
+| 핸들 3순위 | `@weavestoryapp` |
+| 표시 이름 | `Weave Story` |
+| 프로필 이미지 | 앱 아이콘 또는 심볼형 로고 1종 |
+| 메인 문장 | `정해진 선택지를 고르는 게 아니라, 네가 직접 새 이야기를 만든다.` |
+| 링크 목적 | 앱 스토어 또는 링크 허브 |
+
+핸들 원칙:
+
+- 숫자, 밑줄, 불필요한 접미사는 마지막 수단으로만 쓴다.
+- 플랫폼마다 이름이 달라지면 검색 회수가 분산되므로 통일을 우선한다.
+
+### TikTok
+
+권장 설정:
+
+| 항목 | 값 |
+|---|---|
+| 핸들 | `@weavestory` 우선 |
+| 표시 이름 | `Weave Story` |
+| 카테고리 | Entertainment 또는 App/Software에 가까운 항목 |
+| 바이오 짧은 버전 | `네가 직접 새 이야기를 만드는 독서 앱` |
+| 바이오 긴 버전 | `정해진 선택지를 고르는 게 아니라, 네가 직접 새 이야기를 만든다.` |
+| 링크 | 로맨스/범용 테스트용 링크 허브 또는 스토어 링크 |
+| 고정 영상 | 3개: 브랜드 훅, 로맨스 훅, 설명형 영상 |
+
+운영 메모:
+
+- TikTok은 바이오가 짧게 읽혀야 하므로 문장 하나로 끝내는 편이 낫다.
+- 첫 3개 업로드가 계정 첫인상을 결정하니, 프로필 정리 후 한 번에 올리는 편이 좋다.
+
+### Instagram
+
+권장 설정:
+
+| 항목 | 값 |
+|---|---|
+| 핸들 | `@weavestory` 우선 |
+| 표시 이름 | `Weave Story` |
+| 이름 필드 대안 | `Weave Story | Story App` |
+| 바이오 1행 | `네가 직접 새 이야기를 만드는 독서 앱` |
+| 바이오 2행 | `read, choose, create your route` |
+| 링크 | 링크 허브 또는 App Store / Google Play 분기 링크 |
+| 하이라이트 | `Start Here`, `Routes`, `About` |
+
+운영 메모:
+
+- Instagram은 이름 필드 검색도 타므로 `Story App` 같은 설명어를 붙일 가치가 있다.
+- 릴스 중심으로 운영하되, 피드 상단 3칸은 비주얼 톤이 맞도록 유지한다.
+
+### YouTube
+
+권장 설정:
+
+| 항목 | 값 |
+|---|---|
+| 채널명 | `Weave Story` |
+| 채널 구조 | 가능하면 같은 Google 계정 아래 `Brand Account` 채널 생성 |
+| 핸들 | `@weavestory` 우선 |
+| 설명 첫 줄 | `Create your own route. Weave Story is a reading app where your choices open new stories.` |
+| 링크 | 앱 스토어 링크 또는 링크 허브 |
+| 고정 콘텐츠 | Shorts 3개 + 채널 소개 Short 1개 |
+
+운영 메모:
+
+- YouTube는 기존 애니 뮤비가 남아 있으면 혼선이 생기기 쉬우므로, 가능하면 Brand Account 새 채널이 더 깔끔하다.
+- Shorts 외에도 나중에 30~90초 설명형 영상 아카이브가 가능하다.
+
+### X
+
+권장 설정:
+
+| 항목 | 값 |
+|---|---|
+| 핸들 | `@weavestory` 우선 |
+| 표시 이름 | `Weave Story` |
+| 바이오 | `A story app where you don’t just choose a route. You create one.` |
+| 링크 | 링크 허브 |
+| 위치 | 비워도 무방 |
+
+운영 메모:
+
+- X는 메인 배포처보다는 메시지 테스트와 메이커 톤 보조 채널로 본다.
+- 가능하면 브랜드 계정과 창업자 계정을 병행한다.
+
+### 프로필 이미지 원칙
+
+- 작은 원형 크롭에서도 읽히는 심볼형 이미지를 쓴다.
+- 텍스트가 많은 로고보다 아이콘형이 낫다.
+- 플랫폼별로 다른 이미지를 쓰지 말고 1종으로 통일한다.
+
+### 링크 구조 권장안
+
+1. 1차: 링크 허브 1개
+2. 2차: App Store / Google Play 분기
+3. 3차: 플랫폼별 추적 파라미터 부여
+
+예시:
+
+- TikTok 바이오 링크: 범용 또는 로맨스용 스토어 링크
+- Instagram 링크: 링크 허브
+- YouTube 링크: 앱 설치 또는 소개 페이지
+- X 링크: 링크 허브
+
+### 첫 세팅 체크리스트
+
+1. 핸들 통일
+2. 표시 이름 통일
+3. 프로필 이미지 통일
+4. 바이오 문장 통일
+5. 링크 연결
+6. 고정 영상 또는 첫 업로드 3개 준비
+7. 기존 무관 게시물 비공개 또는 정리
+
+## YouTube 채널 리브랜딩 체크리스트
+
+전제:
+
+- 기존 채널에 애니 뮤비 2개가 있지만, 계정이 거의 비어 있고 구독자/조회수 영향이 작다면
+  새 채널을 만들지 않고 재활용해도 된다.
+- Shorts는 개별 발견이 가능하므로, 핵심은 알고리즘보다 `채널 방문 시 첫인상`을 정리하는 것이다.
+
+### 리브랜딩 결정 기준
+
+재활용해도 되는 조건:
+
+- 기존 영상 수가 적다
+- 기존 영상과 새 브랜드가 심각한 리스크를 만들 정도로 충돌하지 않는다
+- 채널 홈을 빠르게 Weave Story 기준으로 덮을 수 있다
+
+분리해야 하는 조건:
+
+- 기존 영상이 너무 많다
+- 기존 채널 정체성이 강하다
+- 구독자가 기존 주제에만 반응하는 상태다
+
+현재 판단:
+
+- Weave Story는 `기존 채널 재활용 + 브랜드 리셋`으로 가도 무방하다.
+
+### 1. 채널 정체성 교체
+
+바꿔야 할 항목:
+
+1. 채널명
+2. 핸들
+3. 프로필 이미지
+4. 배너
+5. 채널 설명
+6. 링크
+
+권장값:
+
+| 항목 | 권장안 |
+|---|---|
+| 채널명 | `Weave Story` |
+| 핸들 | `@weavestory` 우선 |
+| 설명 첫 줄 | `Create your own route. Weave Story is a story app where your choices open new lives.` |
+| 링크 | 링크 허브 또는 앱 스토어 링크 |
+
+### 2. 기존 애니 뮤비 처리
+
+선택지:
+
+1. `비공개`
+2. `일부공개`
+3. `그대로 유지`
+
+권장:
+
+- 기본값은 `비공개`
+
+이유:
+
+- 채널 방문자가 Weave Story 브랜드와 무관한 인상을 받는 것을 줄일 수 있다.
+- 영상이 2개 정도라면 잃는 것이 거의 없다.
+
+예외:
+
+- 조회수나 댓글이 의미 있게 쌓여 있거나, 개인적으로 반드시 남기고 싶으면 `일부공개`로 돌리는 편이 낫다.
+
+### 3. 첫인상 정리
+
+채널 홈 첫인상 목표:
+
+- 방문자가 3초 안에 `이 채널은 Weave Story 채널`이라고 이해해야 한다.
+
+해야 할 일:
+
+1. Weave Story Shorts 3개 이상 연속 업로드
+2. 채널 설명과 링크 정리
+3. 배너에 핵심 문장 또는 서비스명 반영
+4. 프로필 이미지와 썸네일 톤 통일
+
+### 4. 첫 업로드 3개 구성
+
+권장 순서:
+
+1. 브랜드 훅형
+2. 로맨스 훅형
+3. 설명형 Short
+
+이유:
+
+- 첫 영상은 정체성
+- 두 번째는 타깃 공감
+- 세 번째는 이해도 보강 역할을 한다
+
+### 5. Shorts 운영 규칙
+
+- 제목은 짧고 강하게 쓴다.
+- 설명란은 길게 쓰지 말고 핵심 문장과 링크만 둔다.
+- 해시태그는 3~5개 이내로 제한한다.
+- 첫 3개 Shorts는 톤을 분산시키지 말고 같은 브랜드 문장 축을 유지한다.
+
+### 6. YouTube 제목/설명 기본형
+
+#### 제목 예시
+
+- `서브남 루트가 없으면, 내가 만들면 됨`
+- `선택지 둘 다 별로면? 새 루트 만들면 됨`
+- `이건 소설 추천 앱이 아니라, 네가 전개를 바꾸는 독서 경험`
+
+#### 설명 예시
+
+```text
+정해진 선택지를 고르는 게 아니라,
+네가 직접 새 이야기를 만드는 독서 경험.
+
+Weave Story
+[링크]
+```
+
+### 7. 리브랜딩 직후 확인할 항목
+
+1. 채널명과 핸들이 검색에 제대로 반영됐는가
+2. 채널 홈 첫 화면에 무관한 영상이 먼저 보이지 않는가
+3. 프로필 이미지가 작은 원형에서도 잘 보이는가
+4. Shorts 3개를 올린 뒤 채널 전체 톤이 통일돼 보이는가
+
+### 8. 지금 바로 할 일
+
+1. 애니 뮤비 2개를 `비공개` 또는 `일부공개`로 전환
+2. 채널명과 핸들을 `Weave Story` 기준으로 교체
+3. 프로필 이미지와 배너 적용
+4. 첫 Shorts 3개 업로드 준비
 
 ## 90일 실행 계획
 

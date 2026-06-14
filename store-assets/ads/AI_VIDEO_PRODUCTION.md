@@ -1,6 +1,6 @@
 # Weave Story AI Video Production
 
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
 ## 목적
 
@@ -18,10 +18,38 @@ Weave Story 광고 영상을 `GPT Image 2 + Seedance 2.0` 조합으로 제작한
   `주어진 선택을 거부하고 직접 새 세계를 만든다`는 단일 클라이맥스 콘셉트로 재설계.
 - 완료 단계: `1. Creative Brief` ~ `9` 전 과정 1차 완료. 8컷 스토리보드 → Seedance i2v 영상화 → ffmpeg 편집(음악 B + 엔드카드) → **30초 광고영상 4개 언어(ko/en/ja/zh-Hant) 제작 완료**.
 - 현재 단계: 4개 언어 1차 컷 완성, 검수·미세조정 단계.
+- 추가 진행(2026-06-14): 숏폼 오가닉 배포용 15초 세로 영상 2종(`choice-ko`, `romance-ko`) 로컬 렌더 파이프라인 구축 및 1차 출력 완료.
+- 추가 결정(2026-06-14): 글로벌 숏폼은 한국어 초안 후 번역이 아니라 `영어 훅 마스터`를 먼저 설계하고, 다른 언어는 그 리듬을 파생하는 구조로 전환.
+- 추가 진행(2026-06-14): 영어 훅 마스터 숏폼 2종(`choice-en`, `romance-en`) 렌더 완료.
+- 추가 확정(2026-06-14): 영어 훅 최종안은 `choice = BOTH OPTIONS SUCK?`, `romance = HATE THEIR ROUTE?`
 - 다음 작업(선택): 숏별 모션 다듬기 / 효과음 추가 / App Store 단독 버전 / **광고 송출 전 음악 Suno Pro 재생성(상업권)**.
 - 작화 스타일(투명 수채화·가는 잉크·종이 질감·성인용 일러스트 소설)은 유지하며, 승인된 Key Visual `key-visual-v1-01`을 새 콘셉트의 작화·구성·색 대비 기준으로 사용한다.
 - ⚠️ 현재 컷은 Google Play 배지 포함이나 **안드로이드 미공개**. iOS 단독 집행 시 App Store 단독 엔드카드 별도 필요. 음악은 무료 플랜 곡이라 송출 전 Pro 재생성 필요.
 - 마케팅 전략 및 90일 실행 계획은 `MARKETING_STRATEGY.md`에서 별도로 관리한다.
+
+### 숏폼 로컬 렌더 파이프라인 (2026-06-14)
+
+- 목적: 브랜드 계정/오가닉 숏폼 채널용 15초 세로 영상 마스터를 빠르게 반복 생산한다.
+- 입력 자산: `store-assets/ads/generated/shorts/images/*.png`
+- 설정 파일: `scripts/ads/lib/short-video-configs.mjs`
+- 렌더 스크립트: `scripts/ads/render-short-video.mjs`
+- 캡션 오버레이 생성: `scripts/ads/render-caption-overlay.py`
+- 출력 폴더: `store-assets/ads/generated/shorts/video`
+
+현재 출력 완료본:
+
+- `short-choice-en.mp4`
+- `short-romance-en.mp4`
+- `short-choice-ko.mp4`
+- `short-romance-ko.mp4`
+
+구현 메모:
+
+- 각 숏은 3장의 세로 키비주얼을 `ffmpeg zoompan`으로 연결해 15초로 렌더한다.
+- 현재 로컬 ffmpeg 빌드에는 `drawtext` 필터가 없어, 캡션은 Pillow로 투명 PNG를 생성한 뒤 `overlay`로 합성한다.
+- 이 구조 덕분에 이미지 마스터 1세트에 언어별 캡션만 교체해 다른 언어 버전을 확장할 수 있다.
+- 단, 현재 `ko` 출력본은 컷 타이밍/레이아웃 검증용 프로토타입으로 보고, 실제 글로벌 오가닉 배포는 `en` 마스터부터 재구성한다.
+- 렌더 스크립트 기본값은 현재 `choice-en`으로 맞춰 두었다.
 
 ## 확정 사항
 
