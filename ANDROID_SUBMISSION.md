@@ -13,16 +13,16 @@ Last updated: 2026-06-04
 >   - Play Console 진입: 계정 선택에서 **leejahun9** 선택 후 "LEE JAHUN" 개발자 계정.
 > - leejahun0@gmail.com에는 **동명의 다른 개발자 계정 `8563905342234584322`가 있는데 "계정 해지"**(2026-01-23, 미사용 사유) 상태 → 우리 앱과 무관, 혼동 주의.
 
-> ## 클로즈드 테스트 현황 (2026-06-04)
-> - 트랙 **"Alpha"** (id `4699889486794816408`) = **활성**, 1.0.0 빌드가 선택 테스터에게 제공 중, 177개국.
-> - 테스터 방식 = **이메일 목록 "Weave Story Closed Test"** → **현재 2명** (12명 필요).
+> ## 클로즈드 테스트 현황 (2026-06-14 갱신)
+> - 트랙 **"Alpha"**(클로즈드 테스트) = **활성**, **1.0.1 (vc14) 라이브** → 옵트인 즉시 설치 가능. (internal 트랙엔 vc15)
+> - 테스터 방식 = **이메일 목록 "Weave Story Closed Test"** → 현재 소수(콘솔 확인 필요), **12명+ 필요**.
 > - **옵트인 링크**(공유용):
 >   - 웹: `https://play.google.com/apps/testing/com.leejahun.weavestory`
 >   - 스토어: `https://play.google.com/store/apps/details?id=com.leejahun.weavestory`
-> - **요건**: 개인 계정이라 **테스터 12명+ × 14일 연속 옵트인** 후 "프로덕션 액세스 신청"(Google 검토). 조직 계정이면 면제지만 전환은 번거로워 권장 안 함.
-> - **모집 계획**: r/GooglePlayTestingExchange 등 **상호 테스트 커뮤니티**(맞테스트 전제). 영문 모집글 초안 준비됨.
->   - ⚠️ Reddit은 브라우저 자동화에서 **차단**됨 → 게시·이메일 수집은 **사용자가 직접**. 수집된 이메일은 내가 목록에 일괄 등록.
-> - 흐름: 이메일 수집 → 목록 "Weave Story Closed Test"에 추가 → 옵트인 링크로 참여 → 14일 유지.
+> - **요건**: 개인 계정이라 **테스터 12명+ × 14일 연속 옵트인** 후 "프로덕션 액세스 신청"(Google 검토).
+> - **모집 채널 = 텔레그램 상호 테스트(맞테스트)** 로 전환. (이전 Reddit r/GooglePlayTestingExchange는 브라우저 자동화 차단으로 보류)
+> - 📋 **상세 런북·붙여넣기 모집 메시지(KO/EN)·추적표**: [`store-assets/PLAY_TESTER_RECRUITMENT.md`](store-assets/PLAY_TESTER_RECRUITMENT.md)
+> - 흐름: 텔레그램 게시·맞테스트(사용자) → Gmail 수집 → 목록 등록(Claude, Play Console) → 옵트인 → 14일 유지 → 프로덕션 액세스 신청.
 
 상태 범례: ⬜ 미착수 · 🟦 진행 중 · ✅ 완료 · ⏭️ 보류/후속 · ⚠️ 주의
 
