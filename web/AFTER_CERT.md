@@ -19,12 +19,13 @@
 
 ### ⬜ 남음 (대부분 콘솔/시크릿 — 사용자)
 - **(콘솔) IAP 소비성 상품 등록**: SKU `credits_starter_3`(3), `credits_value_10`(10). 서버 `TOSS_CREDITS_PER_SKU`와 일치 필수.
-- **(콘솔) 메시지 템플릿 등록 + 검수(2~3일)** → 발급된 `templateSetCode`를 `TOSS_MESSAGE_TEMPLATE_CODE`로 설정. 푸시 켜는 절차:
-  1. 콘솔 → 메시지(스마트 발송) → **기능성 메시지** 템플릿 등록. 본문 예: `「{storyTitle}」 다음 이야기가 준비됐어요`. 변수 키 **`storyTitle`** 포함(코드 `context.storyTitle`과 일치 필수).
-  2. 랜딩(딥링크): 미니앱 경로 **`/reading/{threadId}`**. 콘솔이 요구하는 랜딩 필드명이 `path`가 아니면, 첫 발송 후 워커 로그(`[toss-push]`)의 응답으로 확인해 `toss-push.ts`의 `context` 키를 맞춘다.
-  3. 검수 통과 → `templateSetCode` 발급 → `cd workers/api && npx wrangler secret put TOSS_MESSAGE_TEMPLATE_CODE` (값 입력은 사용자가 직접).
-  4. 검증: 이야기 생성 → 워커 로그에서 `[toss-push] sent ok` 확인. NOT ok면 같은 로그에 `req=/res=` 전체가 찍혀 필드명 교정 가능.
-  - ⚠️ **딥링크 랜딩 검증**: 웹 클라는 `BrowserRouter`만 사용(별도 스킴 파싱 없음). Toss가 미니앱을 `/reading/...` 경로로 직접 열면 그대로 라우팅되지만, 커스텀 스킴/쿼리로 넘기면 클라에 진입경로 파싱 추가 필요(→ 새 `.ait`). E2E에서 확인.
+- **(콘솔) 메시지 템플릿 — 2026-06-14 등록·검토요청 완료(검토중, 영업일 3일내 이메일)**. 캠페인 "기능성_새 챕터 준비 완료", 그룹 ID 7757.
+  - **발송 코드(=`TOSS_MESSAGE_TEMPLATE_CODE` 값): `weave-story-chapter_ready`** ← 콘솔이 앱이름 접두사 자동 부착. 정확히 이 값 사용.
+  - 소재: 제목 `새 이야기`(고정, ≤7자), 내용 `{{ storyTitle }} 다음 이야기가 준비됐어요.`(변수 `{{ storyTitle }}` ✅ 코드 `context.storyTitle`과 일치, 문장 끝 `~요.` 필수), 이동 URL `intoss://weave-story/stories`(정적 — threadId 못 넣어 내 서재로 랜딩).
+  - 승인 후: `cd workers/api && npx wrangler secret put TOSS_MESSAGE_TEMPLATE_CODE` → 값 `weave-story-chapter_ready` 입력(사용자 직접).
+  - 검증: 이야기 생성 → 워커 로그 `[toss-push] sent ok` 확인. NOT ok면 같은 로그 `req=/res=` 전체로 필드명(`templateSetCode`/`context`) 교정 → 워커 재배포(`.ait` 무관).
+  - ⚠️ 미확인: **API 발송 가이드의 정확한 요청 필드명**(우리 가정: `templateSetCode`+`context`). 첫 발송 로그로 확정.
+  - ⚠️ 딥링크 랜딩: 웹 클라 `BrowserRouter`만 사용. Toss가 `intoss://weave-story/stories`를 `/stories` 경로로 열면 그대로 라우팅. 아니면 진입경로 파싱 추가(→ 새 `.ait`). E2E 확인.
 - **(시크릿, 선택) PII 복호화**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`. 미설정이어도 로그인 동작(name/email만 비움).
 - **(프로덕션 전) IAP 검증 강제**: 첫 샌드박스 주문 로그로 getIapOrderStatus 실제 스키마 확인 → `toss-iap.ts`의 경로/`looksPaid` 확정 → `TOSS_IAP_ENFORCE_VERIFY='true'`.
 - **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 로그인 → 이야기 생성→푸시→딥링크, 충전(샌드박스).
