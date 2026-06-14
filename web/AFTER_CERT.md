@@ -11,10 +11,17 @@
 - **1-B `/api/auth/toss` 구현·배포(06acb684)**: mTLS로 generate-token+login-me 호출 → userKey로 provider='toss' 계정 upsert + JWT 발급. 더미코드 스모크 401 확인.
 - **1-A 임시 자동 데모 로그인 제거**: `web/src/lib/auth.ts`의 `TEMP_AUTO_DEMO_CODE` 삭제, 브라우저=미리보기 게이트로 원복(수동 데모 로그인 유지). `.ait` 재빌드 완료.
 
-### ⬜ 남음
-- **(사용자, 선택) PII 복호화 시크릿**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`(콘솔 이메일 발급) → `wrangler secret put`. 미설정이어도 로그인은 userKey로 동작(name/email만 비움).
-- **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 "토스로 시작하기" → 실제 로그인 → 홈 진입 확인.
-- 푸시(sendMessage)·IAP(`/api/purchases/toss`)는 아래 4·3 참고(별도 작업).
+### ✅ 완료 (2026-06-14, 2차 — IAP·푸시)
+- **IAP 서버**: `POST /api/purchases/toss`(orderId 멱등, sku→credits, getIapOrderStatus 검증 로깅+`TOSS_IAP_ENFORCE_VERIFY` 플래그). `lib/purchases/toss-iap.ts`.
+- **IAP 클라**: `web/src/features/purchase/*`(usePurchase: 구매+중단주문 복원), ProfilePage 충전 UI.
+- **푸시 서버**: `lib/notify/toss-push.ts`(send-message, x-toss-user-key, mTLS) → consumer에서 챕터 완성 시 토스 유저에게 발송(모더레이션 숨김 아닐 때). 기존 FCM은 그대로.
+
+### ⬜ 남음 (대부분 콘솔/시크릿 — 사용자)
+- **(콘솔) IAP 소비성 상품 등록**: SKU `credits_starter_3`(3), `credits_value_10`(10). 서버 `TOSS_CREDITS_PER_SKU`와 일치 필수.
+- **(콘솔) 메시지 템플릿 등록 + 검수(2~3일)** → 발급된 `templateSetCode`를 `TOSS_MESSAGE_TEMPLATE_CODE`로 설정(미설정 시 토스 푸시 skip). 템플릿 변수: `storyTitle`, 랜딩 `/reading/{threadId}`.
+- **(시크릿, 선택) PII 복호화**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`. 미설정이어도 로그인 동작(name/email만 비움).
+- **(프로덕션 전) IAP 검증 강제**: 첫 샌드박스 주문 로그로 getIapOrderStatus 실제 스키마 확인 → `toss-iap.ts`의 경로/`looksPaid` 확정 → `TOSS_IAP_ENFORCE_VERIFY='true'`.
+- **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 로그인 → 이야기 생성→푸시→딥링크, 충전(샌드박스).
 
 ## 1. 인증서 발급 시 받는 것 / 시크릿 등록
 발급물(앱인토스 콘솔): **mTLS 인증서**, **AAD_STRING**, **DECRYPTION_KEY** (+ 토스 API 호출용 키들).
