@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { and, eq } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
-import { contentReports, chapters } from '../lib/schema';
+import { contentReports, chapters, threads } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { REPORT_HIDE_THRESHOLD, countDistinctReporters, hideChapter } from '../lib/moderation/enforce';
 import { isUuid } from '../lib/validation';
@@ -25,7 +25,12 @@ reportsRouter.post('/', async (c) => {
 
   const db = makeDb(c.env.DATABASE_URL);
 
-  const [chapter] = await db.select({ id: chapters.id }).from(chapters).where(eq(chapters.id, chapterId));
+  // 본인 소유 챕터만 신고 가능(스토리는 비공개) — 타 유저 콘텐츠 숨김 악용 방지.
+  const [chapter] = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .innerJoin(threads, eq(chapters.threadId, threads.id))
+    .where(and(eq(chapters.id, chapterId), eq(threads.userId, userId)));
   if (!chapter) return c.json({ error: 'Chapter not found' }, 404);
 
   await db.insert(contentReports).values({
@@ -43,13 +48,13 @@ reportsRouter.post('/', async (c) => {
 
   console.log(`[reports] chapter=${chapterId} reason=${reason} reporter=${userId}`);
 
-  // 서로 다른 사용자 N명 이상이 신고하면 자동 숨김 + 운영자 알림.
+  // 비공개 콘텐츠라 소유자 신고 1건이면 자동 숨김 + 운영자 알림(임계값 1).
   const reporters = await countDistinctReporters(db, chapterId);
   if (reporters >= REPORT_HIDE_THRESHOLD) {
     c.executionCtx.waitUntil(
       hideChapter(c.env, db, chapterId, {
         source: 'reports',
-        detail: `distinct reporters: ${reporters} (threshold ${REPORT_HIDE_THRESHOLD})\nlatest reason: ${reason}`,
+        detail: `reporters: ${reporters} (threshold ${REPORT_HIDE_THRESHOLD})\nlatest reason: ${reason}`,
       }),
     );
   }
