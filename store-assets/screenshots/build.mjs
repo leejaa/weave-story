@@ -232,7 +232,7 @@ const L10N = {
     dir: 'ko',
     market: {
       choice:  { eyebrow: 'WEAVE · 인터랙티브 소설', headline: '당신의 <span class="accent">선택</span>이<br>이야기를 바꾼다', sub: '갈림길마다 내리는 결정이<br>다음 장면을 새로 써내려가요.' },
-      setup:   { eyebrow: 'CREATE · 한 문장의 씨앗', headline: '한 문장이면<br><span class="accent">소설</span>이 시작돼', sub: '원하는 이야기를 설명하면<br>AI가 첫 챕터를 써냅니다.' },
+      setup:   { eyebrow: 'CREATE · 한 문장의 씨앗', headline: '한 문장이면<br><span class="accent">소설</span>이 시작돼', sub: '원하는 이야기를 적으면<br>첫 챕터가 펼쳐집니다.' },
       read:    { eyebrow: 'READ · 몰입의 페이지', headline: '나만을 위해<br>쓰여진 <span class="accent">소설</span>', sub: '종이책처럼 차분하게,<br>한 장씩 펼쳐 읽어요.' },
       home:    { eyebrow: 'GENRES · 일곱 갈래', headline: '로맨스부터<br><span class="accent">무협</span>까지', sub: '취향대로 고르는 일곱 가지 장르,<br>오늘 밤을 위한 한 권.' },
       library: { eyebrow: 'LIBRARY · 나의 서재', headline: '언제든<br><span class="accent">이어서</span> 읽다', sub: '진행 중인 이야기도, 완결된 이야기도<br>한곳에 모아 둬요.' },
