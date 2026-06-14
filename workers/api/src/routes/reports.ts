@@ -4,6 +4,7 @@ import { makeDb } from '../lib/db';
 import { contentReports, chapters } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { REPORT_HIDE_THRESHOLD, countDistinctReporters, hideChapter } from '../lib/moderation/enforce';
+import { isUuid } from '../lib/validation';
 import type { AppEnv } from '../types';
 
 const VALID_REASONS = new Set(['sexual', 'violence', 'hate', 'illegal', 'other']);
@@ -18,7 +19,7 @@ reportsRouter.post('/', async (c) => {
   const body = await c.req.json() as { chapterId?: unknown; reason?: unknown; detail?: unknown };
   const { chapterId, reason, detail } = body;
 
-  if (typeof chapterId !== 'string' || typeof reason !== 'string' || !VALID_REASONS.has(reason)) {
+  if (!isUuid(chapterId) || typeof reason !== 'string' || !VALID_REASONS.has(reason)) {
     return c.json({ error: 'chapterId and a valid reason are required' }, 400);
   }
 

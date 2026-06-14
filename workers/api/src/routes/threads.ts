@@ -8,6 +8,7 @@ import { normalizeStoryLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob, createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import { rateLimit } from '../lib/middleware/rate-limit';
+import { isUuid } from '../lib/validation';
 import type { AppEnv } from '../types';
 
 export const threadsRouter = new Hono<AppEnv>();
@@ -46,7 +47,7 @@ threadsRouter.get('/', async (c) => {
 threadsRouter.post('/', async (c) => {
   const userId = c.get('userId');
   const { storyId } = await c.req.json();
-  if (!storyId) return c.json({ error: 'storyId required' }, 400);
+  if (!isUuid(storyId)) return c.json({ error: 'storyId required' }, 400);
 
   const db = makeDb(c.env.DATABASE_URL);
   const [thread] = await db.insert(threads).values({ userId, storyId }).returning();
@@ -82,6 +83,7 @@ threadsRouter.post('/', async (c) => {
 threadsRouter.get('/:id', async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
+  if (!isUuid(threadId)) return c.json({ error: 'Not found' }, 404);
   const db = makeDb(c.env.DATABASE_URL);
 
   const [row] = await db
@@ -125,6 +127,7 @@ threadsRouter.get('/:id', async (c) => {
 threadsRouter.post('/:id/retry-first-chapter', genLimit, async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
+  if (!isUuid(threadId)) return c.json({ error: 'Not found' }, 404);
   const db = makeDb(c.env.DATABASE_URL);
 
   const [row] = await db
@@ -181,6 +184,7 @@ threadsRouter.post('/:id/retry-first-chapter', genLimit, async (c) => {
 threadsRouter.post('/:id/choose', genLimit, async (c) => {
   const userId = c.get('userId');
   const threadId = c.req.param('id');
+  if (!isUuid(threadId)) return c.json({ error: 'Not found' }, 404);
   const { chapterNumber, choiceIndex, customInput } = await c.req.json();
 
   if (typeof chapterNumber !== 'number') return c.json({ error: 'chapterNumber required' }, 400);
