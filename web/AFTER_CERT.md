@@ -3,10 +3,18 @@
 > **목적**: 앱인토스 콘솔 승인 + mTLS 인증서가 발급되면 진행할 작업을 세션이 초기화돼도 바로 이어갈 수 있게 정리한 문서.
 > 전체 진행상황은 [PROGRESS.md](./PROGRESS.md) 참고. 이 문서는 **인증서 의존(blocked) 작업**만 다룬다.
 
-## 0. 지금 상태 요약 (왜 막혀 있나)
-- 웹앱은 **실서버와 이미 연동**돼 동작 중. 단, 인증 토큰을 얻는 정식 경로(토스 로그인)가 인증서 대기로 미완성.
-- **임시 조치**: 브라우저에서 "토스로 시작하기" → 데모(리뷰어) 코드 자동 로그인으로 실서버 세션 통과 중. (아래 1-A에서 제거)
+## 0. 지금 상태 요약
 - API 서버: `https://weave-story-api.leejahun0.workers.dev` (CF Worker, Expo와 동일 백엔드). 인증=Bearer JWT(HS256, `JWT_SECRET`), claim `{ sub: userId }`.
+
+### ✅ 완료 (2026-06-14, 인증서 발급 후)
+- **mTLS**: CF에 클라 인증서 업로드(`weave-toss-mtls`, id `6a7f22e1-...`) → `TOSS_MTLS` 바인딩(wrangler.toml). `.secrets/toss-mtls-*.{crt,key}` 보관.
+- **1-B `/api/auth/toss` 구현·배포(06acb684)**: mTLS로 generate-token+login-me 호출 → userKey로 provider='toss' 계정 upsert + JWT 발급. 더미코드 스모크 401 확인.
+- **1-A 임시 자동 데모 로그인 제거**: `web/src/lib/auth.ts`의 `TEMP_AUTO_DEMO_CODE` 삭제, 브라우저=미리보기 게이트로 원복(수동 데모 로그인 유지). `.ait` 재빌드 완료.
+
+### ⬜ 남음
+- **(사용자, 선택) PII 복호화 시크릿**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`(콘솔 이메일 발급) → `wrangler secret put`. 미설정이어도 로그인은 userKey로 동작(name/email만 비움).
+- **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 "토스로 시작하기" → 실제 로그인 → 홈 진입 확인.
+- 푸시(sendMessage)·IAP(`/api/purchases/toss`)는 아래 4·3 참고(별도 작업).
 
 ## 1. 인증서 발급 시 받는 것 / 시크릿 등록
 발급물(앱인토스 콘솔): **mTLS 인증서**, **AAD_STRING**, **DECRYPTION_KEY** (+ 토스 API 호출용 키들).
