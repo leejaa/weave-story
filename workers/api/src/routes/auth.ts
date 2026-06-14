@@ -8,6 +8,7 @@ import { verifyGoogleIdToken } from '../lib/auth/google';
 import { signAccessToken, generateRefreshToken, hashRefreshToken, REFRESH_TOKEN_TTL_MS } from '../lib/tokens';
 import { notifyOwner } from '../lib/notify/owner';
 import { rateLimit, clientIp } from '../lib/middleware/rate-limit';
+import { loginWithTossCode, type TossReferrer } from '../lib/auth/toss';
 import type { AppEnv } from '../types';
 
 export const authRouter = new Hono<AppEnv>();
@@ -91,6 +92,57 @@ authRouter.post('/google', async (c) => {
     await db.insert(accounts).values({ userId: newUser.id, provider: 'google', providerSub: googleSub });
     userId = newUser.id;
     c.executionCtx.waitUntil(notifyOwner(c.env, `🎉 신규 가입 (Google)\nemail: ${email ?? '-'}\nname: ${name ?? '-'}`));
+  }
+
+  const rawRefreshToken = generateRefreshToken();
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+  await db.insert(sessions).values({ userId, refreshTokenHash: await hashRefreshToken(rawRefreshToken), expiresAt });
+
+  const accessToken = await signAccessToken(userId, c.env.JWT_SECRET);
+  return c.json({ accessToken, refreshToken: rawRefreshToken });
+});
+
+// 앱인토스(토스 앱 WebView) 로그인. 클라 appLogin() → { authorizationCode, referrer }.
+// 서버가 mTLS로 토스 파트너 API를 호출해 userKey를 얻고, 우리 계정/세션을 발급한다.
+authRouter.post('/toss', async (c) => {
+  const { authorizationCode, referrer } = await c.req.json().catch(() => ({}));
+  if (typeof authorizationCode !== 'string' || !authorizationCode) {
+    return c.json({ error: 'authorizationCode required' }, 400);
+  }
+  const ref: TossReferrer = referrer === 'SANDBOX' ? 'SANDBOX' : 'DEFAULT';
+
+  let tossUser;
+  try {
+    tossUser = await loginWithTossCode(c.env, authorizationCode, ref);
+  } catch (err) {
+    console.error('[auth/toss] login failed', err);
+    return c.json({ error: 'Invalid Toss authorization' }, 401);
+  }
+
+  const db = makeDb(c.env.DATABASE_URL);
+  const existingAccount = await db.query.accounts.findFirst({
+    where: and(eq(accounts.provider, 'toss'), eq(accounts.providerSub, tossUser.userKey)),
+  });
+
+  let userId: string;
+  if (existingAccount) {
+    userId = existingAccount.userId;
+    // 복호화된 PII가 있으면 최신화(없으면 기존 값 유지).
+    if (tossUser.email || tossUser.name) {
+      await db.update(users)
+        .set({
+          ...(tossUser.email ? { email: tossUser.email } : {}),
+          ...(tossUser.name ? { name: tossUser.name } : {}),
+        })
+        .where(eq(users.id, userId));
+    }
+  } else {
+    const [newUser] = await db.insert(users)
+      .values({ email: tossUser.email ?? null, name: tossUser.name ?? null })
+      .returning({ id: users.id });
+    await db.insert(accounts).values({ userId: newUser.id, provider: 'toss', providerSub: tossUser.userKey });
+    userId = newUser.id;
+    c.executionCtx.waitUntil(notifyOwner(c.env, `🎉 신규 가입 (Toss)\nuserKey: ${tossUser.userKey}\nemail: ${tossUser.email ?? '-'}`));
   }
 
   const rawRefreshToken = generateRefreshToken();

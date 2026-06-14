@@ -31,6 +31,12 @@ export type WorkerEnv = {
   // 운영자 텔레그램 알림(신규 가입·새 이야기 등). 둘 다 설정돼야 동작, 없으면 no-op.
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  // 토스(앱인토스) 파트너 API 호출용 mTLS 클라이언트 인증서 바인딩.
+  TOSS_MTLS?: Fetcher;
+  // 토스 유저 PII(name/email 등) 복호화용 — 콘솔 발급 이메일로 받음(AES-256-GCM).
+  // 미설정 시 로그인은 userKey만으로 동작(PII 복호화는 건너뜀).
+  TOSS_AAD_STRING?: string;
+  TOSS_DECRYPTION_KEY?: string; // base64 256-bit 키
 };
 
 export type AppEnv = {

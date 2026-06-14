@@ -22,6 +22,12 @@ name = "GEN_RATE_LIMITER"
 namespace_id = "1002"
 simple = { limit = 12, period = 60 }
 
+# 토스(앱인토스) 파트너 API 호출용 mTLS 클라이언트 인증서 바인딩.
+# env.TOSS_MTLS.fetch(...) 가 클라이언트 인증서를 제시해 상호 TLS 핸드셰이크.
+[[mtls_certificates]]
+binding = "TOSS_MTLS"
+certificate_id = "6a7f22e1-e05b-40d0-ba3c-aff1b5d6735a"
+
 # Google Play 환불(voided) 폴링 — 매일 1회(00:30 UTC).
 [triggers]
 crons = ["30 0 * * *"]
