@@ -45,9 +45,14 @@ async function exchangeAuthorizationCode(
   if (!res.ok) {
     throw new TossApiError(`toss generate-token failed: ${res.status} ${await res.text()}`, res.status, res.status >= 500);
   }
-  const body = (await res.json()) as { accessToken?: string };
-  if (!body.accessToken) throw new TossApiError('toss generate-token: no accessToken', undefined, true);
-  return body.accessToken;
+  // 토스 파트너 API는 { resultType, success: {...} } 봉투 구조. 평면 응답도 방어적으로 허용.
+  const raw = (await res.json()) as Record<string, any>;
+  const accessToken = raw?.accessToken ?? raw?.success?.accessToken ?? raw?.data?.accessToken;
+  if (!accessToken) {
+    console.error('[toss] generate-token unexpected shape', { keys: Object.keys(raw ?? {}), body: JSON.stringify(raw).slice(0, 400) });
+    throw new TossApiError('toss generate-token: no accessToken', undefined, true);
+  }
+  return accessToken as string;
 }
 
 type LoginMeResponse = {
@@ -65,7 +70,14 @@ async function fetchLoginMe(env: WorkerEnv, tossAccessToken: string): Promise<Lo
   if (!res.ok) {
     throw new TossApiError(`toss login-me failed: ${res.status} ${await res.text()}`, res.status, res.status >= 500);
   }
-  return (await res.json()) as LoginMeResponse;
+  // 봉투 구조 처리: success/data 안에 유저 정보가 있을 수 있음.
+  const raw = (await res.json()) as Record<string, any>;
+  const me = (raw?.success ?? raw?.data ?? raw) as LoginMeResponse;
+  if (me?.userKey == null) {
+    console.error('[toss] login-me unexpected shape', { keys: Object.keys(raw ?? {}), body: JSON.stringify(raw).slice(0, 400) });
+    throw new TossApiError('toss login-me: no userKey', undefined, true);
+  }
+  return me;
 }
 
 function b64ToBytes(b64: string): Uint8Array {
