@@ -5,6 +5,7 @@ import { generateFirstChapterBackground, generateNextChapterBackground } from '.
 import { notifyOwner } from '../notify/owner';
 import { moderateChapterContent } from '../moderation/classify';
 import { hideChapter } from '../moderation/enforce';
+import { sendTossChapterReadyPush } from '../notify/toss-push';
 import { logError } from '../observability/logger';
 import { alertServerError } from '../observability/alert';
 import type { WorkerEnv } from '../../types';
@@ -102,18 +103,19 @@ async function markJobFailed(job: StoryGenerationJob, env: WorkerEnv): Promise<v
 
 // 생성 직후 안전성 분류 — 정책 위반이면 자동 숨김 + 운영자 알림(best-effort).
 // 분류기 오류는 fail-open(콘텐츠는 노출)하되 생성 흐름을 막지 않는다.
+// 생성 직후 안전성 분류 — 정책 위반이면 자동 숨김. 숨겼으면 true 반환(푸시 차단용).
 async function moderateGeneratedChapter(
   job: StoryGenerationJob,
   env: WorkerEnv,
   db: ReturnType<typeof makeDb>,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const [row] = await db
       .select({ content: chapters.content, title: chapters.title })
       .from(chapters)
       .where(eq(chapters.id, job.chapterId))
       .limit(1);
-    if (!row?.content) return;
+    if (!row?.content) return false;
 
     const verdict = await moderateChapterContent(row.content, env.AI_GATEWAY_API_KEY);
     if (verdict.action === 'hide') {
@@ -122,11 +124,13 @@ async function moderateGeneratedChapter(
         detail: `title: ${row.title ?? '-'}\ncategories: ${verdict.categories.join(', ') || '-'}\nreason: ${verdict.reason || '-'}`,
       });
       console.warn(`${getJobTag(job)} moderation_hidden categories=${verdict.categories.join(',')}`);
+      return true;
     }
   } catch (err) {
     // 모더레이션 실패가 챕터 생성을 실패로 만들지 않도록 흡수한다.
     console.error(`${getJobTag(job)} moderation_error`, err);
   }
+  return false;
 }
 
 async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv): Promise<void> {
@@ -161,7 +165,9 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
       console.error('[notify] first-chapter failed', err);
     }
 
-    await moderateGeneratedChapter(job, env, db);
+    const hiddenFirst = await moderateGeneratedChapter(job, env, db);
+    // 토스 유저 푸시(기능성 메시지) — 숨김 처리 안 됐을 때만. Expo/FCM 푸시는 background에서 별도 발송.
+    if (!hiddenFirst) await sendTossChapterReadyPush(env, db, { threadId: job.threadId });
     return;
   }
 
@@ -173,7 +179,10 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     useHarness: env.USE_STORY_HARNESS !== 'false',
   });
 
-  await moderateGeneratedChapter(job, env, db);
+  const hiddenNext = await moderateGeneratedChapter(job, env, db);
+  if (!hiddenNext && job.genCtx.threadId) {
+    await sendTossChapterReadyPush(env, db, { threadId: job.genCtx.threadId });
+  }
 }
 
 export async function handleStoryGenerationQueue(

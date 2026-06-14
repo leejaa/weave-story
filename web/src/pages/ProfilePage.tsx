@@ -4,6 +4,8 @@ import { getToken } from '@/lib/api';
 import { logout } from '@/lib/auth';
 import { useMe } from '@/features/me/useMe';
 import { deleteMe } from '@/features/me/api';
+import { usePurchase } from '@/features/purchase/usePurchase';
+import { CREDIT_PACKS } from '@/features/purchase/packs';
 import styles from './ProfilePage.module.css';
 
 /**
@@ -15,6 +17,7 @@ import styles from './ProfilePage.module.css';
 export function ProfilePage() {
   const navigate = useNavigate();
   const { me } = useMe();
+  const { buy, buying } = usePurchase();
   const [busy, setBusy] = useState(false);
 
   // 세션 정리 후 로그인 게이트로 풀 리로드 (인증 상태 재평가)
@@ -71,6 +74,20 @@ export function ProfilePage() {
         <section className={styles.section}>
           <p className={styles.label}>요금제</p>
           <p className={styles.planDesc}>크레딧 {me?.credits ?? 0}개 남음</p>
+          <div className={styles.packs}>
+            {CREDIT_PACKS.map((pack) => (
+              <button
+                key={pack.sku}
+                className={styles.pack}
+                onClick={() => buy(pack.sku)}
+                disabled={buying !== null}
+                type="button"
+              >
+                <span className={styles.packLabel}>{pack.label}</span>
+                <span className={styles.packCta}>{buying === pack.sku ? '처리 중…' : '충전'}</span>
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* 액션 */}

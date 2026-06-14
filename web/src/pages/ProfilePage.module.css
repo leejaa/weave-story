@@ -118,3 +118,33 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* 크레딧 충전 팩 (앱인토스 IAP) */
+.packs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.pack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-paper-raised, transparent);
+  cursor: pointer;
+}
+.pack:disabled { opacity: 0.6; cursor: default; }
+.packLabel {
+  font-family: var(--font-sans);
+  font-size: var(--size-sm);
+  color: var(--color-ink);
+}
+.packCta {
+  font-family: var(--font-sans);
+  font-size: var(--size-sm);
+  font-weight: 600;
+  color: var(--color-thread, var(--color-ink));
+}

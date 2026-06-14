@@ -37,6 +37,11 @@ export type WorkerEnv = {
   // 미설정 시 로그인은 userKey만으로 동작(PII 복호화는 건너뜀).
   TOSS_AAD_STRING?: string;
   TOSS_DECRYPTION_KEY?: string; // base64 256-bit 키
+  // 앱인토스 스마트 발송(기능성 메시지) 템플릿 코드. 콘솔 등록+검수 후 설정. 미설정 시 토스 푸시 skip.
+  TOSS_MESSAGE_TEMPLATE_CODE?: string;
+  // 'true'면 IAP 지급 전 토스 주문검증(getIapOrderStatus) 통과를 강제. 스키마 확정·프로덕션 전 'true'로.
+  // 미설정/그외엔 검증 결과를 로깅만 하고 지급 진행(샌드박스 테스트용).
+  TOSS_IAP_ENFORCE_VERIFY?: string;
 };
 
 export type AppEnv = {

@@ -6,6 +6,7 @@ import { requireAuth } from '../lib/auth/middleware';
 import { verifyGooglePurchase } from '../lib/google-play';
 import { verifyAppleTransaction } from '../lib/purchases/apple-storekit';
 import { hasGrant, applyGrant } from '../lib/purchases/grant';
+import { TOSS_CREDITS_PER_SKU, verifyTossOrder } from '../lib/purchases/toss-iap';
 import { notifyOwner } from '../lib/notify/owner';
 import type { AppEnv } from '../types';
 
@@ -69,4 +70,37 @@ purchasesRouter.post('/grant', async (c) => {
   console.log(`[grant] granted userId=${userId} platform=${platform} product=${productId} credits=${creditsToGrant} total=${credits}`);
   c.executionCtx.waitUntil(notifyOwner(c.env, `💳 결제\nuser: ${email ?? userId}\nproduct: ${productId}\nplatform: ${platform}\n+${creditsToGrant} 크레딧 (총 ${credits})`));
   return c.json({ credits });
+});
+
+// 앱인토스 IAP 지급. 클라 processProductGrant 콜백 → { orderId, sku }.
+// orderId 기준 멱등. 토스 주문검증(getIapOrderStatus)은 스키마 확정 전까지 로깅+옵션 강제.
+purchasesRouter.post('/toss', async (c) => {
+  const userId = c.get('userId');
+  const body = (await c.req.json().catch(() => ({}))) as { orderId?: unknown; sku?: unknown };
+  const orderId = typeof body.orderId === 'string' ? body.orderId : null;
+  const sku = typeof body.sku === 'string' ? body.sku : null;
+
+  if (!orderId || !sku) return c.json({ error: 'orderId and sku required' }, 400);
+  const creditsToGrant = TOSS_CREDITS_PER_SKU[sku];
+  if (!creditsToGrant) return c.json({ error: 'Unknown sku' }, 400);
+
+  const db = makeDb(c.env.DATABASE_URL);
+
+  // 멱등 — 같은 orderId 재요청은 이중 지급 안 함.
+  if (await hasGrant(db, userId, sku, orderId)) {
+    const [user] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
+    return c.json({ granted: true, credits: user?.credits ?? 0, alreadyGranted: true });
+  }
+
+  // 주문 검증 — 응답 스키마 로깅. 강제 모드(TOSS_IAP_ENFORCE_VERIFY='true')면 통과 필수.
+  const { verified } = await verifyTossOrder(c.env, orderId);
+  if (c.env.TOSS_IAP_ENFORCE_VERIFY === 'true' && !verified) {
+    console.error(`[toss-iap] verify failed (enforced) order=${orderId} sku=${sku}`);
+    return c.json({ granted: false, error: 'order not verified' }, 402);
+  }
+
+  const { credits, email } = await applyGrant(db, { userId, productId: sku, grantKey: orderId, credits: creditsToGrant });
+  console.log(`[toss-iap] granted userId=${userId} sku=${sku} order=${orderId} +${creditsToGrant} total=${credits} verified=${verified}`);
+  c.executionCtx.waitUntil(notifyOwner(c.env, `💳 결제 (Toss)\nuser: ${email ?? userId}\nsku: ${sku}\norder: ${orderId}\n+${creditsToGrant} 크레딧 (총 ${credits})${verified ? '' : '\n⚠️ 검증 미통과(로깅)'}`));
+  return c.json({ granted: true, credits });
 });
