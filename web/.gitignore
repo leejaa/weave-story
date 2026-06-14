@@ -3,3 +3,6 @@ dist/
 .env.local
 .env.*.local
 *.tsbuildinfo
+
+# apps-in-toss build artifact
+*.ait
