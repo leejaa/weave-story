@@ -21,6 +21,9 @@
 - **IAP 클라**: `web/src/features/purchase/*`(usePurchase: 구매+중단주문 복원), ProfilePage 충전 UI.
 - **푸시 서버**: `lib/notify/toss-push.ts`(send-message, x-toss-user-key, mTLS) → consumer에서 챕터 완성 시 토스 유저에게 발송(모더레이션 숨김 아닐 때). 기존 FCM은 그대로.
   - 2026-06-14: 응답 엔벨로프(`resultType==='SUCCESS'`) 판정 + 첫 실발송 요청/응답 전체 로깅 추가(스키마 확정용). **워커 배포 완료** — 시크릿만 설정하면 즉시 켜짐(새 `.ait` 불필요).
+- **앱 출시 검토요청 — 2026-06-14 완료(검토중, 최대 영업일 3일)**. `.ait`(배경/하단공백 수정분) 업로드 → 출시노트·앱내기능 등록 → "검토 요청하기".
+  - 등록 기능(검색/홈 노출 딥링크): `새 이야기 시작하기`/`Start New Story` → `intoss://weave-story/setup`, `내 이야기`/`My Stories` → `intoss://weave-story/stories`. (영어명은 각 단어 첫글자 대문자 규칙)
+- **배포 자동화**: `npm run deploy:ait -- "메모"`로 `.ait` 빌드+업로드. 콘솔 API 키는 `ait token add`(로컬) 또는 CI `AIT_API_KEY`. 검토요청·출시는 콘솔 수동(플랫폼 제약). 상세 §0.
 
 ### ⬜ 남음 (대부분 콘솔/시크릿 — 사용자)
 - **(콘솔) IAP 소비성 상품 등록**: SKU `credits_starter_3`(3), `credits_value_10`(10). 서버 `TOSS_CREDITS_PER_SKU`와 일치 필수.
@@ -33,7 +36,7 @@
   - ⚠️ 딥링크 랜딩: 웹 클라 `BrowserRouter`만 사용. Toss가 `intoss://weave-story/stories`를 `/stories` 경로로 열면 그대로 라우팅. 아니면 진입경로 파싱 추가(→ 새 `.ait`). E2E 확인.
 - **(시크릿, 선택) PII 복호화**: `TOSS_AAD_STRING`·`TOSS_DECRYPTION_KEY`. 미설정이어도 로그인 동작(name/email만 비움).
 - **(프로덕션 전) IAP 검증 강제**: 첫 샌드박스 주문 로그로 getIapOrderStatus 실제 스키마 확인 → `toss-iap.ts`의 경로/`looksPaid` 확정 → `TOSS_IAP_ENFORCE_VERIFY='true'`.
-- **E2E 검증**: 새 `.ait` 업로드 → 토스 앱 로그인 → 이야기 생성→푸시→딥링크, 충전(샌드박스).
+- **E2E 검증**(검토 승인 후): 토스 앱 로그인 → 이야기 생성→푸시→딥링크, 충전(샌드박스). 딥링크 `setup`/`stories` 진입 정상인지 확인.
 
 ## 1. 인증서 발급 시 받는 것 / 시크릿 등록
 발급물(앱인토스 콘솔): **mTLS 인증서**, **AAD_STRING**, **DECRYPTION_KEY** (+ 토스 API 호출용 키들).
