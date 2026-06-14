@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MEDIA } from '@/lib/media';
 import { Spinner } from '@/components/ui';
+import { BackgroundVideo } from '@/components/ui/BackgroundVideo';
 import styles from './LoginPage.module.css';
 
 type Props = {
@@ -29,7 +30,7 @@ export function LoginPage({ onLogin }: Props) {
 
   return (
     <div className={styles.screen}>
-      <video className={styles.video} src={MEDIA.loginVideo} poster={MEDIA.loginPoster} autoPlay loop muted playsInline preload="auto" aria-hidden />
+      <BackgroundVideo className={styles.video} src={MEDIA.loginVideo} poster={MEDIA.loginPoster} />
       <div className={styles.overlay} aria-hidden />
 
       <div className={styles.content}>
