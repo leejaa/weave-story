@@ -8,7 +8,9 @@ import { verifyGoogleIdToken } from '../lib/auth/google';
 import { signAccessToken, generateRefreshToken, hashRefreshToken, REFRESH_TOKEN_TTL_MS } from '../lib/tokens';
 import { notifyOwner } from '../lib/notify/owner';
 import { rateLimit, clientIp } from '../lib/middleware/rate-limit';
-import { loginWithTossCode, type TossReferrer } from '../lib/auth/toss';
+import { loginWithTossCode, TossApiError, type TossReferrer } from '../lib/auth/toss';
+import { logError } from '../lib/observability/logger';
+import { alertServerError } from '../lib/observability/alert';
 import type { AppEnv } from '../types';
 
 export const authRouter = new Hono<AppEnv>();
@@ -115,7 +117,14 @@ authRouter.post('/toss', async (c) => {
   try {
     tossUser = await loginWithTossCode(c.env, authorizationCode, ref);
   } catch (err) {
-    console.error('[auth/toss] login failed', err);
+    // CF에 항상 구조 로그(스택 포함) → 검색/디버깅. 인프라성 오류만 텔레그램 알림.
+    const requestId = c.req.header('cf-ray') ?? crypto.randomUUID();
+    const errorName = err instanceof Error ? err.name : 'Error';
+    const isInfra = err instanceof TossApiError ? err.infra : true; // 미상 오류는 인프라로 간주
+    logError(err, { event: 'request_error', requestId, method: 'POST', path: '/api/auth/toss', status: 401 });
+    if (isInfra) {
+      c.executionCtx.waitUntil(alertServerError(c.env, { source: 'request', requestId, method: 'POST', path: '/api/auth/toss', status: 401, errorName }));
+    }
     return c.json({ error: 'Invalid Toss authorization' }, 401);
   }
 

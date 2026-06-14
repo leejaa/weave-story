@@ -14,6 +14,7 @@
 
 import { appLogin } from '@apps-in-toss/web-framework';
 import { api, setToken, clearToken } from './api';
+import { setSentryUser } from './sentry';
 
 const TOKEN_KEY = 'ws_access_token';
 const DEMO_KEY = 'ws_demo';
@@ -30,6 +31,7 @@ export function isInTossApp(): boolean {
 export function saveToken(token: string) {
   sessionStorage.setItem(TOKEN_KEY, token);
   setToken(token);
+  setSentryUser(token);
 }
 
 /** 새로고침 시 인증 상태 복원: 'token'(실로그인) | 'demo'(미리보기) | null */
@@ -37,6 +39,7 @@ export function restoreAuth(): 'token' | 'demo' | null {
   const token = sessionStorage.getItem(TOKEN_KEY);
   if (token) {
     setToken(token);
+    setSentryUser(token);
     return 'token';
   }
   if (sessionStorage.getItem(DEMO_KEY)) return 'demo';
@@ -76,4 +79,5 @@ export function logout() {
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(DEMO_KEY);
   clearToken();
+  setSentryUser(null);
 }

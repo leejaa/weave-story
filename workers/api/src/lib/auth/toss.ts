@@ -11,11 +11,24 @@ export type TossUser = {
   name: string | null;
 };
 
+/**
+ * 토스 API 호출 오류. `infra=true`면 우리 쪽 문제(mTLS 미설정/네트워크/5xx) → 알림 대상.
+ * upstreamStatus 4xx(인가코드 만료 등 사용자 측)는 infra=false → 로그만.
+ */
+export class TossApiError extends Error {
+  constructor(message: string, public upstreamStatus?: number, public infra = false) {
+    super(message);
+    this.name = 'TossApiError';
+  }
+}
+
 function mtlsFetch(env: WorkerEnv, url: string, init: RequestInit): Promise<Response> {
   if (!env.TOSS_MTLS) {
-    throw new Error('TOSS_MTLS binding not configured');
+    throw new TossApiError('TOSS_MTLS binding not configured', undefined, true);
   }
-  return env.TOSS_MTLS.fetch(url, init);
+  return env.TOSS_MTLS.fetch(url, init).catch((err) => {
+    throw new TossApiError(`toss fetch network error: ${String(err)}`, undefined, true);
+  });
 }
 
 /** 인가 코드 → 토스 액세스 토큰(유저 조회용). 인가 코드 유효시간 10분. */
@@ -30,10 +43,10 @@ async function exchangeAuthorizationCode(
     body: JSON.stringify({ authorizationCode, referrer }),
   });
   if (!res.ok) {
-    throw new Error(`toss generate-token failed: ${res.status} ${await res.text()}`);
+    throw new TossApiError(`toss generate-token failed: ${res.status} ${await res.text()}`, res.status, res.status >= 500);
   }
   const body = (await res.json()) as { accessToken?: string };
-  if (!body.accessToken) throw new Error('toss generate-token: no accessToken');
+  if (!body.accessToken) throw new TossApiError('toss generate-token: no accessToken', undefined, true);
   return body.accessToken;
 }
 
@@ -50,7 +63,7 @@ async function fetchLoginMe(env: WorkerEnv, tossAccessToken: string): Promise<Lo
     headers: { Authorization: `Bearer ${tossAccessToken}` },
   });
   if (!res.ok) {
-    throw new Error(`toss login-me failed: ${res.status} ${await res.text()}`);
+    throw new TossApiError(`toss login-me failed: ${res.status} ${await res.text()}`, res.status, res.status >= 500);
   }
   return (await res.json()) as LoginMeResponse;
 }
