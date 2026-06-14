@@ -15,7 +15,7 @@ Last updated: 2026-06-04
 
 > ## 클로즈드 테스트 현황 (2026-06-14 갱신)
 > - 트랙 **"Alpha"**(클로즈드 테스트) = **활성**, **1.0.1 (vc14) 라이브** → 옵트인 즉시 설치 가능. (internal 트랙엔 vc15)
-> - 테스터 방식 = **이메일 목록 "Weave Story Closed Test"** → 현재 소수(콘솔 확인 필요), **12명+ 필요**.
+> - 테스터 방식 = **이메일 목록 "Weave Story Closed Test"** → **옵트인 1명 / 12명 필요**(2026-06-14 대시보드 확인). 14일 카운트 미시작.
 > - **옵트인 링크**(공유용):
 >   - 웹: `https://play.google.com/apps/testing/com.leejahun.weavestory`
 >   - 스토어: `https://play.google.com/store/apps/details?id=com.leejahun.weavestory`

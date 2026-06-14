@@ -9,10 +9,11 @@
 
 > 14일 시계는 **12명이 모두 옵트인된 시점(Day 0)** 부터 카운트. 중간에 인원이 12명 미만으로 떨어지면 카운트가 흔들릴 수 있으니 **여유 있게 14~15명** 확보 권장.
 
-## 현재 상태
+## 현재 상태 (2026-06-14, Play Console 대시보드 확인)
 - 트랙 **Alpha(클로즈드 테스트)**: 1.0.1 (vc14) **라이브** — 옵트인 즉시 설치 가능 ✅
-- 테스터 이메일 목록: **"Weave Story Closed Test"** — 현재 소수(콘솔에서 정확 인원 확인 필요), **목표 12명+**
-- 개발자 계정: LEE JAHUN (개인, leejahun9@gmail.com), 패키지 `com.leejahun.weavestory`
+- **옵트인(참여 선택) 테스터: 1명 / 12명 필요** ← 프로덕션 액세스 진행 현황 기준
+- 14일 카운트: **아직 미시작**(12명 충족 후 Day 0)
+- 개발자 계정: LEE JAHUN (개인, leejahun9@gmail.com), 패키지 `com.leejahun.weavestory`, 앱 내부 ID `4975060960175249342`
 
 ## 옵트인 링크 (테스터에게 공유)
 - 웹 옵트인: `https://play.google.com/apps/testing/com.leejahun.weavestory`
