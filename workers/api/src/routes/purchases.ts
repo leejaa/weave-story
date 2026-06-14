@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { makeDb } from '../lib/db';
-import { users, purchaseGrants } from '../lib/schema';
+import { users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { verifyGooglePurchase } from '../lib/google-play';
 import { verifyAppleTransaction } from '../lib/purchases/apple-storekit';
+import { hasGrant, applyGrant } from '../lib/purchases/grant';
 import { notifyOwner } from '../lib/notify/owner';
 import type { AppEnv } from '../types';
 
@@ -48,16 +49,8 @@ purchasesRouter.post('/grant', async (c) => {
 
   const db = makeDb(c.env.DATABASE_URL);
 
-  const alreadyGranted = await db
-    .select({ id: purchaseGrants.id })
-    .from(purchaseGrants)
-    .where(and(
-      eq(purchaseGrants.userId, userId),
-      eq(purchaseGrants.productId, productId),
-      eq(purchaseGrants.rcPurchaseDateMs, grantKey),
-    ));
-
-  if (alreadyGranted.length > 0) {
+  // 중복 지급 방지 — 검증 전에 확인해 재검증 비용을 아낀다.
+  if (await hasGrant(db, userId, productId, grantKey)) {
     const [user] = await db.select({ credits: users.credits }).from(users).where(eq(users.id, userId));
     return c.json({ credits: user.credits, alreadyGranted: true });
   }
@@ -71,20 +64,9 @@ purchasesRouter.post('/grant', async (c) => {
     return c.json({ error: 'Purchase verification failed' }, 402);
   }
 
-  const [updated] = await db
-    .update(users)
-    .set({ credits: sql`${users.credits} + ${creditsToGrant}` })
-    .where(eq(users.id, userId))
-    .returning({ credits: users.credits, email: users.email });
+  const { credits, email } = await applyGrant(db, { userId, productId, grantKey, credits: creditsToGrant });
 
-  await db.insert(purchaseGrants).values({
-    userId,
-    productId,
-    rcPurchaseDateMs: grantKey,
-    creditsGranted: creditsToGrant,
-  });
-
-  console.log(`[grant] granted userId=${userId} platform=${platform} product=${productId} credits=${creditsToGrant} total=${updated.credits}`);
-  c.executionCtx.waitUntil(notifyOwner(c.env, `💳 결제\nuser: ${updated.email ?? userId}\nproduct: ${productId}\nplatform: ${platform}\n+${creditsToGrant} 크레딧 (총 ${updated.credits})`));
-  return c.json({ credits: updated.credits });
+  console.log(`[grant] granted userId=${userId} platform=${platform} product=${productId} credits=${creditsToGrant} total=${credits}`);
+  c.executionCtx.waitUntil(notifyOwner(c.env, `💳 결제\nuser: ${email ?? userId}\nproduct: ${productId}\nplatform: ${platform}\n+${creditsToGrant} 크레딧 (총 ${credits})`));
+  return c.json({ credits });
 });
