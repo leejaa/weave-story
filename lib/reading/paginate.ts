@@ -10,6 +10,7 @@ const H_PADDING = 24; // each side
 const CHAPTER_TITLE_HEIGHT = 36; // title line + margin
 const V_PADDING_TOP = 20;
 const V_PADDING_BOTTOM = 24;
+const PAGE_NUM_HEIGHT = 24; // 하단 페이지 표시기(fontSize 10 + marginTop 8)가 차지하는 높이
 
 export function calcCharsPerPage(
   screenWidth: number,
@@ -23,7 +24,8 @@ export function calcCharsPerPage(
   const charsPerLine = Math.floor(contentWidth / 17);
 
   const titleOffset = firstPage ? CHAPTER_TITLE_HEIGHT : 0;
-  const usableHeight = listHeight - V_PADDING_TOP - V_PADDING_BOTTOM - titleOffset;
+  const usableHeight =
+    listHeight - V_PADDING_TOP - V_PADDING_BOTTOM - PAGE_NUM_HEIGHT - titleOffset;
   const linesPerPage = Math.floor(usableHeight / LINE_HEIGHT);
 
   // Subtract ~20% to account for paragraph gap lines

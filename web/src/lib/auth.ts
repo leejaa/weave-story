@@ -15,18 +15,13 @@
 import { appLogin } from '@apps-in-toss/web-framework';
 import { api, setToken, clearToken } from './api';
 import { setSentryUser } from './sentry';
+import { isInTossApp } from './env';
+
+// 환경 감지는 lib/env.ts 로 분리. 기존 import 경로(@/lib/auth) 호환을 위해 재노출.
+export { isInTossApp } from './env';
 
 const TOKEN_KEY = 'ws_access_token';
 const DEMO_KEY = 'ws_demo';
-
-/** 토스 앱 WebView 환경 추정. 아니면(브라우저) 데모로 통과한다. */
-export function isInTossApp(): boolean {
-  try {
-    return typeof navigator !== 'undefined' && /toss/i.test(navigator.userAgent);
-  } catch {
-    return false;
-  }
-}
 
 export function saveToken(token: string) {
   sessionStorage.setItem(TOKEN_KEY, token);

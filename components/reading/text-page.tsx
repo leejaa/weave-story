@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { usePalette } from '@/hooks/use-palette';
 import { FONTS, SIZES } from '@/constants/colors';
 
@@ -16,17 +16,24 @@ export function TextPage({ content, chapterTitle, pageIndex, totalPages }: Props
 
   return (
     <View style={styles.page}>
-      {isFirst && chapterTitle ? (
-        <Text allowFontScaling={false} style={[styles.chapterTitle, { color: c.inkSoft }]}>{chapterTitle}</Text>
-      ) : null}
-
-      <View style={styles.prose}>
+      {/* 글자수 추정 페이지네이션이 살짝 넘쳐도 잘리지 않도록 본문은 세로 스크롤 가능.
+          가로 페이지 넘김(부모 FlatList)과 축이 달라 제스처 충돌 없음. */}
+      <ScrollView
+        style={styles.prose}
+        contentContainerStyle={styles.proseContent}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+        directionalLockEnabled
+        bounces={false}>
+        {isFirst && chapterTitle ? (
+          <Text allowFontScaling={false} style={[styles.chapterTitle, { color: c.inkSoft }]}>{chapterTitle}</Text>
+        ) : null}
         {paragraphs.map((p, i) => (
           <Text allowFontScaling={false} key={i} style={[styles.body, { color: c.ink }]}>
             {p}
           </Text>
         ))}
-      </View>
+      </ScrollView>
 
       <Text allowFontScaling={false} style={[styles.pageNum, { color: c.inkFaint }]}>
         {pageIndex + 1} / {totalPages}
@@ -51,7 +58,9 @@ const styles = StyleSheet.create({
   },
   prose: {
     flex: 1,
-    overflow: 'hidden',
+  },
+  proseContent: {
+    flexGrow: 1,
   },
   body: {
     fontFamily: FONTS.serif,

@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 import '@/styles/global.css';
 import App from './App';
 import { initSentry, Sentry } from '@/lib/sentry';
+import { applyEnvClasses } from '@/lib/env';
 
+applyEnvClasses();
 initSentry();
 
 const rootEl = document.getElementById('root');

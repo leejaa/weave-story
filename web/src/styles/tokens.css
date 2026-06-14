@@ -64,3 +64,12 @@
   --safe-left:   env(safe-area-inset-left, 0px);
   --safe-right:  env(safe-area-inset-right, 0px);
 }
+
+/* 앱인토스 안드로이드 WebView 보정 —
+   시스템 내비게이션이 웹뷰 바깥 별도 바로 렌더되는데도 env(safe-area-inset-bottom)이
+   유령 값을 보고해 하단 탭바 아래 공백이 과도해지는 문제를 0으로 보정한다.
+   (클래스는 lib/env.ts applyEnvClasses 에서 부착. iOS 토스/일반 브라우저는 영향 없음) */
+html.toss-android {
+  --safe-bottom: 0px;
+  --tabbar-height: 49px;
+}
