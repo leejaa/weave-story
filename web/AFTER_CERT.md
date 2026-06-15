@@ -21,7 +21,9 @@
 - **IAP 클라**: `web/src/features/purchase/*`(usePurchase: 구매+중단주문 복원), ProfilePage 충전 UI.
 - **푸시 서버**: `lib/notify/toss-push.ts`(send-message, x-toss-user-key, mTLS) → consumer에서 챕터 완성 시 토스 유저에게 발송(모더레이션 숨김 아닐 때). 기존 FCM은 그대로.
   - 2026-06-14: 응답 엔벨로프(`resultType==='SUCCESS'`) 판정 + 첫 실발송 요청/응답 전체 로깅 추가(스키마 확정용). **워커 배포 완료** — 시크릿만 설정하면 즉시 켜짐(새 `.ait` 불필요).
-- **앱 출시 검토요청 — 2026-06-14 완료(검토중, 최대 영업일 3일)**. `.ait`(배경/하단공백 수정분) 업로드 → 출시노트·앱내기능 등록 → "검토 요청하기".
+- **앱 출시 검토 — 2026-06-14 1차 반려 → 수정 후 재제출 예정**.
+  - 반려사유(기타): "미니앱 이름이 앱 정보등록 이름과 동일해야" — 등록명 **"실마리"** vs 번들 표시명 "Weave Story" 불일치.
+  - 수정: `granite.config.ts` `displayName: '실마리'`, 로그인 워드마크·`<h1>`·`index.html <title>` 모두 "실마리"로 통일(영문 태그라인은 유지). 잔여 "Weave Story"는 미도달 dev 페이지(gallery/home.html)뿐. `.ait` 재빌드(deploymentId 019ec898). → **새 `.ait` 업로드 후 동일 출시노트로 재검토 요청 필요**.
   - 등록 기능(검색/홈 노출 딥링크): `새 이야기 시작하기`/`Start New Story` → `intoss://weave-story/setup`, `내 이야기`/`My Stories` → `intoss://weave-story/stories`. (영어명은 각 단어 첫글자 대문자 규칙)
 - **배포 자동화**: `npm run deploy:ait -- "메모"`로 `.ait` 빌드+업로드. 콘솔 API 키는 `ait token add`(로컬) 또는 CI `AIT_API_KEY`. 검토요청·출시는 콘솔 수동(플랫폼 제약). 상세 §0.
 

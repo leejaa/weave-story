@@ -36,11 +36,11 @@ export function LoginPage({ onLogin }: Props) {
       <div className={styles.content}>
         <div className={styles.brand}>
           <span className={styles.diamond} />
-          <span className={styles.wordmark}>WEAVE STORY</span>
+          <span className={styles.wordmark}>실마리</span>
         </div>
 
         <div className={styles.headline}>
-          <h1 className={styles.title}>Weave Story</h1>
+          <h1 className={styles.title}>실마리</h1>
           <p className={styles.subtitle}>Your stories, woven together.</p>
         </div>
 
