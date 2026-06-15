@@ -66,10 +66,12 @@
 }
 
 /* 앱인토스 안드로이드 WebView 보정 —
-   시스템 내비게이션이 웹뷰 바깥 별도 바로 렌더되는데도 env(safe-area-inset-bottom)이
-   유령 값을 보고해 하단 탭바 아래 공백이 과도해지는 문제를 0으로 보정한다.
+   - safe-area-inset-bottom: 시스템 내비게이션이 웹뷰 바깥 별도 바로 렌더되는데도 유령 값 보고 → 0으로 강제
+   - safe-area-inset-top: 앱인토스 WebView는 이미 status bar 아래에서 시작하므로 top도 0으로 강제
+   - tabbar-height: safe-bottom이 0이므로 패딩 여유분 포함해 56px로 설정
    (클래스는 lib/env.ts applyEnvClasses 에서 부착. iOS 토스/일반 브라우저는 영향 없음) */
 html.toss-android {
+  --safe-top: 0px;
   --safe-bottom: 0px;
-  --tabbar-height: 49px;
+  --tabbar-height: 56px;
 }

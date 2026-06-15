@@ -1,6 +1,6 @@
 # Play Store 클로즈드 테스터 모집 런북
 
-> 갱신: 2026-06-14 · 담당: 사용자(모집·게시) + Claude(목록 등록·추적)
+> 갱신: 2026-06-15 · 담당: 사용자(모집·게시) + Claude(목록 등록·추적)
 
 ## 목표 / 요건
 개인 개발자 계정이라 **프로덕션 출시 전 의무**:
@@ -9,9 +9,9 @@
 
 > 14일 시계는 **12명이 모두 옵트인된 시점(Day 0)** 부터 카운트. 중간에 인원이 12명 미만으로 떨어지면 카운트가 흔들릴 수 있으니 **여유 있게 14~15명** 확보 권장.
 
-## 현재 상태 (2026-06-14, Play Console 대시보드 확인)
+## 현재 상태 (2026-06-15 갱신)
 - 트랙 **Alpha(클로즈드 테스트)**: 1.0.1 (vc14) **라이브** — 옵트인 즉시 설치 가능 ✅
-- **옵트인(참여 선택) 테스터: 1명 / 12명 필요** ← 프로덕션 액세스 진행 현황 기준
+- **옵트인 테스터: 3명 확인(Play Console 기준) / 12명 필요**
 - 14일 카운트: **아직 미시작**(12명 충족 후 Day 0)
 - 개발자 계정: LEE JAHUN (개인, leejahun9@gmail.com), 패키지 `com.leejahun.weavestory`, 앱 내부 ID `4975060960175249342`
 
@@ -64,7 +64,11 @@ Drop your app + Gmail and I'll test yours back right away. 🙏
 | # | Gmail | 등록일 | 옵트인 확인 | Day-14 도달일 | 비고 |
 |---|-------|--------|-------------|---------------|------|
 | 1 | heowuayngonapp@gmail.com | 2026-06-14 | ✅ | 2026-06-28 | Thang Le (텔레그램 맞테스트). 상대앱=com.mintlab.slicelab 나도 옵트인 완료 |
-| 2 | | | | | |
+| 2 | samirtof8@gmail.com | 2026-06-15 | ⏳ Dompet 옵트인 대기 | — | Dompet Harian (@RWLabDompetHarian, 텔레그램). 상대앱=com.dompetharian.app. Play Console 등록 ✅. 사용자→Dompet 옵트인 ✅("You are a tester"). Dompet→우리앱 옵트인 대기 중 |
+| 3 | samarmindgamer@gmail.com | 2026-06-15 | ✅ | 2026-06-29 | Samar ~💕 (@samarmindgamersupport, 텔레그램). 상대앱=com.pinsavedownload.app. 일일 스크린샷 교환 합의. 우리앱 설치 스크린샷 확인 ✅ |
+| 4 | Vineet.r2k18@gmail.com | 2026-06-15 | ⏳ opt-in 대기 | — | Vineet (@VineetRa, 텔레그램). 상대앱=com.omeglee, com.internationalChess. Play Console 등록 ✅. 일일 스크린샷 교환 합의. 사용자→Vineet 앱 opt-in 필요 |
+| 5 | ict1stlk@gmail.com | 2026-06-15 | ✅ | 2026-06-29 | Kavindu Lakshan (@kavindu12111, 텔레그램). 상대앱=com.kcodz.fruitfallchallange. 우리앱 설치 스크린샷 확인 ✅ |
+| 6 | | | | | |
 | … | | | | | |
 
 > 12명이 모두 옵트인된 날을 Day 0으로 적고, +14일을 "프로덕션 액세스 신청 가능일"로 표시.

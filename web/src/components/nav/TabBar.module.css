@@ -4,7 +4,7 @@
   right: 0;
   bottom: 0;
   z-index: 10;
-  height: calc(49px + var(--safe-bottom));
+  height: var(--tabbar-height);
   padding-bottom: var(--safe-bottom);
   display: flex;
 }
