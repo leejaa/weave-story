@@ -22,6 +22,10 @@ export type SetupContext = {
   prompt: string;
   estimatedChapters: number;
   language: StoryLang;
+  // Actual output language detected from the prompt (e.g. 'id', 'es'). When set
+  // and different from `language`, the harness instructs the model to write in
+  // this language instead of the harness's native language.
+  outputLanguage?: string;
 };
 
 export type ChapterSummaryEntry = { chapterNumber: number; summary: string };

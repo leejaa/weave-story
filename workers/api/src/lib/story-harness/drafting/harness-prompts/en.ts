@@ -1,6 +1,16 @@
 // English harness prompts (mirrors the Korean craft directives).
+// Also serves as the fallback harness for any language not natively supported
+// (e.g. Indonesian, Spanish). In that case `outputLanguage` is set on args and
+// a language override instruction is prepended so the model writes in that language.
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
+import { langDisplayName } from '../../../ai/story-lang';
+
+function langOverride(outputLanguage?: string): string {
+  if (!outputLanguage || outputLanguage === 'en') return '';
+  const name = langDisplayName(outputLanguage);
+  return `CRITICAL: Write every field — title, chapterTitle, genre, content, choices, all text — entirely in ${name}. Do not use English anywhere.\n\n`;
+}
 
 function bibleSection(storyBible: StoryBibleSnapshot): string {
   if (!storyBible) {
@@ -42,9 +52,10 @@ export const EN: HarnessGuide = {
     'Read the given chapter body and accurately extract the reader choices that lead into the next chapter.',
     'Do not invent events not in the body; use the choice pressure created by the final scene of the body.',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues }) => {
+  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, outputLanguage }) => {
     const retry = previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
+      langOverride(outputLanguage),
       `The story the reader wants:\n"${prompt}"`,
       `Total chapters: ${estimatedChapters}`,
       `Generation attempt: ${attempt}/2`,
@@ -93,6 +104,7 @@ export const EN: HarnessGuide = {
       : 'No summary';
     const retry = a.previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
+      langOverride(a.outputLanguage),
       bibleSection(a.storyBible),
       '',
       `[User's original premise]\n${a.prompt}`,
@@ -150,8 +162,9 @@ export const EN: HarnessGuide = {
       '- Do not invent new events outside the body.',
     ].join('\n');
   },
-  buildExtend: ({ currentContent, deficitChars, isFinal }) =>
+  buildExtend: ({ currentContent, deficitChars, isFinal, outputLanguage }) =>
     [
+      langOverride(outputLanguage),
       'Below is the chapter body so far. It is too short — keep writing to extend it.',
       '─────────────',
       currentContent,

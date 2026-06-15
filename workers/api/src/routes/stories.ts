@@ -4,7 +4,7 @@ import { makeDb } from '../lib/db';
 import { stories, threads, chapters, users } from '../lib/schema';
 import { requireAuth } from '../lib/auth/middleware';
 import { checkPromptSpecificity } from '../lib/ai/prompt-check';
-import { normalizeStoryLang } from '../lib/ai/story-lang';
+import { normalizeStoryLang, detectPromptLanguage, languageToHarnessLang } from '../lib/ai/story-lang';
 import { createFirstChapterGenerationJob } from '../lib/queue/story-generation-jobs';
 import { enqueueStoryGenerationJob } from '../lib/queue/story-generation-queue';
 import { notifyOwner } from '../lib/notify/owner';
@@ -31,7 +31,9 @@ storiesRouter.post('/', genLimit, async (c) => {
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
   const estimatedChapters = Math.min(50, Math.max(1, typeof body?.estimatedChapters === 'number' ? Math.floor(body.estimatedChapters) : 10));
-  const language = normalizeStoryLang(body?.language);
+  const detectedLang = detectPromptLanguage(prompt ?? '');
+  const language = languageToHarnessLang(detectedLang);
+  const outputLanguage = detectedLang !== language ? detectedLang : undefined;
   if (!prompt?.trim()) return c.json({ error: 'prompt required' }, 400);
   if (prompt.trim().length > 2000) return c.json({ error: 'prompt too long' }, 400); // 입력 검증: 길이 제한
 
@@ -48,7 +50,7 @@ storiesRouter.post('/', genLimit, async (c) => {
 
   const who = userRow.email ?? userRow.name ?? userId;
   const promptPreview = prompt.trim().slice(0, 120);
-  c.executionCtx.waitUntil(notifyOwner(c.env, `📖 새 이야기 생성\nuser: ${who}\nlang: ${language}\nprompt: ${promptPreview}`));
+  c.executionCtx.waitUntil(notifyOwner(c.env, `📖 새 이야기 생성\nuser: ${who}\nlang: ${language}${outputLanguage ? ` → output: ${outputLanguage}` : ''}\nprompt: ${promptPreview}`));
 
   const [thread] = await db.insert(threads).values({ userId, storyId: story.id }).returning();
 
@@ -60,7 +62,7 @@ storiesRouter.post('/', genLimit, async (c) => {
     storyId: story.id,
     threadId: thread.id,
     chapterId: pendingChapter.id,
-    genCtx: { prompt: prompt.trim(), estimatedChapters, language },
+    genCtx: { prompt: prompt.trim(), estimatedChapters, language, outputLanguage },
   });
 
   try {

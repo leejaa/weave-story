@@ -77,6 +77,7 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
       attempt: params.attempt,
       previousIssues: params.previousIssues,
       isFinal,
+      outputLanguage: params.genCtx.outputLanguage,
     }),
     schema: NextChapterDraftSchema,
   });
@@ -91,7 +92,7 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
         content: draft.output.content,
         targetChars: EXTEND_TARGET,
         buildExtendPrompt: (current, deficitChars) =>
-          g.buildExtend({ currentContent: current, deficitChars, isFinal }),
+          g.buildExtend({ currentContent: current, deficitChars, isFinal, outputLanguage: params.genCtx.outputLanguage }),
       });
   const draftBody: NextChapterDraft = {
     ...draft.output,

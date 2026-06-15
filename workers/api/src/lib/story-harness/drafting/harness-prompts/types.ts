@@ -7,6 +7,7 @@ export type FirstDraftArgs = {
   estimatedChapters: number;
   attempt: number;
   previousIssues?: string[];
+  outputLanguage?: string;
 };
 
 export type FirstStructureArgs = {
@@ -29,6 +30,7 @@ export type NextDraftArgs = {
   attempt: number;
   previousIssues?: string[];
   isFinal: boolean;
+  outputLanguage?: string;
 };
 
 export type NextStructureArgs = {
@@ -45,6 +47,7 @@ export type ExtendArgs = {
   currentContent: string;
   deficitChars: number;
   isFinal: boolean;
+  outputLanguage?: string;
 };
 
 export type HarnessGuide = {

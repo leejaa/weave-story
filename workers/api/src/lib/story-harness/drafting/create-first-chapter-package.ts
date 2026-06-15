@@ -69,6 +69,7 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
       estimatedChapters: params.genCtx.estimatedChapters,
       attempt: params.attempt,
       previousIssues: params.previousIssues,
+      outputLanguage: params.genCtx.outputLanguage,
     }),
     schema: ChapterDraftSchema,
   });
@@ -83,7 +84,7 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
         content: draft.output.content,
         targetChars: EXTEND_TARGET,
         buildExtendPrompt: (current, deficitChars) =>
-          g.buildExtend({ currentContent: current, deficitChars, isFinal: false }),
+          g.buildExtend({ currentContent: current, deficitChars, isFinal: false, outputLanguage: params.genCtx.outputLanguage }),
       });
   const draftBody = { ...draft.output, content: stripTrailingChoiceBlock(extended.content) };
 
