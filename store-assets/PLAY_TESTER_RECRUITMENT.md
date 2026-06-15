@@ -63,7 +63,7 @@ Drop your app + Gmail and I'll test yours back right away. 🙏
 ## 테스터 추적표
 | # | Gmail | 등록일 | 옵트인 확인 | Day-14 도달일 | 비고 |
 |---|-------|--------|-------------|---------------|------|
-| 1 | | | | | |
+| 1 | heowuayngonapp@gmail.com | 2026-06-14 | ✅ | 2026-06-28 | Thang Le (텔레그램 맞테스트). 상대앱=com.mintlab.slicelab 나도 옵트인 완료 |
 | 2 | | | | | |
 | … | | | | | |
 
