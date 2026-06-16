@@ -19,12 +19,13 @@ export function ReadingPage() {
   const navigate = useNavigate();
   const { threadId = '' } = useParams();
   const { thread, isLoading, choosing, retrying, choose, retry } = useReading(threadId);
-  const { getRestoredOnce, save } = useReadingProgress(threadId);
+  const { initialIndex, getRestoredOnce, save } = useReadingProgress(threadId);
 
   const observerRef = useRef<ResizeObserver | null>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
   const [visibleIndex, setVisibleIndex] = useState(0);
-  const [targetIndex, setTargetIndex] = useState(0);
+  // 저장된 위치로 초기화 — ReadingPager의 첫 렌더부터 올바른 페이지에서 시작
+  const [targetIndex, setTargetIndex] = useState(() => initialIndex ?? 0);
 
   // 콜백 ref: .content 가 (로딩 종료 후) 마운트되는 시점에 측정/관찰을 시작한다.
   // useLayoutEffect([]) 는 로딩 중(.content 미존재) 1회만 돌아 측정이 영영 0으로 남는 문제를 방지.
@@ -58,14 +59,12 @@ export function ReadingPage() {
     if (restored !== null && restored < pages.length) return setTargetIndex(restored);
     const firstCur = pages.findIndex((p) => p.type === 'text' && p.chapterNumber === curChapter);
     if (firstCur >= 0) setTargetIndex(firstCur);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curChapter, status, pages.length]);
+  }, [curChapter, status, pages.length, getRestoredOnce]);
 
   // 현재 보이는 페이지 위치 저장 (뒤로갔다 복귀 시 복원용)
   useEffect(() => {
     save(visibleIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleIndex]);
+  }, [visibleIndex, save]);
 
   if (isLoading || !thread) {
     return <BookFlip fullscreen size={124} />;
