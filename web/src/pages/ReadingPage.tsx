@@ -48,7 +48,9 @@ export function ReadingPage() {
   const curChapter = thread?.currentChapter ?? 1;
   const status = thread?.status;
   useEffect(() => {
-    if (!pages.length) return;
+    // dims.width=0이면 paginate가 챕터를 1페이지로 뭉쳐 잘못된 page count로 실행됨.
+    // 실제 dims가 반영된 뒤 한 번만 복원하기 위해 건너뜀.
+    if (!pages.length || dims.width === 0) return;
     if (status === 'completed') return setTargetIndex(pages.length - 1);
     const gen = pages.findIndex((p) => p.type === 'generating');
     if (gen >= 0) return setTargetIndex(gen);
