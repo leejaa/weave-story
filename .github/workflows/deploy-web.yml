@@ -1,17 +1,19 @@
-name: Deploy web (Cloudflare Pages)
+name: Deploy web
 
-# web/ (앱인토스 웹앱) 변경이 main에 푸시되면 빌드 후 Cloudflare Pages에 배포한다.
-# 프로덕션 URL은 고정: https://weave-story-web.pages.dev
+# web/ 변경이 main에 푸시되면:
+#   - Cloudflare Pages (웹 SPA 미리보기용)
+#   - 앱인토스 AIT 업로드 (검수 요청은 콘솔에서 수동)
 on:
   push:
     branches: [main]
     paths:
       - 'web/**'
       - '.github/workflows/deploy-web.yml'
-  workflow_dispatch: # 수동 실행도 허용
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-pages:
+    name: Cloudflare Pages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,10 +48,43 @@ jobs:
       - name: Print deployment URL
         run: |
           {
-            echo "### 🌎 Cloudflare Pages 배포 완료"
+            echo "### Cloudflare Pages 배포 완료"
             echo ""
             echo "| | URL |"
             echo "|---|---|"
             echo "| 프로덕션(고정) | https://weave-story-web.pages.dev |"
             echo "| 이번 배포 | ${{ steps.deploy.outputs.deployment-url }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-ait:
+    name: 앱인토스 AIT 업로드
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build AIT
+        run: npm run build:ait
+
+      - name: Upload to 앱인토스
+        run: npx ait deploy --api-key ${{ secrets.APPS_IN_TOSS_API_KEY }} -m "$(git log -1 --pretty='%s (%h)')"
+
+      - name: Summary
+        run: |
+          {
+            echo "### 앱인토스 AIT 업로드 완료"
+            echo ""
+            echo "콘솔에서 검토 요청 후 출시하세요."
+            echo "https://console.toss.im/apps-in-toss"
           } >> "$GITHUB_STEP_SUMMARY"

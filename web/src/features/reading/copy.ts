@@ -15,7 +15,8 @@ export const READING_COPY = {
     title: '당신의 책을 펼치고 있어요',
     body: '첫 장면이 페이지 위에 자리 잡고 있어요.',
     estimate: '약 1-2분 소요',
-    notify: '앱을 나가 계셔도 괜찮아요 — 완성되면 알림으로 알려드릴게요',
+    notify: '완성되면 알림 받기',
+    notifyDone: '알림 설정 완료',
   },
   error: {
     title: '이야기를 펼치지 못했어요',

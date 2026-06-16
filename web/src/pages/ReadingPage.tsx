@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useReading } from '@/features/reading/useReading';
 import { buildPages, type ReadingPage as RPage } from '@/features/reading/build-pages';
+import { useReadingProgress } from '@/features/reading/useReadingProgress';
 import { ChapterRibbon } from '@/components/reading/ChapterRibbon';
 import { ReadingPager } from '@/components/reading/ReadingPager';
 import { TextPage } from '@/components/reading/TextPage';
@@ -18,6 +19,7 @@ export function ReadingPage() {
   const navigate = useNavigate();
   const { threadId = '' } = useParams();
   const { thread, isLoading, choosing, retrying, choose, retry } = useReading(threadId);
+  const { getRestoredOnce, save } = useReadingProgress(threadId);
 
   const observerRef = useRef<ResizeObserver | null>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
@@ -42,7 +44,7 @@ export function ReadingPage() {
     [thread, dims.width, dims.height],
   );
 
-  // 자동 이동: 완료 → 끝, 생성중이면 그 페이지, 아니면 현재 챕터 첫 페이지
+  // 자동 이동: 완료 → 끝, 생성중이면 그 페이지, 복귀 시 저장 위치, 아니면 현재 챕터 첫 페이지
   const curChapter = thread?.currentChapter ?? 1;
   const status = thread?.status;
   useEffect(() => {
@@ -50,9 +52,18 @@ export function ReadingPage() {
     if (status === 'completed') return setTargetIndex(pages.length - 1);
     const gen = pages.findIndex((p) => p.type === 'generating');
     if (gen >= 0) return setTargetIndex(gen);
+    const restored = getRestoredOnce();
+    if (restored !== null && restored < pages.length) return setTargetIndex(restored);
     const firstCur = pages.findIndex((p) => p.type === 'text' && p.chapterNumber === curChapter);
     if (firstCur >= 0) setTargetIndex(firstCur);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curChapter, status, pages.length]);
+
+  // 현재 보이는 페이지 위치 저장 (뒤로갔다 복귀 시 복원용)
+  useEffect(() => {
+    save(visibleIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleIndex]);
 
   if (isLoading || !thread) {
     return <BookFlip fullscreen size={124} />;

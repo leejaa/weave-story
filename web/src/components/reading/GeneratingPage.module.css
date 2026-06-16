@@ -47,12 +47,22 @@
   color: var(--color-ink-faint);
 }
 
-/* 알림 알약 (🔔 앱을 나가 계셔도 괜찮아요 …) */
+/* 알림 알약 버튼 */
 .notify {
   margin-top: 20px;
   padding: 8px 14px;
   border-radius: 999px;
   background: rgba(45, 90, 61, 0.08);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.notify:hover:not(:disabled) {
+  background: rgba(45, 90, 61, 0.15);
+}
+.notify:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 .notifyText {
   font-family: var(--font-sans);

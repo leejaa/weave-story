@@ -36,7 +36,6 @@ export function LoginPage({ onLogin }: Props) {
       <div className={styles.content}>
         <div className={styles.brand}>
           <span className={styles.diamond} />
-          <span className={styles.wordmark}>실마리</span>
         </div>
 
         <div className={styles.headline}>
