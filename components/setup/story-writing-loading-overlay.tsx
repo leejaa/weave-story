@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useColorScheme } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { FONTS, SIZES } from '@/constants/colors';
 import { usePalette } from '@/hooks/use-palette';
@@ -12,10 +12,15 @@ type Props = {
 
 export function StoryWritingLoadingOverlay({ title, subtitle }: Props) {
   const c = usePalette();
+  const isDark = useColorScheme() === 'dark';
 
   return (
-    <View style={styles.backdrop} pointerEvents="auto">
-      <View style={styles.panel} accessible accessibilityRole="progressbar" accessibilityLabel={title}>
+    <View
+      style={[styles.backdrop, { backgroundColor: isDark ? 'rgba(19,23,16,0.88)' : 'rgba(255,248,232,0.76)' }]}
+      pointerEvents="auto">
+      <View
+        style={[styles.panel, { backgroundColor: isDark ? 'rgba(35,43,31,0.92)' : 'rgba(255,251,242,0.72)' }]}
+        accessible accessibilityRole="progressbar" accessibilityLabel={title}>
         <LottieView
           source={STORY_WRITING_LOADER}
           autoPlay
@@ -35,7 +40,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 34,
-    backgroundColor: 'rgba(255,248,232,0.76)',
   },
   panel: {
     width: '100%',
@@ -46,7 +50,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(92,71,45,0.18)',
-    backgroundColor: 'rgba(255,251,242,0.72)',
   },
   animation: {
     width: 210,

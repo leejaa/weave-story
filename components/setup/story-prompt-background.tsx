@@ -1,14 +1,16 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
 
 const STORY_PROMPT_DESK = require('@/assets/images/setup/story-prompt-paper-centered.png');
 
 export function StoryPromptBackground() {
+  const isDark = useColorScheme() === 'dark';
   return (
     <View style={StyleSheet.absoluteFill}>
       <Image source={STORY_PROMPT_DESK} style={StyleSheet.absoluteFill} contentFit="cover" />
       <View style={styles.warmWash} pointerEvents="none" />
       <View style={styles.readabilityWash} pointerEvents="none" />
+      {isDark && <View style={styles.darkWash} pointerEvents="none" />}
     </View>
   );
 }
@@ -25,5 +27,9 @@ const styles = StyleSheet.create({
     right: 0,
     height: '38%',
     backgroundColor: 'rgba(255,250,239,0.26)',
+  },
+  darkWash: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
 });
