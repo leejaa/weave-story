@@ -39,8 +39,10 @@ export function ReadingPage() {
     observerRef.current = ro;
   }, []);
 
+  // dims.width=0이면 paginate가 챕터를 1페이지로 뭉침 → 복원 시점이 꼬임.
+  // 실제 치수가 확보된 뒤에만 buildPages를 실행해 pages를 항상 유효한 상태로 유지.
   const pages = useMemo(
-    () => (thread ? buildPages(thread, dims.width, dims.height) : []),
+    () => (thread && dims.width > 0 ? buildPages(thread, dims.width, dims.height) : []),
     [thread, dims.width, dims.height],
   );
 
@@ -48,9 +50,7 @@ export function ReadingPage() {
   const curChapter = thread?.currentChapter ?? 1;
   const status = thread?.status;
   useEffect(() => {
-    // dims.width=0이면 paginate가 챕터를 1페이지로 뭉쳐 잘못된 page count로 실행됨.
-    // 실제 dims가 반영된 뒤 한 번만 복원하기 위해 건너뜀.
-    if (!pages.length || dims.width === 0) return;
+    if (!pages.length) return;
     if (status === 'completed') return setTargetIndex(pages.length - 1);
     const gen = pages.findIndex((p) => p.type === 'generating');
     if (gen >= 0) return setTargetIndex(gen);
