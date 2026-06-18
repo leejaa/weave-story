@@ -12,6 +12,8 @@ const StoryBibleLiteSchema = z.object({
   openingThreat: z.string().min(10).max(300),
   openThreads: z.array(z.string().min(4).max(240)).min(1).max(8),
   forbiddenPatterns: z.array(z.string().min(2).max(180)).min(1).max(8),
+  desire: z.string().min(4).max(200).optional(),
+  wound: z.string().min(4).max(200).optional(),
 });
 
 const HighImpactChoiceSchema = z.object({

@@ -15,6 +15,8 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     `中心的な葛藤: ${storyBible.centralConflict}`,
     `読者への約束: ${storyBible.readerPromise}`,
     `冒頭の脅威: ${storyBible.openingThreat}`,
+    storyBible.desire ? `主人公の欲望: ${storyBible.desire}` : '',
+    storyBible.wound ? `主人公の傷/恐れ: ${storyBible.wound}` : '',
     storyBible.openThreads.length ? `[未回収の伏線]\n${storyBible.openThreads.map(t => `- ${t}`).join('\n')}` : '',
     storyBible.forbiddenPatterns.length ? `[禁止パターン]\n${storyBible.forbiddenPatterns.map(p => `- ${p}`).join('\n')}` : '',
   ].filter(Boolean).join('\n');
@@ -76,6 +78,8 @@ export const JA: HarnessGuide = {
       retry,
       '[抽出ルール]',
       '- bible: 本文と一貫した作品設定集。各フィールドは簡潔に埋めます。',
+      '- bible.desire: 主人公がこの物語で本当に求めているもの(生存以上のもの)。本文から読み取れる核心的な欲望を1〜2文で。',
+      '- bible.wound: 主人公の感情的な傷、または最も恐れていること。本文に表れている、または暗示されている内面の脆弱性を1〜2文で。',
       '- situation: 本文が終わる決断の瞬間を1〜2文で要約します。台詞は入れないでください。',
       '- question: 読者に投げかける一行の問いです。',
       '- choices: ちょうど2つ。各項目はtext(具体的な行動)とconsequence(結果の示唆)を持ちます。',

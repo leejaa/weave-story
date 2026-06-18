@@ -15,6 +15,8 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     `核心衝突: ${storyBible.centralConflict}`,
     `對讀者的承諾: ${storyBible.readerPromise}`,
     `開場的威脅: ${storyBible.openingThreat}`,
+    storyBible.desire ? `主角的欲望: ${storyBible.desire}` : '',
+    storyBible.wound ? `主角的傷痕/恐懼: ${storyBible.wound}` : '',
     storyBible.openThreads.length ? `[未回收的伏筆]\n${storyBible.openThreads.map(t => `- ${t}`).join('\n')}` : '',
     storyBible.forbiddenPatterns.length ? `[禁止的模式]\n${storyBible.forbiddenPatterns.map(p => `- ${p}`).join('\n')}` : '',
   ].filter(Boolean).join('\n');
@@ -76,6 +78,8 @@ export const ZH_HANT: HarnessGuide = {
       retry,
       '[萃取規則]',
       '- bible: 與正文一致的作品設定集。各欄位簡潔填寫。',
+      '- bible.desire: 主角在這個故事中真正渴望的東西(超越生存之上)。以1至2句描述正文中可以讀取到的核心欲望。',
+      '- bible.wound: 主角的情感傷痕或最深的恐懼。以1至2句描述正文中呈現或暗示的內心脆弱之處。',
       '- situation: 將正文結尾的抉擇時刻以1至2句摘要。不要放入台詞。',
       '- question: 向讀者拋出的一行提問。',
       '- choices: 剛好2個。每一項具有 text(具體行動)與 consequence(結果的暗示)。',

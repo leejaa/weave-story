@@ -1,0 +1,44 @@
+name: Deploy worker
+
+# workers/api/ 또는 shared/ 변경이 main에 푸시되면 Cloudflare Worker 배포
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/api/**'
+      - 'shared/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Cloudflare Worker 배포
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/api/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Deploy
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Summary
+        run: |
+          {
+            echo "### Cloudflare Worker 배포 완료"
+            echo ""
+            echo "Worker: \`weave-story-api\`"
+            echo "커밋: $(git log -1 --pretty='%s (%h)')"
+          } >> "$GITHUB_STEP_SUMMARY"

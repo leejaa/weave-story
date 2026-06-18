@@ -25,6 +25,8 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     `Central conflict: ${storyBible.centralConflict}`,
     `Reader promise: ${storyBible.readerPromise}`,
     `Opening threat: ${storyBible.openingThreat}`,
+    storyBible.desire ? `Protagonist's desire: ${storyBible.desire}` : '',
+    storyBible.wound ? `Protagonist's wound/fear: ${storyBible.wound}` : '',
     storyBible.openThreads.length ? `[Open threads]\n${storyBible.openThreads.map(t => `- ${t}`).join('\n')}` : '',
     storyBible.forbiddenPatterns.length ? `[Forbidden patterns]\n${storyBible.forbiddenPatterns.map(p => `- ${p}`).join('\n')}` : '',
   ].filter(Boolean).join('\n');
@@ -87,6 +89,8 @@ export const EN: HarnessGuide = {
       retry,
       '[Extraction rules]',
       '- bible: a story bible consistent with the body. Fill each field concisely.',
+      '- bible.desire: what the protagonist truly wants in this story (beyond survival). 1–2 sentences from the body.',
+      '- bible.wound: the protagonist\'s emotional scar or deepest fear. 1–2 sentences from what the body reveals or implies.',
       '- situation: summarize the decision moment where the body ends in 1–2 sentences. Do not include dialogue.',
       '- question: a single-line question posed to the reader.',
       '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',

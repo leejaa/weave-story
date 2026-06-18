@@ -16,6 +16,8 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     `중심 갈등: ${storyBible.centralConflict}`,
     `독자 약속: ${storyBible.readerPromise}`,
     `오프닝 위협: ${storyBible.openingThreat}`,
+    storyBible.desire ? `주인공의 욕망: ${storyBible.desire}` : '',
+    storyBible.wound ? `주인공의 상처/두려움: ${storyBible.wound}` : '',
     storyBible.openThreads.length ? `[열린 떡밥]\n${storyBible.openThreads.map(t => `- ${t}`).join('\n')}` : '',
     storyBible.forbiddenPatterns.length ? `[금지 패턴]\n${storyBible.forbiddenPatterns.map(p => `- ${p}`).join('\n')}` : '',
   ].filter(Boolean).join('\n');
@@ -77,6 +79,8 @@ export const KO: HarnessGuide = {
       retry,
       '[추출 규칙]',
       '- bible: 본문과 일관된 작품 설정집. 각 필드는 간결하게 채웁니다.',
+      '- bible.desire: 주인공이 이 이야기에서 진정으로 원하는 것(생존 이상의 것). 본문에서 읽히는 핵심 욕망을 1-2문장(100자 이내)으로.',
+      '- bible.wound: 주인공의 감정적 상처 또는 가장 두려워하는 것. 본문에서 드러나거나 암시된 내면의 취약점을 1-2문장(100자 이내)으로.',
       '- situation: 본문이 끝나는 결정 순간을 1-2문장(120자 이내)으로 요약합니다. 대사를 넣지 마세요.',
       '- question: 독자에게 던지는 한 줄 질문(80자 이내)입니다.',
       '- choices: 정확히 2개. 각 항목은 text(구체적 행동)와 consequence(결과 암시)를 가집니다.',

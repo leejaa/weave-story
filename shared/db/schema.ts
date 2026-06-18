@@ -124,6 +124,8 @@ export const storyBibles = pgTable('story_bibles', {
   openingThreat: text('opening_threat').notNull(),
   openThreads: jsonb('open_threads').notNull().default('[]'),
   forbiddenPatterns: jsonb('forbidden_patterns').notNull().default('[]'),
+  desire: text('desire'),
+  wound: text('wound'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

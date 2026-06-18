@@ -22,6 +22,8 @@ export async function saveStoryBible({ db, storyId, bible }: Params): Promise<vo
       openingThreat: bible.openingThreat,
       openThreads: bible.openThreads,
       forbiddenPatterns: bible.forbiddenPatterns,
+      desire: bible.desire ?? null,
+      wound: bible.wound ?? null,
     })
     .onConflictDoUpdate({
       target: storyBibles.storyId,
@@ -35,6 +37,8 @@ export async function saveStoryBible({ db, storyId, bible }: Params): Promise<vo
         openingThreat: bible.openingThreat,
         openThreads: bible.openThreads,
         forbiddenPatterns: bible.forbiddenPatterns,
+        desire: bible.desire ?? null,
+        wound: bible.wound ?? null,
       },
     });
 }
