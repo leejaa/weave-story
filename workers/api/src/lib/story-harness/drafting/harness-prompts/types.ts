@@ -25,6 +25,8 @@ export type NextDraftArgs = {
   previousChapterNumber: number;
   previousChapterContent: string;
   previousChaptersSummaries: { chapterNumber: number; summary: string }[];
+  // 롤링 진행 메모("지금까지의 이야기"). 있으면 챕터별 요약 나열 대신 이걸 쓴다.
+  recap?: string | null;
   chosenOption: string;
   choiceKind?: 'choice' | 'free_input';
   attempt: number;

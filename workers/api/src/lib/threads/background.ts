@@ -1,9 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 import { chapters, stories, threads } from '../schema';
-import { generateNextChapter, generateChapterSummary, generateFirstChapter } from '../ai/story-generation';
+import { generateNextChapter, generateFirstChapter, generateStoryRecap } from '../ai/story-generation';
 import type { ContinuationContext, SetupContext } from '../ai/story-generation';
 import type { DB } from '../db';
 import { sendChapterReadyPush } from '../push';
+import { loadStoryBible } from '../story-harness/memory/load-story-bible';
 import { runFirstChapterHarness } from '../story-harness/pipeline/run-first-chapter-harness';
 import { runNextChapterHarness } from '../story-harness/pipeline/run-next-chapter-harness';
 
@@ -60,12 +61,24 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
 
   console.log(`${tag} chapter saved elapsed=${Date.now() - startMs}ms`);
 
+  // 롤링 진행 메모(recap) 갱신 — 챕터별 요약 나열을 대체. 캐논 모순 방지 + 길이 일정.
   try {
-    const summary = await generateChapterSummary(generated.content, nextChapterNumber, threadId, apiKey, genCtx.language);
-    await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
-    console.log(`${tag} summary saved elapsed=${Date.now() - startMs}ms`);
+    const newRecap = await generateStoryRecap({
+      prevRecap: genCtx.recap ?? null,
+      chapterContent: generated.content,
+      canon: genCtx.canon ?? null,
+      chapterNumber: nextChapterNumber,
+      estimatedChapters: genCtx.estimatedChapters,
+      threadId,
+      apiKey,
+      language: genCtx.language,
+    });
+    if (threadId !== '?') {
+      await db.update(threads).set({ recap: newRecap }).where(eq(threads.id, threadId));
+    }
+    console.log(`${tag} recap saved elapsed=${Date.now() - startMs}ms`);
   } catch (err) {
-    console.error(`${tag} summary failed non_critical elapsed=${Date.now() - startMs}ms`, err);
+    console.error(`${tag} recap failed non_critical elapsed=${Date.now() - startMs}ms`, err);
   }
 
   // Notify the user (best-effort) that the next chapter is ready.
@@ -120,12 +133,23 @@ export async function generateFirstChapterBackground({
 
   console.log(`${tag} done title="${generated.title}" elapsed=${Date.now() - startMs}ms`);
 
+  // 초기 진행 메모(recap) 생성 — 1챕터 본문 + 캐논 기반. 이후 챕터마다 갱신.
   try {
-    const summary = await generateChapterSummary(generated.content, 1, threadId, apiKey, genCtx.language);
-    await db.update(chapters).set({ summary }).where(eq(chapters.id, chapterId));
-    console.log(`${tag} summary saved elapsed=${Date.now() - startMs}ms`);
+    const bible = await loadStoryBible(db, storyId);
+    const newRecap = await generateStoryRecap({
+      prevRecap: null,
+      chapterContent: generated.content,
+      canon: bible?.canon ?? null,
+      chapterNumber: 1,
+      estimatedChapters: genCtx.estimatedChapters,
+      threadId,
+      apiKey,
+      language: genCtx.language,
+    });
+    await db.update(threads).set({ recap: newRecap }).where(eq(threads.id, threadId));
+    console.log(`${tag} recap saved elapsed=${Date.now() - startMs}ms`);
   } catch (err) {
-    console.error(`${tag} summary failed non_critical elapsed=${Date.now() - startMs}ms`, err);
+    console.error(`${tag} recap failed non_critical elapsed=${Date.now() - startMs}ms`, err);
   }
 
   // Cover image — non-critical

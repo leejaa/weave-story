@@ -17,6 +17,7 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     return '[Story Bible]\nまだ保存されたstory bibleがありません。ユーザー設定と前の章を基準に連続性を保ってください。';
   }
   return [
+    storyBible.canon ? `[不変カノン — 以下の設定と絶対に矛盾しないこと(死亡/転生など核心メカニズム・ジャンルを保持)]\n${storyBible.canon}\n` : '',
     '[Story Bible]',
     `ログライン: ${storyBible.logline}`,
     `ジャンル: ${storyBible.genre}`,
@@ -93,6 +94,7 @@ export const JA: HarnessGuide = {
       '- bible: 本文と一貫した作品設定集。各フィールドは簡潔に埋めます。',
       '- bible.desire: 主人公がこの物語で本当に求めているもの(生存以上のもの)。本文から読み取れる核心的な欲望を1〜2文で。',
       '- bible.wound: 主人公の感情的な傷、または最も恐れていること。本文に表れている、または暗示されている内面の脆弱性を1〜2文で。',
+      '- bible.canon: ユーザーの元の設定の核心前提を*再解釈せず*固定した不変ルール。死亡/転生/憑依/失踪などの核心メカニズムとジャンルを原文どおり保持(例:「転生」を「憑依」に、「死亡」を「失踪」に変えない)。3〜5個の短い断定文、200字以内。',
       '- situation: 本文が終わる決断の瞬間を1〜2文で要約します。台詞は入れないでください。',
       '- question: 読者に投げかける一行の問いです。',
       '- choices: ちょうど2つ。各項目はtext(具体的な行動)とconsequence(結果の示唆)を持ちます。',
@@ -106,9 +108,11 @@ export const JA: HarnessGuide = {
   },
   buildNextDraft: (a) => {
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
-    const summaries = a.previousChaptersSummaries.length > 0
-      ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
-      : '要約なし';
+    const recap = a.recap?.trim()
+      ? a.recap.trim()
+      : (a.previousChaptersSummaries.length > 0
+          ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
+          : '要約なし');
     const retry = a.previousIssues?.length ? `\n\n[前回の結果で必ず直す問題]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
       bibleSection(a.storyBible),
@@ -118,7 +122,7 @@ export const JA: HarnessGuide = {
       `今書く章: ${a.nextChapterNumber}`,
       `生成の試み: ${a.attempt}/2`,
       retry,
-      `[前の章の要約]\n${summaries}`,
+      `[これまでの物語]\n${recap}`,
       `[直前の第${a.previousChapterNumber}章の本文]\n${a.previousChapterContent}`,
       `[読者の選択]\n${a.chosenOption}`,
       '',

@@ -24,6 +24,7 @@ export async function saveStoryBible({ db, storyId, bible }: Params): Promise<vo
       forbiddenPatterns: bible.forbiddenPatterns,
       desire: bible.desire ?? null,
       wound: bible.wound ?? null,
+      canon: bible.canon ?? null,
     })
     .onConflictDoUpdate({
       target: storyBibles.storyId,
@@ -39,6 +40,7 @@ export async function saveStoryBible({ db, storyId, bible }: Params): Promise<vo
         forbiddenPatterns: bible.forbiddenPatterns,
         desire: bible.desire ?? null,
         wound: bible.wound ?? null,
+        canon: bible.canon ?? null,
       },
     });
 }

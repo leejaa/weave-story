@@ -17,6 +17,7 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     return '[Story Bible]\n尚無已保存的 story bible。請以使用者設定與前面章節為準，維持連貫性。';
   }
   return [
+    storyBible.canon ? `[不變正典 — 絕對不可與以下設定矛盾(死亡/轉生等核心機制與類型須保持一致)]\n${storyBible.canon}\n` : '',
     '[Story Bible]',
     `故事主線: ${storyBible.logline}`,
     `類型: ${storyBible.genre}`,
@@ -93,6 +94,7 @@ export const ZH_HANT: HarnessGuide = {
       '- bible: 與正文一致的作品設定集。各欄位簡潔填寫。',
       '- bible.desire: 主角在這個故事中真正渴望的東西(超越生存之上)。以1至2句描述正文中可以讀取到的核心欲望。',
       '- bible.wound: 主角的情感傷痕或最深的恐懼。以1至2句描述正文中呈現或暗示的內心脆弱之處。',
+      '- bible.canon: 將使用者原始設定的核心前提*不加重新詮釋*地固定下來的不變規則。死亡/轉生/附身/失蹤等核心機制與類型須照原文保留(例：不可把「轉生」改成「附身」、「死亡」改成「失蹤」)。3至5條簡短斷定句，200字以內。',
       '- situation: 將正文結尾的抉擇時刻以1至2句摘要。不要放入台詞。',
       '- question: 向讀者拋出的一行提問。',
       '- choices: 剛好2個。每一項具有 text(具體行動)與 consequence(結果的暗示)。',
@@ -106,9 +108,11 @@ export const ZH_HANT: HarnessGuide = {
   },
   buildNextDraft: (a) => {
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
-    const summaries = a.previousChaptersSummaries.length > 0
-      ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
-      : '無摘要';
+    const recap = a.recap?.trim()
+      ? a.recap.trim()
+      : (a.previousChaptersSummaries.length > 0
+          ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
+          : '無摘要');
     const retry = a.previousIssues?.length ? `\n\n[上次結果務必修正的問題]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
       bibleSection(a.storyBible),
@@ -118,7 +122,7 @@ export const ZH_HANT: HarnessGuide = {
       `現在要寫的章: ${a.nextChapterNumber}`,
       `生成嘗試: ${a.attempt}/2`,
       retry,
-      `[前面章節的摘要]\n${summaries}`,
+      `[至今的故事]\n${recap}`,
       `[緊接的第${a.previousChapterNumber}章正文]\n${a.previousChapterContent}`,
       `[讀者的選擇]\n${a.chosenOption}`,
       '',

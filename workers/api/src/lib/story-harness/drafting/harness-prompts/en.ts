@@ -27,6 +27,7 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     return '[Story Bible]\nNo saved story bible yet. Keep continuity from the user premise and previous chapters.';
   }
   return [
+    storyBible.canon ? `[CANON — must never be contradicted (keep core mechanics like death/reincarnation and the genre intact)]\n${storyBible.canon}\n` : '',
     '[Story Bible]',
     `Logline: ${storyBible.logline}`,
     `Genre: ${storyBible.genre}`,
@@ -104,6 +105,7 @@ export const EN: HarnessGuide = {
       '- bible: a story bible consistent with the body. Fill each field concisely.',
       '- bible.desire: what the protagonist truly wants in this story (beyond survival). 1–2 sentences from the body.',
       '- bible.wound: the protagonist\'s emotional scar or deepest fear. 1–2 sentences from what the body reveals or implies.',
+      '- bible.canon: the immutable core premise from the user\'s original prompt, with NO reinterpretation. Preserve core mechanics (death/reincarnation/possession/disappearance) and the genre exactly as written (e.g. do NOT turn "reincarnation" into "possession", or "death" into "disappearance"). 3–5 short declarative facts, under ~200 chars.',
       '- situation: summarize the decision moment where the body ends in 1–2 sentences. Do not include dialogue.',
       '- question: a single-line question posed to the reader.',
       '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',
@@ -117,9 +119,11 @@ export const EN: HarnessGuide = {
   },
   buildNextDraft: (a) => {
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
-    const summaries = a.previousChaptersSummaries.length > 0
-      ? a.previousChaptersSummaries.map(s => `Chapter ${s.chapterNumber}: ${s.summary}`).join('\n')
-      : 'No summary';
+    const recap = a.recap?.trim()
+      ? a.recap.trim()
+      : (a.previousChaptersSummaries.length > 0
+          ? a.previousChaptersSummaries.map(s => `Chapter ${s.chapterNumber}: ${s.summary}`).join('\n')
+          : 'No summary');
     const retry = a.previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
       langOverride(a.outputLanguage),
@@ -130,7 +134,7 @@ export const EN: HarnessGuide = {
       `Chapter to write now: ${a.nextChapterNumber}`,
       `Generation attempt: ${a.attempt}/2`,
       retry,
-      `[Previous chapter summaries]\n${summaries}`,
+      `[Story so far]\n${recap}`,
       `[Previous chapter ${a.previousChapterNumber} body]\n${a.previousChapterContent}`,
       `[Reader's choice]\n${a.chosenOption}`,
       '',

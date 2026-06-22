@@ -19,6 +19,7 @@ function bibleSection(storyBible: StoryBibleSnapshot): string {
     return '[Story Bible]\n아직 저장된 story bible이 없습니다. 사용자 설정과 이전 챕터를 기준으로 연속성을 유지하세요.';
   }
   return [
+    storyBible.canon ? `[불변 캐논 — 아래 설정과 절대 모순 금지(사망/환생 등 핵심 메커니즘·장르 유지)]\n${storyBible.canon}\n` : '',
     '[Story Bible]',
     `로그라인: ${storyBible.logline}`,
     `장르: ${storyBible.genre}`,
@@ -95,6 +96,7 @@ export const KO: HarnessGuide = {
       '- bible: 본문과 일관된 작품 설정집. 각 필드는 간결하게 채웁니다.',
       '- bible.desire: 주인공이 이 이야기에서 진정으로 원하는 것(생존 이상의 것). 본문에서 읽히는 핵심 욕망을 1-2문장(100자 이내)으로.',
       '- bible.wound: 주인공의 감정적 상처 또는 가장 두려워하는 것. 본문에서 드러나거나 암시된 내면의 취약점을 1-2문장(100자 이내)으로.',
+      '- bible.canon: 사용자 원 설정의 핵심 전제를 *재해석 없이* 고정한 불변 규칙. 사망/환생/빙의/실종 같은 핵심 메커니즘과 장르를 원문 그대로 보존(예: "환생"을 "빙의"로, "사망"을 "실종"으로 바꾸지 말 것). 3-5개의 짧은 단정문, 200자 이내.',
       '- situation: 본문이 끝나는 결정 순간을 1-2문장(120자 이내)으로 요약합니다. 대사를 넣지 마세요.',
       '- question: 독자에게 던지는 한 줄 질문(80자 이내)입니다.',
       '- choices: 정확히 2개. 각 항목은 text(구체적 행동)와 consequence(결과 암시)를 가집니다.',
@@ -108,9 +110,11 @@ export const KO: HarnessGuide = {
   },
   buildNextDraft: (a) => {
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
-    const summaries = a.previousChaptersSummaries.length > 0
-      ? a.previousChaptersSummaries.map(s => `챕터 ${s.chapterNumber}: ${s.summary}`).join('\n')
-      : '요약 없음';
+    const recap = a.recap?.trim()
+      ? a.recap.trim()
+      : (a.previousChaptersSummaries.length > 0
+          ? a.previousChaptersSummaries.map(s => `챕터 ${s.chapterNumber}: ${s.summary}`).join('\n')
+          : '요약 없음');
     const retry = a.previousIssues?.length ? `\n\n[이전 결과에서 반드시 고칠 문제]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
       bibleSection(a.storyBible),
@@ -120,7 +124,7 @@ export const KO: HarnessGuide = {
       `현재 작성할 챕터: ${a.nextChapterNumber}`,
       `생성 시도: ${a.attempt}/2`,
       retry,
-      `[이전 챕터 요약]\n${summaries}`,
+      `[지금까지의 이야기]\n${recap}`,
       `[직전 챕터 ${a.previousChapterNumber} 본문]\n${a.previousChapterContent}`,
       `[독자의 선택]\n${a.chosenOption}`,
       '',

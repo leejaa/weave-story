@@ -14,6 +14,7 @@ export type StoryBibleSnapshot = {
   forbiddenPatterns: string[];
   desire: string | null;
   wound: string | null;
+  canon: string | null;
 } | null;
 
 export async function loadStoryBible(db: DB, storyId: string): Promise<StoryBibleSnapshot> {
@@ -30,6 +31,7 @@ export async function loadStoryBible(db: DB, storyId: string): Promise<StoryBibl
       forbiddenPatterns: storyBibles.forbiddenPatterns,
       desire: storyBibles.desire,
       wound: storyBibles.wound,
+      canon: storyBibles.canon,
     })
     .from(storyBibles)
     .where(eq(storyBibles.storyId, storyId))
@@ -43,5 +45,6 @@ export async function loadStoryBible(db: DB, storyId: string): Promise<StoryBibl
     forbiddenPatterns: Array.isArray(row.forbiddenPatterns) ? row.forbiddenPatterns as string[] : [],
     desire: row.desire ?? null,
     wound: row.wound ?? null,
+    canon: row.canon ?? null,
   };
 }

@@ -126,6 +126,8 @@ export const storyBibles = pgTable('story_bibles', {
   forbiddenPatterns: jsonb('forbidden_patterns').notNull().default('[]'),
   desire: text('desire'),
   wound: text('wound'),
+  // 불변 캐논: 원본 프롬프트의 핵심 전제(사망/환생 등 메커니즘·장르)를 재해석 없이 고정. 1챕터 1회 기록, 이후 갱신 안 함. 매 챕터 가드레일.
+  canon: text('canon'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -139,6 +141,8 @@ export const threads = pgTable('threads', {
   startedAt: timestamp('started_at', { withTimezone: true }).defaultNow().notNull(),
   lastReadAt: timestamp('last_read_at', { withTimezone: true }).defaultNow().notNull(),
   finishedAt: timestamp('finished_at', { withTimezone: true }),
+  // 롤링 진행 메모: "지금까지의 이야기" + 열린 떡밥 + 인물 상태 + 아크 위치. 챕터마다 갱신.
+  recap: text('recap'),
 }, (t) => [
   index('idx_threads_user_id').on(t.userId),
   index('idx_threads_story_id').on(t.storyId),

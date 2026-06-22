@@ -14,6 +14,8 @@ const StoryBibleLiteSchema = z.object({
   forbiddenPatterns: z.array(z.string().min(2).max(180)).min(1).max(8),
   desire: z.string().min(4).max(200).optional(),
   wound: z.string().min(4).max(200).optional(),
+  // 불변 캐논: 원본 프롬프트의 핵심 전제(메커니즘·장르)를 재해석 없이 고정한 가드레일.
+  canon: z.string().min(4).max(800).optional(),
 });
 
 const HighImpactChoiceSchema = z.object({

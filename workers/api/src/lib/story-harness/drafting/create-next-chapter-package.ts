@@ -73,6 +73,7 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
       previousChapterNumber: params.genCtx.previousChapterNumber,
       previousChapterContent: params.genCtx.previousChapterContent,
       previousChaptersSummaries: params.genCtx.previousChaptersSummaries,
+      recap: params.genCtx.recap,
       chosenOption: params.genCtx.chosenOption,
       choiceKind: params.genCtx.choiceKind,
       attempt: params.attempt,
