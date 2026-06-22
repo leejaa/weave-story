@@ -19,6 +19,8 @@ export type CreateStoryRequest = {
   prompt: string;
   estimatedChapters: number;
   language: Language;
+  /** 샘플카드에서 선택한 장르 힌트 (FANTASY, ROMANCE 등). 서버에서 장르 이탈 방지에 사용. */
+  hintGenre?: string;
 };
 export type CreateStoryResponse = { threadId: string };
 

@@ -55,18 +55,22 @@ export const JA: HarnessGuide = {
     '与えられた章の本文を読み、次の話へつながる読者の選択肢を正確に抽出します。',
     '本文にない新しい事件を作らず、本文の最終場面が生んだ選択の圧力をそのまま使います。',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues }) => {
+  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n\n[前回の結果で必ず直す問題]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreHint = hintGenre ? `\n[選択したジャンル: ${hintGenre}]\nこのジャンルに合った雰囲気と演出を維持してください。このジャンルにないミステリー・ノワール・スリラー要素を追加しないでください。\n` : '';
     return [
       `読者が望む物語:\n"${prompt}"`,
       `全章数: ${estimatedChapters}章`,
       `生成の試み: ${attempt}/2`,
       retry,
+      genreHint,
       '[物語の段階 — この章の役割]',
       JA_PHASE.setup,
       '',
       '[第1話の設計原則]',
       '- 最初の3段落以内に、主人公の日常や安全を壊す事件を起こします。',
+      '- プロンプトに転換事件(死亡・転生・回帰・憑依・前世など)が明記されている場合、その転換事件は必ずこの第1話の中で実際に起きなければなりません。転換前の状況だけを描く「前編」構成で第1話を終わらせないでください。',
+      '- ジャンル逸脱禁止: 元のプロンプトにないミステリー・ノワール・推理・スリラー要素を自意識で追加しないでください。プロンプトのジャンルと雰囲気をそのまま維持してください。',
       '- 主人公は単に驚いたり待ったりせず、危険な情報を握るか、危険な選択の前に立たせます。',
       '- 本文の最後は、権力・関係・秘密・生存・濡れ衣・契約・裏切りのうち少なくとも一つを揺るがす決断の瞬間で止めます。',
       '- 「冷静に答える」「知らないふりをする」のような些細な反応で終わらせません。',
@@ -79,8 +83,9 @@ export const JA: HarnessGuide = {
       '- 本文の中に「[選択]」「選択肢」「①/②」のような選択肢リストや、読者への問いかけを絶対に書かないでください。本文は物語の叙述だけで終えます。',
     ].join('\n');
   },
-  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
+  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n[前回の試みで指摘された問題 — 今回は必ず直す]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreNote = hintGenre ? `\n[ユーザーが選択したジャンル: ${hintGenre}]\nbible.genreはこのジャンルを基準とします。\n` : '';
     return [
       `読者が本来望んだ物語:\n"${prompt}"`,
       `全章数: ${estimatedChapters}章`,
@@ -90,11 +95,15 @@ export const JA: HarnessGuide = {
       content,
       '─────────────',
       retry,
+      genreNote,
       '[抽出ルール]',
       '- bible: 本文と一貫した作品設定集。各フィールドは簡潔に埋めます。',
       '- bible.desire: 主人公がこの物語で本当に求めているもの(生存以上のもの)。本文から読み取れる核心的な欲望を1〜2文で。',
       '- bible.wound: 主人公の感情的な傷、または最も恐れていること。本文に表れている、または暗示されている内面の脆弱性を1〜2文で。',
       '- bible.canon: ユーザーの元の設定の核心前提を*再解釈せず*固定した不変ルール。死亡/転生/憑依/失踪などの核心メカニズムとジャンルを原文どおり保持(例:「転生」を「憑依」に、「死亡」を「失踪」に変えない)。3〜5個の短い断定文、200字以内。',
+      '- bible.genre: プロンプトと本文から明確に読み取れるジャンルのみ書きます。本文にない「推理」「ミステリー」「ノワール」などを自意識で追加しないでください。',
+      '- bible.tone: プロンプトと本文の実際の雰囲気を抽出します。原本にない「冷たく暗い」「ミステリアスな」雰囲気を任意で上乗せしないでください。',
+      '- bible.forbidden_patternsには「元の設定にない推理・ミステリー・ノワールのサブプロット追加」を必ず含めてください。',
       '- situation: 本文が終わる決断の瞬間を1〜2文で要約します。台詞は入れないでください。',
       '- question: 読者に投げかける一行の問いです。',
       '- choices: ちょうど2つ。各項目はtext(具体的な行動)とconsequence(結果の示唆)を持ちます。',

@@ -20,13 +20,13 @@ function messageFor(error: unknown): string {
  * 생성은 useMutation 으로 통일: 성공 시 threads 캐시 무효화 + /reading/:id 이동.
  * 생성 API는 Bearer 인증 필요. 미연동 상태(토큰 없음)에서는 데모 안내.
  */
-export function useStorySetup(initialPrompt = '') {
+export function useStorySetup(initialPrompt = '', hintGenre?: string) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [prompt, setPromptState] = useState(initialPrompt);
 
   const mutation = useMutation({
-    mutationFn: () => postCreateStory({ prompt: prompt.trim(), estimatedChapters: 10, language: 'ko' }),
+    mutationFn: () => postCreateStory({ prompt: prompt.trim(), estimatedChapters: 10, language: 'ko', hintGenre }),
     onSuccess: ({ threadId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.threads() });
       navigate(`/reading/${threadId}`);

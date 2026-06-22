@@ -65,19 +65,23 @@ export const EN: HarnessGuide = {
     'Read the given chapter body and accurately extract the reader choices that lead into the next chapter.',
     'Do not invent events not in the body; use the choice pressure created by the final scene of the body.',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, outputLanguage }) => {
+  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, outputLanguage, hintGenre }) => {
     const retry = previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreHint = hintGenre ? `\n[Selected genre: ${hintGenre}]\nMaintain the tone and style of this genre. Do not add mystery, noir, or thriller elements that are absent from this genre.\n` : '';
     return [
       langOverride(outputLanguage),
       `The story the reader wants:\n"${prompt}"`,
       `Total chapters: ${estimatedChapters}`,
       `Generation attempt: ${attempt}/2`,
       retry,
+      genreHint,
       '[Narrative phase — this chapter\'s role]',
       EN_PHASE.setup,
       '',
       '[First-chapter design principles]',
       '- Within the first 3 paragraphs, break the protagonist\'s ordinary life or safety with an event.',
+      '- If the prompt specifies a premise-transition event (death, reincarnation, regression, transmigration, etc.), that event MUST actually happen within this first chapter. Do not end the chapter as a "prologue" that only shows the before-state.',
+      '- Genre lock: do NOT add mystery, noir, detective, or thriller elements not present in the original prompt. Maintain the genre and tone the prompt establishes.',
       '- The protagonist must not merely be surprised or wait — they should hold dangerous information or face a dangerous choice.',
       '- End the body at a decision moment that shakes at least one of: power, relationships, secrets, survival, false accusation, a contract, betrayal.',
       '- Do not end on a trivial reaction like "answers calmly" or "pretends not to know."',
@@ -90,8 +94,9 @@ export const EN: HarnessGuide = {
       '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
     ].join('\n');
   },
-  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
+  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n[Problems noted in the previous attempt — fix them this time]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreNote = hintGenre ? `\n[User-selected genre: ${hintGenre}]\nbible.genre should default to this genre.\n` : '';
     return [
       `The story the reader originally wanted:\n"${prompt}"`,
       `Total chapters: ${estimatedChapters}`,
@@ -101,11 +106,15 @@ export const EN: HarnessGuide = {
       content,
       '─────────────',
       retry,
+      genreNote,
       '[Extraction rules]',
       '- bible: a story bible consistent with the body. Fill each field concisely.',
       '- bible.desire: what the protagonist truly wants in this story (beyond survival). 1–2 sentences from the body.',
       '- bible.wound: the protagonist\'s emotional scar or deepest fear. 1–2 sentences from what the body reveals or implies.',
       '- bible.canon: the immutable core premise from the user\'s original prompt, with NO reinterpretation. Preserve core mechanics (death/reincarnation/possession/disappearance) and the genre exactly as written (e.g. do NOT turn "reincarnation" into "possession", or "death" into "disappearance"). 3–5 short declarative facts, under ~200 chars.',
+      '- bible.genre: write only the genre(s) clearly present in the prompt and body. Do NOT add "mystery", "noir", or "thriller" unless explicitly in the original prompt.',
+      '- bible.tone: extract the actual tone from the prompt and body. Do not layer in "cold and dark" or "mysterious" atmosphere that is absent from the source.',
+      '- bible.forbidden_patterns must include "adding mystery/noir/thriller subplots not in the original premise."',
       '- situation: summarize the decision moment where the body ends in 1–2 sentences. Do not include dialogue.',
       '- question: a single-line question posed to the reader.',
       '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',

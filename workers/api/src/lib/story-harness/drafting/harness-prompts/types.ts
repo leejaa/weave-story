@@ -8,6 +8,8 @@ export type FirstDraftArgs = {
   attempt: number;
   previousIssues?: string[];
   outputLanguage?: string;
+  // 샘플카드에서 선택한 장르 힌트(FANTASY, ROMANCE 등). 프롬프트에 없는 장르 이탈 방지에 사용.
+  hintGenre?: string;
 };
 
 export type FirstStructureArgs = {
@@ -15,6 +17,7 @@ export type FirstStructureArgs = {
   estimatedChapters: number;
   content: string;
   previousIssues?: string[];
+  hintGenre?: string;
 };
 
 export type NextDraftArgs = {

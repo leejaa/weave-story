@@ -30,6 +30,7 @@ storiesRouter.post('/', genLimit, async (c) => {
   const userId = c.get('userId');
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
+  const hintGenre = (body?.hintGenre as string | undefined)?.trim().slice(0, 40) || undefined;
   // Chapter count is server-authoritative: the client-sent value is intentionally ignored so
   // story length can be tuned from the worker alone (appintoss would otherwise need a store
   // review per change). Override via STORY_CHAPTER_COUNT; defaults to a standard one-volume book.
@@ -50,7 +51,7 @@ storiesRouter.post('/', genLimit, async (c) => {
   await db.update(users).set({ credits: sql`${users.credits} - 1` }).where(eq(users.id, userId));
 
   const [story] = await db.insert(stories)
-    .values({ userId, setupAnswers: { prompt: prompt.trim() }, estimatedChapters, language, status: 'generating' })
+    .values({ userId, setupAnswers: { prompt: prompt.trim(), ...(hintGenre ? { hintGenre } : {}) }, estimatedChapters, language, status: 'generating' })
     .returning();
 
   const who = userRow.email ?? userRow.name ?? userId;
@@ -67,7 +68,7 @@ storiesRouter.post('/', genLimit, async (c) => {
     storyId: story.id,
     threadId: thread.id,
     chapterId: pendingChapter.id,
-    genCtx: { prompt: prompt.trim(), estimatedChapters, language, outputLanguage },
+    genCtx: { prompt: prompt.trim(), estimatedChapters, language, outputLanguage, hintGenre },
   });
 
   try {

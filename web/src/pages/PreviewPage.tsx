@@ -18,7 +18,7 @@ export function PreviewPage() {
     <BookPreview
       card={card}
       onClose={() => navigate(-1)}
-      onStart={() => navigate('/setup', { state: { prompt: card.prompt }, replace: true })}
+      onStart={() => navigate('/setup', { state: { prompt: card.prompt, hintGenre: card.genre }, replace: true })}
     />
   );
 }

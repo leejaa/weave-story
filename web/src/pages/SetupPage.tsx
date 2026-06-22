@@ -8,13 +8,15 @@ import { SubmitButton } from '@/components/setup/SubmitButton';
 import { WritingOverlay } from '@/components/setup/WritingOverlay';
 import styles from './SetupPage.module.css';
 
-type SetupState = { prompt?: string };
+type SetupState = { prompt?: string; hintGenre?: string };
 
 /** 스토리 셋업 — 프롬프트 입력 후 첫 챕터 생성 (story-prompt-screen.tsx 대응). */
 export function SetupPage() {
   const navigate = useNavigate();
-  const initial = ((useLocation().state ?? {}) as SetupState).prompt ?? '';
-  const { prompt, setPrompt, canSubmit, isPending, error, submit } = useStorySetup(initial);
+  const state = (useLocation().state ?? {}) as SetupState;
+  const initial = state.prompt ?? '';
+  const hintGenre = state.hintGenre;
+  const { prompt, setPrompt, canSubmit, isPending, error, submit } = useStorySetup(initial, hintGenre);
 
   return (
     <div className={styles.container}>

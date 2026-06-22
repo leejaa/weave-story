@@ -55,18 +55,22 @@ export const ZH_HANT: HarnessGuide = {
     '你會讀完給定章節的正文，準確地萃取出通往下一話的讀者選項。',
     '不要捏造正文中沒有的新事件，直接沿用正文最終場景所產生的選擇壓力。',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues }) => {
+  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n\n[上次結果務必修正的問題]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreHint = hintGenre ? `\n[已選擇的類型: ${hintGenre}]\n請維持符合這個類型的氛圍與演出。不要加入此類型所沒有的推理、黑色、驚悚元素。\n` : '';
     return [
       `讀者想要的故事:\n"${prompt}"`,
       `總章數: ${estimatedChapters}章`,
       `生成嘗試: ${attempt}/2`,
       retry,
+      genreHint,
       '[敘事階段 — 本章的角色]',
       ZH_PHASE.setup,
       '',
       '[第一話的設計原則]',
       '- 在前三段以內，就發生一樁打破主角日常或安全的事件。',
+      '- 若提示詞中明確提到了轉折事件(死亡、轉生、回歸、附身、前世等)，則該轉折事件必須在第一話中實際發生。不要只描寫轉折前的狀態，以「序章」形式結束第一話。',
+      '- 類型鎖定：請勿自行加入原始提示詞中沒有的推理、黑色電影、偵探、驚悚元素。請維持提示詞所確立的類型與氛圍。',
       '- 主角不能只是驚訝或等待，而要握有危險的情報，或站在危險抉擇的面前。',
       '- 正文的結尾，要停在至少動搖權力、關係、祕密、生存、冤屈、契約、背叛其中之一的抉擇時刻。',
       '- 不要以「冷靜回應」「假裝不知道」這類瑣碎的反應作結。',
@@ -79,8 +83,9 @@ export const ZH_HANT: HarnessGuide = {
       '- 正文中絕對不要寫出「[選擇]」「選項」「①/②」這類選項清單，也不要對讀者提問。正文只以故事敘述作結。',
     ].join('\n');
   },
-  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
+  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n[上次嘗試被指出的問題 — 這次務必修正]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreNote = hintGenre ? `\n[使用者選擇的類型: ${hintGenre}]\nbible.genre 請以此類型為基準。\n` : '';
     return [
       `讀者原本想要的故事:\n"${prompt}"`,
       `總章數: ${estimatedChapters}章`,
@@ -90,11 +95,15 @@ export const ZH_HANT: HarnessGuide = {
       content,
       '─────────────',
       retry,
+      genreNote,
       '[萃取規則]',
       '- bible: 與正文一致的作品設定集。各欄位簡潔填寫。',
       '- bible.desire: 主角在這個故事中真正渴望的東西(超越生存之上)。以1至2句描述正文中可以讀取到的核心欲望。',
       '- bible.wound: 主角的情感傷痕或最深的恐懼。以1至2句描述正文中呈現或暗示的內心脆弱之處。',
       '- bible.canon: 將使用者原始設定的核心前提*不加重新詮釋*地固定下來的不變規則。死亡/轉生/附身/失蹤等核心機制與類型須照原文保留(例：不可把「轉生」改成「附身」、「死亡」改成「失蹤」)。3至5條簡短斷定句，200字以內。',
+      '- bible.genre: 只寫提示詞和正文中可以明確讀出的類型。不要自行加入正文中沒有的「推理」「懸疑」「黑色電影」等。',
+      '- bible.tone: 萃取提示詞和正文的實際氛圍。不要在原文中沒有的情況下擅自加上「冷峻陰暗」「神秘」的氛圍。',
+      '- bible.forbidden_patterns 必須包含「加入原始設定中沒有的推理/懸疑/黑色電影副線」。',
       '- situation: 將正文結尾的抉擇時刻以1至2句摘要。不要放入台詞。',
       '- question: 向讀者拋出的一行提問。',
       '- choices: 剛好2個。每一項具有 text(具體行動)與 consequence(結果的暗示)。',

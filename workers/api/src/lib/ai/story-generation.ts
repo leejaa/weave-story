@@ -26,6 +26,9 @@ export type SetupContext = {
   // and different from `language`, the harness instructs the model to write in
   // this language instead of the harness's native language.
   outputLanguage?: string;
+  // Genre hint from the sample card the user picked (e.g. 'FANTASY', 'ROMANCE').
+  // Used in harness prompts to prevent genre drift and anchor tone/style.
+  hintGenre?: string;
 };
 
 export type ChapterSummaryEntry = { chapterNumber: number; summary: string };

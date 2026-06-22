@@ -57,18 +57,22 @@ export const KO: HarnessGuide = {
     '주어진 챕터 본문을 읽고, 다음 화로 이어지는 독자 선택지를 정확하게 추출합니다.',
     '본문에 없는 새 사건을 만들지 않고, 본문의 마지막 장면이 만든 선택 압박을 그대로 사용합니다.',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues }) => {
+  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n\n[이전 결과에서 반드시 고칠 문제]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreHint = hintGenre ? `\n[선택한 장르: ${hintGenre}]\n이 장르에 맞는 분위기와 연출을 유지하세요. 이 장르에 없는 추리·누아르·미스터리·스릴러 요소를 추가하지 마세요.\n` : '';
     return [
       `독자가 원하는 이야기:\n"${prompt}"`,
       `전체 챕터 수: ${estimatedChapters}챕터`,
       `생성 시도: ${attempt}/2`,
       retry,
+      genreHint,
       '[서사 단계 — 이 챕터의 역할]',
       KO_PHASE.setup,
       '',
       '[첫 화 설계 원칙]',
       '- 첫 3문단 안에 독자의 일상/안전을 깨는 사건을 발생시킵니다.',
+      '- 프롬프트에 전환 사건(사망·환생·회귀·빙의·전생 등)이 명시된 경우, 그 전환 사건은 반드시 이번 첫 화 안에서 실제로 일어나야 합니다. 전환 이전 상황만 묘사하는 "전편" 구성으로 첫 화를 끝내지 마세요.',
+      '- 장르 이탈 금지: 원 프롬프트에 없는 추리·누아르·미스터리·스릴러 요소를 자의로 추가하지 마세요. 프롬프트의 장르와 분위기를 그대로 유지하세요.',
       '- 주인공은 단순히 놀라거나 기다리지 않고, 위험한 정보를 쥐거나 위험한 선택 앞에 서야 합니다.',
       '- 본문의 마지막은 권력, 관계, 비밀, 생존, 누명, 계약, 배신 중 최소 하나를 흔드는 결정의 순간에서 멈춥니다.',
       '- "침착하게 대답한다", "모른 척한다"처럼 사소한 반응으로 끝내지 않습니다.',
@@ -81,8 +85,9 @@ export const KO: HarnessGuide = {
       '- 본문 안에 "[선택]", "선택지", "①/②" 같은 선택지 목록이나 독자에게 던지는 질문을 절대 쓰지 마세요. 본문은 이야기 서술로만 끝냅니다.',
     ].join('\n');
   },
-  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues }) => {
+  buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues, hintGenre }) => {
     const retry = previousIssues?.length ? `\n[이전 시도에서 지적된 문제 — 이번엔 반드시 고치세요]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+    const genreNote = hintGenre ? `\n[사용자가 선택한 장르: ${hintGenre}]\nbible.genre는 이 장르를 기준으로 합니다.\n` : '';
     return [
       `독자가 원래 원한 이야기:\n"${prompt}"`,
       `전체 챕터 수: ${estimatedChapters}챕터`,
@@ -92,11 +97,15 @@ export const KO: HarnessGuide = {
       content,
       '─────────────',
       retry,
+      genreNote,
       '[추출 규칙]',
       '- bible: 본문과 일관된 작품 설정집. 각 필드는 간결하게 채웁니다.',
       '- bible.desire: 주인공이 이 이야기에서 진정으로 원하는 것(생존 이상의 것). 본문에서 읽히는 핵심 욕망을 1-2문장(100자 이내)으로.',
       '- bible.wound: 주인공의 감정적 상처 또는 가장 두려워하는 것. 본문에서 드러나거나 암시된 내면의 취약점을 1-2문장(100자 이내)으로.',
       '- bible.canon: 사용자 원 설정의 핵심 전제를 *재해석 없이* 고정한 불변 규칙. 사망/환생/빙의/실종 같은 핵심 메커니즘과 장르를 원문 그대로 보존(예: "환생"을 "빙의"로, "사망"을 "실종"으로 바꾸지 말 것). 3-5개의 짧은 단정문, 200자 이내.',
+      '- bible.genre: 원 프롬프트와 본문에서 명확히 읽히는 장르만 적습니다. 본문에 없는 "추리", "미스터리", "누아르" 등을 자의로 추가하지 마세요.',
+      '- bible.tone: 원 프롬프트와 본문의 실제 분위기를 추출합니다. 원본에 없는 "차갑고 어두운", "미스터리한" 분위기를 임의로 덧씌우지 마세요.',
+      '- bible.forbidden_patterns에는 "원 설정에 없는 추리·미스터리·누아르 서브플롯 추가"를 반드시 포함하세요.',
       '- situation: 본문이 끝나는 결정 순간을 1-2문장(120자 이내)으로 요약합니다. 대사를 넣지 마세요.',
       '- question: 독자에게 던지는 한 줄 질문(80자 이내)입니다.',
       '- choices: 정확히 2개. 각 항목은 text(구체적 행동)와 consequence(결과 암시)를 가집니다.',

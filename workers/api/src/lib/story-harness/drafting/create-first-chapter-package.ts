@@ -71,6 +71,7 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
       attempt: params.attempt,
       previousIssues: params.previousIssues,
       outputLanguage: params.genCtx.outputLanguage,
+      hintGenre: params.genCtx.hintGenre,
     }),
     schema: ChapterDraftSchema,
   });
@@ -98,6 +99,7 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
       estimatedChapters: params.genCtx.estimatedChapters,
       content: draftBody.content,
       previousIssues: params.previousIssues,
+      hintGenre: params.genCtx.hintGenre,
     }),
     schema: ChapterStructureSchema,
   });
