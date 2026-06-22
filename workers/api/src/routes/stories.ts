@@ -30,7 +30,12 @@ storiesRouter.post('/', genLimit, async (c) => {
   const userId = c.get('userId');
   const body = await c.req.json();
   const prompt = body?.prompt as string | undefined;
-  const estimatedChapters = Math.min(50, Math.max(1, typeof body?.estimatedChapters === 'number' ? Math.floor(body.estimatedChapters) : 10));
+  // Chapter count is server-authoritative: the client-sent value is intentionally ignored so
+  // story length can be tuned from the worker alone (appintoss would otherwise need a store
+  // review per change). Override via STORY_CHAPTER_COUNT; defaults to a standard one-volume book.
+  const envChapterCount = Number(c.env.STORY_CHAPTER_COUNT);
+  const estimatedChapters = Math.min(50, Math.max(1,
+    Number.isFinite(envChapterCount) && envChapterCount > 0 ? Math.floor(envChapterCount) : 20));
   const detectedLang = detectPromptLanguage(prompt ?? '');
   const language = languageToHarnessLang(detectedLang);
   const outputLanguage = detectedLang !== language ? detectedLang : undefined;

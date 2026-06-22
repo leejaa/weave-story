@@ -14,7 +14,8 @@ import { harnessGuide } from './harness-prompts';
 import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
-const EXTEND_TARGET = 2000;
+// CJK-oriented floor (chars); English bodies run far longer in chars so they never trip it.
+const EXTEND_TARGET = 4500;
 
 type Params = {
   apiKey: string;

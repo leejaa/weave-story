@@ -5,6 +5,16 @@
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
 import { langDisplayName } from '../../../ai/story-lang';
+import { narrativePhase, type NarrativePhase } from '../narrative-phase';
+
+// Per-arc-phase (act) pacing guidance — see narrative-phase.ts.
+const EN_PHASE: Record<NarrativePhase, string> = {
+  setup: 'This is the setup (act 1). Ground the world, the characters, and the protagonist\'s desire and wound, and plant the seed of the central conflict. Do not reveal every secret yet.',
+  rising: 'This is the rising action (act 2). Escalate the conflict and the stakes. Add new obstacles, relational tension, and competing interests; let the protagonist\'s desire and wound begin to collide.',
+  turn: 'This is the turn (midpoint). Raise the crisis with a reversal or an exposed secret. From here, hold back major new threads and start converging the conflicts already opened.',
+  resolution: 'This is the convergence toward the climax. Begin paying off open threads; do not introduce new characters or subplots. Drive tension to just before the climax.',
+  final: 'This is the final chapter. Deliver the climax and resolve the central conflict. Pay off the protagonist\'s desire and wound emotionally, tie up remaining threads, and close with resonance.',
+};
 
 function langOverride(outputLanguage?: string): string {
   if (!outputLanguage || outputLanguage === 'en') return '';
@@ -62,6 +72,9 @@ export const EN: HarnessGuide = {
       `Total chapters: ${estimatedChapters}`,
       `Generation attempt: ${attempt}/2`,
       retry,
+      '[Narrative phase — this chapter\'s role]',
+      EN_PHASE.setup,
+      '',
       '[First-chapter design principles]',
       '- Within the first 3 paragraphs, break the protagonist\'s ordinary life or safety with an event.',
       '- The protagonist must not merely be surprised or wait — they should hold dangerous information or face a dangerous choice.',
@@ -69,8 +82,8 @@ export const EN: HarnessGuide = {
       '- Do not end on a trivial reaction like "answers calmly" or "pretends not to know."',
       '',
       '[Length and format — very important]',
-      '- content must be between 1100 and 1600 words of English. Under ~600 words is a failure.',
-      '- 10–14 paragraphs, each separated by a blank line.',
+      '- content must be between 2600 and 3200 words of English. Under ~1600 words is a failure.',
+      '- 18–24 paragraphs, each separated by a blank line.',
       '- Each paragraph runs 2–4 sentences. Do not summarize scenes; show them as real events.',
       '- This response writes ONLY the body (content) and the title fields. Choices are made in the next step.',
       '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
@@ -103,6 +116,7 @@ export const EN: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const summaries = a.previousChaptersSummaries.length > 0
       ? a.previousChaptersSummaries.map(s => `Chapter ${s.chapterNumber}: ${s.summary}`).join('\n')
       : 'No summary';
@@ -129,6 +143,9 @@ export const EN: HarnessGuide = {
         : '- Carry out the action exactly as the option states; do not silently swap it for a different action.',
       '- However, if the action is physically impossible or breaks the established world, do not ignore it — execute the closest version that honors the reader\'s intent.',
       '',
+      '[Narrative phase — this chapter\'s role]',
+      EN_PHASE[phase],
+      '',
       '[Next-chapter principles]',
       '- Within the first 2 paragraphs, show the result that changed because of the reader\'s choice.',
       '- The cost of the choice must alter at least one of: relationships, evidence, power, survival risk.',
@@ -137,8 +154,8 @@ export const EN: HarnessGuide = {
       a.isFinal ? '- This is the final chapter. Bring the story to a close in the body.' : '- End the body at a decision moment that calls for the next choice.',
       '',
       '[Length and format — very important]',
-      '- content must be between 1000 and 1600 words of English. Under ~600 words is a failure.',
-      '- 9–14 paragraphs, each separated by a blank line.',
+      '- content must be between 2500 and 3200 words of English. Under ~1600 words is a failure.',
+      '- 18–24 paragraphs, each separated by a blank line.',
       '- This response writes ONLY the body (content) and the title. Choices are made in the next step.',
       '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
     ].join('\n');

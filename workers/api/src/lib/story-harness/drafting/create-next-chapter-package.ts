@@ -15,7 +15,8 @@ import { stripTrailingChoiceBlock } from './strip-choice-block';
 import { harnessGuide } from './harness-prompts';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
-const EXTEND_TARGET = 2000;
+// CJK-oriented floor (chars); English bodies run far longer in chars so they never trip it.
+const EXTEND_TARGET = 4500;
 
 type Params = {
   apiKey: string;

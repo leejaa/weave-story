@@ -1,8 +1,8 @@
 import { generateText } from 'ai';
 import type { LanguageModel } from 'ai';
 
-const MAX_OUTPUT_TOKENS = 16000;
-const MAX_CONTENT_CHARS = 8000;
+const MAX_OUTPUT_TOKENS = 24000;
+const MAX_CONTENT_CHARS = 20000;
 
 // When a generated chapter body lands under the target length, ask the model to CONTINUE the
 // same scene and append the new prose — instead of failing the chapter or regenerating it

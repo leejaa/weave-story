@@ -1,6 +1,16 @@
 // Japanese harness prompts (mirrors the Korean craft directives).
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
+import { narrativePhase, type NarrativePhase } from '../narrative-phase';
+
+// アーク段階(起承転結)ごとのペース配分の指針 — narrative-phase.ts を参照。
+const JA_PHASE: Record<NarrativePhase, string> = {
+  setup: '今は導入部(起)です。世界と人物、主人公の欲望と傷を定着させ、中心的な葛藤の火種を仕込んでください。まだすべての秘密を明かさないでください。',
+  rising: '今は展開部(承)です。葛藤と賭け金を大きくします。新たな障害・関係の緊張・利害を加え、主人公の欲望と傷が衝突し始めるようにしてください。',
+  turn: '今は転換部(転)です。局面を覆す逆転や秘密の露見で危機を高めてください。この時点から新たな大きな伏線は控え、広げてきた葛藤を一つの方向へ収束させ始めます。',
+  resolution: '今はクライマックスへ収束する区間です。未回収の伏線を回収し始め、新しい人物や新しいサブプロットを導入しないでください。緊張をクライマックス直前まで高めます。',
+  final: 'これが最終章です。クライマックスを爆発させ、中心的な葛藤を決着させてください。主人公の欲望と傷に感情的な報酬を与え、残った伏線を回収し、余韻を残して閉じてください。',
+};
 
 function bibleSection(storyBible: StoryBibleSnapshot): string {
   if (!storyBible) {
@@ -51,6 +61,9 @@ export const JA: HarnessGuide = {
       `全章数: ${estimatedChapters}章`,
       `生成の試み: ${attempt}/2`,
       retry,
+      '[物語の段階 — この章の役割]',
+      JA_PHASE.setup,
+      '',
       '[第1話の設計原則]',
       '- 最初の3段落以内に、主人公の日常や安全を壊す事件を起こします。',
       '- 主人公は単に驚いたり待ったりせず、危険な情報を握るか、危険な選択の前に立たせます。',
@@ -58,8 +71,8 @@ export const JA: HarnessGuide = {
       '- 「冷静に答える」「知らないふりをする」のような些細な反応で終わらせません。',
       '',
       '[分量と形式 — 非常に重要]',
-      '- contentは必ず日本語で2400字以上、3200字以下で書きます。1800字未満は失敗です。',
-      '- 10〜14段落、各段落は空行で区切ります。',
+      '- contentは必ず日本語で4800字以上、5600字以下で書きます。4000字未満は失敗です。',
+      '- 18〜24段落、各段落は空行で区切ります。',
       '- 各段落は2〜4文で十分に展開します。場面を要約せず、実際の出来事として見せてください。',
       '- この応答では本文(content)とタイトルのフィールドだけを書きます。選択肢は次の段階で作ります。',
       '- 本文の中に「[選択]」「選択肢」「①/②」のような選択肢リストや、読者への問いかけを絶対に書かないでください。本文は物語の叙述だけで終えます。',
@@ -92,6 +105,7 @@ export const JA: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const summaries = a.previousChaptersSummaries.length > 0
       ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
       : '要約なし';
@@ -117,6 +131,9 @@ export const JA: HarnessGuide = {
         : '- 選択肢の文言どおりの行動を実行し、勝手に別の行動へ変えないでください。',
       '- ただし物理的に不可能、または世界観を壊す行動なら、無視せず読者の意図に最も近い形で実行してください。',
       '',
+      '[物語の段階 — この章の役割]',
+      JA_PHASE[phase],
+      '',
       '[次の話の作成原則]',
       '- 最初の2段落以内に、読者の選択によって変わった結果を見せてください。',
       '- 選択の代償が、人物関係・証拠・権力・生存の危機のうち少なくとも一つを変えなければなりません。',
@@ -125,8 +142,8 @@ export const JA: HarnessGuide = {
       a.isFinal ? '- 最終章です。本文で物語を完結させてください。' : '- 本文の最後は、次の選択を呼ぶ決断の瞬間で止めます。',
       '',
       '[分量と形式 — 非常に重要]',
-      '- contentは必ず日本語で2400字以上、3200字以下で書きます。1800字未満は失敗です。',
-      '- 9〜14段落、各段落は空行で区切ります。',
+      '- contentは必ず日本語で4800字以上、5600字以下で書きます。4000字未満は失敗です。',
+      '- 18〜24段落、各段落は空行で区切ります。',
       '- この応答では本文(content)とタイトルだけを書きます。選択肢は次の段階で作ります。',
       '- 本文の中に「[選択]」「選択肢」「①/②」のような選択肢リストや、読者への問いかけを絶対に書かないでください。本文は物語の叙述だけで終えます。',
     ].join('\n');

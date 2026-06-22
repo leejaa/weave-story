@@ -10,7 +10,7 @@ const NextChapterChoiceSchema = z.object({
 export const NextChapterPackageSchema = z.object({
   chapterTitle: z.string().min(2).max(80),
   // No length floor: a short body is grown by the continuation pass, never hard-failed here.
-  content: z.string().min(1).max(8000),
+  content: z.string().min(1).max(20000),
   situation: z.string().min(0).max(300),
   question: z.string().min(0).max(180),
   choices: z.array(NextChapterChoiceSchema).max(2),
@@ -24,7 +24,7 @@ export type NextChapterPackage = z.infer<typeof NextChapterPackageSchema>;
 // min(1) only guards against an empty string.
 export const NextChapterDraftSchema = z.object({
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(1).max(8000),
+  content: z.string().min(1).max(20000),
 });
 
 // Step 2 derives the decision UI from the finished body (non-final chapters only).

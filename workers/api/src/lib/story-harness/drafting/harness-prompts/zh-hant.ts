@@ -1,6 +1,16 @@
 // Traditional Chinese harness prompts (mirrors the Korean/Japanese craft directives).
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
+import { narrativePhase, type NarrativePhase } from '../narrative-phase';
+
+// 各敘事階段(起承轉結)的節奏指引 — 參見 narrative-phase.ts。
+const ZH_PHASE: Record<NarrativePhase, string> = {
+  setup: '現在是開端(起)。請讓世界與人物、主角的欲望與傷痕站穩，並埋下核心衝突的火種。先不要揭露所有祕密。',
+  rising: '現在是發展(承)。請放大衝突與賭注。加入新的障礙、關係張力與利害關係，讓主角的欲望與傷痕開始碰撞。',
+  turn: '現在是轉折(轉)。以翻盤的逆轉或祕密的揭露把危機推高。從此刻起克制新的大伏筆，開始把已鋪陳的衝突收束到同一個方向。',
+  resolution: '現在是朝高潮收束的區段。開始回收未解的伏筆，不要再引入新人物或新支線。把張力推到高潮之前。',
+  final: '這是最後一章。請引爆高潮並了結核心衝突。給主角的欲望與傷痕情感上的回報，回收剩餘的伏筆，並以餘韻作結。',
+};
 
 function bibleSection(storyBible: StoryBibleSnapshot): string {
   if (!storyBible) {
@@ -51,6 +61,9 @@ export const ZH_HANT: HarnessGuide = {
       `總章數: ${estimatedChapters}章`,
       `生成嘗試: ${attempt}/2`,
       retry,
+      '[敘事階段 — 本章的角色]',
+      ZH_PHASE.setup,
+      '',
       '[第一話的設計原則]',
       '- 在前三段以內，就發生一樁打破主角日常或安全的事件。',
       '- 主角不能只是驚訝或等待，而要握有危險的情報，或站在危險抉擇的面前。',
@@ -58,8 +71,8 @@ export const ZH_HANT: HarnessGuide = {
       '- 不要以「冷靜回應」「假裝不知道」這類瑣碎的反應作結。',
       '',
       '[篇幅與格式 — 極其重要]',
-      '- content 務必以繁體中文寫滿2400字以上、3200字以下。低於1800字視為失敗。',
-      '- 10至14段，各段以空行分隔。',
+      '- content 務必以繁體中文寫滿4800字以上、5600字以下。低於4000字視為失敗。',
+      '- 18至24段，各段以空行分隔。',
       '- 各段以2至4句充分展開。不要摘要場景，要當作實際發生的事件來呈現。',
       '- 這次回應只寫正文(content)與標題欄位。選項在下一階段製作。',
       '- 正文中絕對不要寫出「[選擇]」「選項」「①/②」這類選項清單，也不要對讀者提問。正文只以故事敘述作結。',
@@ -92,6 +105,7 @@ export const ZH_HANT: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const summaries = a.previousChaptersSummaries.length > 0
       ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
       : '無摘要';
@@ -117,6 +131,9 @@ export const ZH_HANT: HarnessGuide = {
         : '- 執行如選項文字所述的行動，不要擅自改成別的行動。',
       '- 但若是物理上不可能、或會破壞世界觀的行動，不要無視，而要以最貼近讀者意圖的形式執行。',
       '',
+      '[敘事階段 — 本章的角色]',
+      ZH_PHASE[phase],
+      '',
       '[下一話的撰寫原則]',
       '- 在最初的2段以內，呈現出因讀者的選擇而改變的結果。',
       '- 選擇的代價，務必改變人物關係、證據、權力、生存危機其中至少一項。',
@@ -125,8 +142,8 @@ export const ZH_HANT: HarnessGuide = {
       a.isFinal ? '- 這是最後一章。請在正文中將故事完結。' : '- 正文的結尾，要停在召喚下一個選擇的抉擇時刻。',
       '',
       '[篇幅與格式 — 極其重要]',
-      '- content 務必以繁體中文寫滿2400字以上、3200字以下。低於1800字視為失敗。',
-      '- 9至14段，各段以空行分隔。',
+      '- content 務必以繁體中文寫滿4800字以上、5600字以下。低於4000字視為失敗。',
+      '- 18至24段，各段以空行分隔。',
       '- 這次回應只寫正文(content)與標題。選項在下一階段製作。',
       '- 正文中絕對不要寫出「[選擇]」「選項」「①/②」這類選項清單，也不要對讀者提問。正文只以故事敘述作結。',
     ].join('\n');

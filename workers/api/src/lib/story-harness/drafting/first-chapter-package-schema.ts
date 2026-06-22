@@ -34,7 +34,7 @@ export const ChapterDraftSchema = z.object({
   title: z.string().min(2).max(80),
   genre: z.string().min(2).max(80),
   chapterTitle: z.string().min(2).max(80),
-  content: z.string().min(1).max(8000),
+  content: z.string().min(1).max(20000),
 });
 
 // Step 2 — derive the story bible + decision UI FROM the finished body. All short
@@ -70,7 +70,7 @@ export const FirstChapterPackageSchema = z.object({
     question: z.string().min(4).max(180),
     choices: z.array(HighImpactChoiceSchema).length(2),
     // No length floor: a short body is grown by the continuation pass, never hard-failed here.
-    content: z.string().min(1).max(8000),
+    content: z.string().min(1).max(20000),
   }),
 });
 

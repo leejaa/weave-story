@@ -2,6 +2,17 @@
 // localization, so existing KO generation is byte-for-byte unchanged.
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
+import { narrativePhase, type NarrativePhase } from '../narrative-phase';
+
+// 챕터의 아크 단계(기·승·전·결)별 페이싱 지침. 본문 길이가 길어지고 챕터 수가 늘어날수록
+// "현재 N/M" 숫자만으론 중반이 늘어지고 결말이 급발진하므로, 단계별 역할을 명시한다.
+const KO_PHASE: Record<NarrativePhase, string> = {
+  setup: '지금은 도입부(기)입니다. 세계와 인물, 주인공의 욕망과 상처를 자리잡게 하고 중심 갈등의 불씨를 심으세요. 아직 모든 비밀을 드러내지 마세요.',
+  rising: '지금은 전개부(승)입니다. 갈등과 판돈을 키우세요. 새 장애물·관계 긴장·이해관계를 더하고, 주인공의 욕망과 상처가 충돌하기 시작하게 하세요.',
+  turn: '지금은 전환부(전)입니다. 판을 뒤집는 반전이나 비밀의 노출로 위기를 끌어올리세요. 이 시점부터 새로운 큰 떡밥은 자제하고, 벌여둔 갈등들을 한 방향으로 모으기 시작하세요.',
+  resolution: '지금은 절정으로 수렴하는 구간입니다. 열린 떡밥을 회수하기 시작하고, 새 인물이나 새 서브플롯을 도입하지 마세요. 긴장을 절정 직전까지 끌어올리세요.',
+  final: '이것이 마지막 챕터입니다. 절정을 터뜨리고 중심 갈등을 매듭지으세요. 주인공의 욕망과 상처에 감정적 보상을 주고, 남은 떡밥을 회수하며 여운 있게 닫으세요.',
+};
 
 function bibleSection(storyBible: StoryBibleSnapshot): string {
   if (!storyBible) {
@@ -52,6 +63,9 @@ export const KO: HarnessGuide = {
       `전체 챕터 수: ${estimatedChapters}챕터`,
       `생성 시도: ${attempt}/2`,
       retry,
+      '[서사 단계 — 이 챕터의 역할]',
+      KO_PHASE.setup,
+      '',
       '[첫 화 설계 원칙]',
       '- 첫 3문단 안에 독자의 일상/안전을 깨는 사건을 발생시킵니다.',
       '- 주인공은 단순히 놀라거나 기다리지 않고, 위험한 정보를 쥐거나 위험한 선택 앞에 서야 합니다.',
@@ -59,8 +73,8 @@ export const KO: HarnessGuide = {
       '- "침착하게 대답한다", "모른 척한다"처럼 사소한 반응으로 끝내지 않습니다.',
       '',
       '[분량과 형식 — 매우 중요]',
-      '- content는 반드시 한국어 2600자 이상, 3400자 이하로 씁니다. 2000자 미만이면 실패입니다.',
-      '- 10-14문단, 각 문단은 빈 줄로 구분합니다.',
+      '- content는 반드시 한국어 4800자 이상, 5600자 이하로 씁니다. 4000자 미만이면 실패입니다.',
+      '- 18-24문단, 각 문단은 빈 줄로 구분합니다.',
       '- 각 문단은 2-4문장으로 충분히 전개합니다. 장면을 요약하지 말고 실제 사건으로 보여주세요.',
       '- 이번 응답은 오직 본문(content)과 제목 필드만 작성합니다. 선택지는 다음 단계에서 만듭니다.',
       '- 본문 안에 "[선택]", "선택지", "①/②" 같은 선택지 목록이나 독자에게 던지는 질문을 절대 쓰지 마세요. 본문은 이야기 서술로만 끝냅니다.',
@@ -93,6 +107,7 @@ export const KO: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const summaries = a.previousChaptersSummaries.length > 0
       ? a.previousChaptersSummaries.map(s => `챕터 ${s.chapterNumber}: ${s.summary}`).join('\n')
       : '요약 없음';
@@ -118,6 +133,9 @@ export const KO: HarnessGuide = {
         : '- 선택지 문구의 행동을 그대로 실행하고, 임의로 다른 행동으로 바꾸지 마세요.',
       '- 단, 물리적으로 불가능하거나 세계관을 깨는 행동이면 무시하지 말고 독자의 의도에 가장 가까운 방식으로 실행하세요.',
       '',
+      '[서사 단계 — 이 챕터의 역할]',
+      KO_PHASE[phase],
+      '',
       '[다음 화 작성 원칙]',
       '- 첫 2문단 안에 독자의 선택 때문에 달라진 결과를 보여주세요.',
       '- 선택의 대가가 인물 관계, 증거, 권력, 생존 위험 중 최소 하나를 바꿔야 합니다.',
@@ -126,8 +144,8 @@ export const KO: HarnessGuide = {
       a.isFinal ? '- 마지막 챕터입니다. 본문에서 이야기를 완결지으세요.' : '- 본문의 마지막은 다음 선택을 부르는 결정의 순간에서 멈춥니다.',
       '',
       '[분량과 형식 — 매우 중요]',
-      '- content는 반드시 한국어 2400자 이상, 3400자 이하로 씁니다. 2000자 미만이면 실패입니다.',
-      '- 9-14문단, 각 문단은 빈 줄로 구분합니다.',
+      '- content는 반드시 한국어 4600자 이상, 5600자 이하로 씁니다. 4000자 미만이면 실패입니다.',
+      '- 18-24문단, 각 문단은 빈 줄로 구분합니다.',
       '- 이번 응답은 오직 본문(content)과 제목만 작성합니다. 선택지는 다음 단계에서 만듭니다.',
       '- 본문 안에 "[선택]", "선택지", "①/②" 같은 선택지 목록이나 독자에게 던지는 질문을 절대 쓰지 마세요. 본문은 이야기 서술로만 끝냅니다.',
     ].join('\n');

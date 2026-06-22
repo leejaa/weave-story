@@ -27,11 +27,11 @@ export function isSchemaError(err: unknown): boolean {
 }
 
 // Without an explicit output cap the gateway applies a low default and truncates the draft
-// mid-body — Korean chapter bodies (2400–3400 chars, plus any reasoning tokens) are
-// token-dense, so a short cap cuts the JSON off before it satisfies the schema and the whole
-// chapter fails. Give generous headroom: the 8000-char content ceiling is ~16k tokens, and a
-// high cap also keeps the body from being starved if the model spends tokens on reasoning.
-const MAX_OUTPUT_TOKENS = 16000;
+// mid-body — book-length chapter bodies (CJK ~4600–5600 chars, English ~2500–3200 words, plus
+// any reasoning tokens) are token-dense, so a short cap cuts the JSON off before it satisfies
+// the schema and the whole chapter fails. Give generous headroom: the 20000-char content
+// ceiling plus reasoning needs a high cap so the body is never starved mid-generation.
+const MAX_OUTPUT_TOKENS = 24000;
 
 export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   model: LanguageModel;
