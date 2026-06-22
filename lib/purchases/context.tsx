@@ -81,7 +81,7 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
         finishTransaction: iapFinishTransaction,
         onGranted: () => queryClient.invalidateQueries({ queryKey: ['me'] }),
       });
-      Sentry.captureMessage(`[iap] granted+finished productId=${purchase.productId} transactionId=${txId}`, 'info');
+      Sentry.addBreadcrumb({ category: 'iap', message: `granted+finished productId=${purchase.productId} transactionId=${txId}` });
       void trackPurchase({ productId: purchase.productId });
       pendingRef.current?.resolve(purchase);
       pendingRef.current = null;
@@ -99,12 +99,12 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   processRef.current = processPurchase;
 
   useEffect(() => {
-    Sentry.captureMessage(`[iap] connected=${connected}`, 'info');
+    Sentry.addBreadcrumb({ category: 'iap', message: `connected=${connected}` });
     if (!connected) return;
     setIsLoading(true);
     fetchProducts({ skus: CREDIT_SKUS, type: 'in-app' })
       .then(() => {
-        Sentry.captureMessage('[iap] fetchProducts resolved', 'info');
+        Sentry.addBreadcrumb({ category: 'iap', message: 'fetchProducts resolved' });
       })
       .catch((err: unknown) => {
         Sentry.captureException(err, { tags: { context: 'iap_fetch_products' } });
@@ -114,7 +114,7 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   }, [connected, fetchProducts]);
 
   useEffect(() => {
-    Sentry.captureMessage(`[iap] products count=${products.length} ids=${products.map(p => p.id).join(',') || 'none'}`, 'info');
+    Sentry.addBreadcrumb({ category: 'iap', message: `products count=${products.length} ids=${products.map(p => p.id).join(',') || 'none'}` });
   }, [products]);
 
   const purchaseProduct = useCallback((sku: string): Promise<Purchase> => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { useAuth } from '@/lib/auth/client/context';
 import { registerForPushNotifications } from '@/lib/notifications';
 
@@ -27,19 +28,20 @@ export function NotificationsBridge() {
 
   useEffect(() => {
     let mounted = true;
-    const redirect = (notification: Notifications.Notification | undefined | null) => {
+    const redirect = (notification: Notifications.Notification | undefined | null, source: 'cold' | 'warm') => {
       const data = notification?.request?.content?.data as NotifData | undefined;
       const url = data?.url ?? (data?.threadId ? `/reading/${data.threadId}` : null);
+      Sentry.addBreadcrumb({ category: 'push', message: `notification tapped (${source})`, data: { url: url ?? undefined, threadId: data?.threadId } });
       if (url) router.push(url as never);
     };
 
     // Cold start: app opened by tapping a notification.
     Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (mounted && response?.notification) redirect(response.notification);
+      if (mounted && response?.notification) redirect(response.notification, 'cold');
     });
     // Warm: tapped while the app was running/backgrounded.
     const sub = Notifications.addNotificationResponseReceivedListener((response) => {
-      redirect(response.notification);
+      redirect(response.notification, 'warm');
     });
     return () => {
       mounted = false;

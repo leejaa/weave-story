@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import { postRegisterPushToken } from '@/lib/api/fetch';
 
 // Show the notification (banner + in the tray) even when the app is foregrounded.
@@ -41,7 +42,10 @@ export async function registerForPushNotifications({ prompt }: { prompt: boolean
       if (!prompt) return;
       granted = (await Notifications.requestPermissionsAsync()).granted;
     }
-    if (!granted) return;
+    if (!granted) {
+      Sentry.addBreadcrumb({ category: 'push', message: 'permission denied' });
+      return;
+    }
 
     const projectId = getProjectId();
     if (!projectId) {
@@ -50,7 +54,9 @@ export async function registerForPushNotifications({ prompt }: { prompt: boolean
     }
     const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
     await postRegisterPushToken(token, Platform.OS === 'ios' ? 'ios' : 'android');
+    Sentry.addBreadcrumb({ category: 'push', message: 'token registered', data: { platform: Platform.OS } });
   } catch (err) {
+    Sentry.captureException(err, { tags: { context: 'push_register' } });
     console.warn('[push] register failed', err);
   }
 }
