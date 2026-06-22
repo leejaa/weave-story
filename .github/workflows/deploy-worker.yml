@@ -26,6 +26,13 @@ jobs:
           cache: npm
           cache-dependency-path: workers/api/package-lock.json
 
+      # workers/api 코드는 ../../shared/db/schema 를 import하고, shared/ 는 루트
+      # node_modules에서 drizzle-orm을 찾는다(루트는 npm workspace가 아님). 루트도
+      # 설치하지 않으면 wrangler 번들 단계에서 "Could not resolve drizzle-orm"로 실패.
+      - name: Install (root — shared/ 의존성)
+        run: npm ci
+        working-directory: .
+
       - name: Install
         run: npm ci
 
