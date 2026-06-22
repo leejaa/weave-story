@@ -5,6 +5,8 @@ export const READING_COPY = {
   choice: {
     defaultQuestion: '어떻게 할 것인가?',
     orInput: '또는 직접 입력',
+    customButton: '직접 입력하기',
+    backToChoices: '선택지로',
     inputPlaceholder: '원하는 행동을 직접 입력하세요…',
     continue: '이야기 계속하기',
     entryKicker: '선택의 순간',

@@ -13,7 +13,9 @@
     "yourChoice": "당신의 선택",
     "entryKicker": "선택의 순간",
     "openChoice": "선택하러 가기",
-    "failedTitle": "이어가지 못했어요"
+    "failedTitle": "이어가지 못했어요",
+    "customButton": "직접 입력하기",
+    "backToChoices": "선택지로"
   },
   "generating": {
     "title": "당신의 책을 펼치고 있어요",

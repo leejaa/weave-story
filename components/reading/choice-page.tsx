@@ -34,29 +34,34 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
   const { t } = useTranslation('reading');
   const insets = useSafeAreaInsets();
   const { scrollRef, inputWrapRef, scrollInputIntoView } = useChoiceInputScroll();
+  // 'choices': A·B·직접입력 버튼 노출 / 'input': 직접입력란만 크게 확장.
+  const [mode, setMode] = useState<'choices' | 'input'>('choices');
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [customInput, setCustomInput] = useState('');
 
-  const canConfirm = selectedChoice !== null || customInput.trim().length > 0;
+  const canConfirm = mode === 'input' ? customInput.trim().length > 0 : selectedChoice !== null;
 
   const handleChoiceSelect = useCallback((index: number) => {
     setSelectedChoice(prev => (prev === index ? null : index));
-    setCustomInput('');
   }, []);
 
-  const handleCustomChange = useCallback((text: string) => {
-    setCustomInput(text);
-    if (text.trim().length > 0) setSelectedChoice(null);
+  const enterInput = useCallback(() => {
+    setSelectedChoice(null);
+    setMode('input');
+  }, []);
+
+  const backToChoices = useCallback(() => {
+    setMode('choices');
   }, []);
 
   const handleConfirm = useCallback(async () => {
     if (!canConfirm || choosing) return;
     const selection =
-      customInput.trim().length > 0
+      mode === 'input'
         ? { customInput: customInput.trim() }
         : { choiceIndex: selectedChoice! };
     await onChoose(chapterNumber, selection);
-  }, [canConfirm, choosing, customInput, selectedChoice, chapterNumber, onChoose]);
+  }, [canConfirm, choosing, mode, customInput, selectedChoice, chapterNumber, onChoose]);
 
   return (
     <ScrollView
@@ -77,47 +82,54 @@ export function ChoicePage({ options, situation, question, chapterNumber, onChoo
           </Text>
         </View>
 
-        <View style={styles.choices}>
-          {options.map(opt => (
+        {mode === 'choices' ? (
+          <View style={styles.choices}>
+            {options.map(opt => (
+              <ChoiceTile
+                key={opt.index}
+                marker={String.fromCharCode(65 + opt.index)}
+                text={opt.text}
+                selected={selectedChoice === opt.index}
+                faded={selectedChoice !== null && selectedChoice !== opt.index}
+                onPress={() => handleChoiceSelect(opt.index)}
+              />
+            ))}
             <ChoiceTile
-              key={opt.index}
-              marker={String.fromCharCode(65 + opt.index)}
-              text={opt.text}
-              selected={selectedChoice === opt.index}
-              faded={selectedChoice !== null && selectedChoice !== opt.index}
-              onPress={() => handleChoiceSelect(opt.index)}
+              marker="✎"
+              text={t('choice.customButton')}
+              onPress={enterInput}
             />
-          ))}
-        </View>
-
-        <View style={styles.dividerRow}>
-          <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
-          <Text style={[styles.dividerLabel, { color: c.inkFaint }]}>{t('choice.orInput')}</Text>
-          <View style={[styles.dividerLine, { backgroundColor: c.rule }]} />
-        </View>
-
-        <View
-          ref={inputWrapRef}
-          style={[
-            styles.inputWrap,
-            {
-              borderColor: customInput.trim() ? c.thread : c.rule,
-              backgroundColor: c.paperRaised,
-            },
-          ]}>
-          <TextInput
-            style={[styles.input, { color: c.ink }]}
-            placeholder={t('choice.inputPlaceholder')}
-            placeholderTextColor={c.inkFaint}
-            value={customInput}
-            onChangeText={handleCustomChange}
-            onFocus={scrollInputIntoView}
-            multiline
-            textAlignVertical="top"
-            returnKeyType="default"
-            blurOnSubmit={false}
-          />
-        </View>
+          </View>
+        ) : (
+          <View style={styles.inputMode}>
+            <Pressable onPress={backToChoices} hitSlop={8} style={styles.backRow}>
+              <Text style={[styles.backLabel, { color: c.inkSoft }]}>‹ {t('choice.backToChoices')}</Text>
+            </Pressable>
+            <View
+              ref={inputWrapRef}
+              style={[
+                styles.inputWrap,
+                {
+                  borderColor: customInput.trim() ? c.thread : c.rule,
+                  backgroundColor: c.paperRaised,
+                },
+              ]}>
+              <TextInput
+                style={[styles.input, { color: c.ink }]}
+                placeholder={t('choice.inputPlaceholder')}
+                placeholderTextColor={c.inkFaint}
+                value={customInput}
+                onChangeText={setCustomInput}
+                onFocus={scrollInputIntoView}
+                autoFocus
+                multiline
+                textAlignVertical="top"
+                returnKeyType="default"
+                blurOnSubmit={false}
+              />
+            </View>
+          </View>
+        )}
 
         <Pressable
           onPress={handleConfirm}
@@ -160,30 +172,28 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   choices: { gap: 8 },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  inputMode: { gap: 12 },
+  backRow: {
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
   },
-  dividerLine: { flex: 1, height: 1 },
-  dividerLabel: {
-    fontFamily: FONTS.mono,
-    fontSize: 9,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+  backLabel: {
+    fontFamily: FONTS.sansSemibold,
+    fontSize: SIZES.sm,
+    letterSpacing: 0.2,
   },
   inputWrap: {
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    minHeight: 100,
+    minHeight: 200,
   },
   input: {
     fontFamily: FONTS.sans,
-    fontSize: SIZES.sm,
-    lineHeight: 22,
-    minHeight: 76,
+    fontSize: SIZES.md,
+    lineHeight: 24,
+    minHeight: 176,
   },
   cta: {
     borderRadius: 14,

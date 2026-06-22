@@ -13,7 +13,9 @@
     "yourChoice": "Your choice",
     "entryKicker": "Moment of choice",
     "openChoice": "Choose what happens next",
-    "failedTitle": "Couldn't continue"
+    "failedTitle": "Couldn't continue",
+    "customButton": "Write your own",
+    "backToChoices": "Back to choices"
   },
   "generating": {
     "title": "Opening your storybook",
