@@ -67,6 +67,7 @@ export function StoryPromptScreen({
 
             <StoryPromptSubmitButton
               label={copy.startBtn}
+              pendingLabel={copy.preparingBtn}
               canSubmit={canSubmit}
               isPending={isPending}
               onPress={onSubmit}
