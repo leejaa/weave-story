@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { IAP } from '@apps-in-toss/web-framework';
+import * as Sentry from '@sentry/react';
 import { isInTossApp } from '@/lib/auth';
 import { grantTossOrder } from './api';
 
@@ -31,7 +32,8 @@ export function usePurchase() {
           try {
             const r = await grantTossOrder(orderId, sku);
             return r.granted;
-          } catch {
+          } catch (err) {
+            Sentry.captureException(err, { tags: { context: 'iap_grant' }, extra: { sku, orderId } });
             return false;
           }
         },
@@ -41,7 +43,9 @@ export function usePurchase() {
         refreshMe();
         cleanup();
       },
-      onError: () => {
+      onError: (err) => {
+        // 주문/결제 단계 실패(예: 미등록 sku, 결제 취소). 실제 사유를 남겨 원인 추적 가능하게.
+        Sentry.captureException(err, { tags: { context: 'iap_order' }, extra: { sku } });
         setBuying(null);
         cleanup();
       },
@@ -65,8 +69,8 @@ export function usePurchase() {
           }
         }
         if (recovered && !cancelled) refreshMe();
-      } catch {
-        // best-effort
+      } catch (err) {
+        Sentry.captureException(err, { tags: { context: 'iap_pending_recovery' } });
       }
     })();
     return () => {
