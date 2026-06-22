@@ -34,9 +34,7 @@ export function LoginPage({ onLogin }: Props) {
       <div className={styles.overlay} aria-hidden />
 
       <div className={styles.content}>
-        <div className={styles.brand}>
-          <span className={styles.diamond} />
-        </div>
+        <div className={styles.brand} />
 
         <div className={styles.headline}>
           <h1 className={styles.title}>실마리</h1>

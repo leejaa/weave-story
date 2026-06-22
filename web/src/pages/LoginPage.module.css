@@ -31,19 +31,9 @@
 }
 
 /* 상단 브랜드 */
+/* 로고 자리. 다이아몬드 도형 제거 후 상단 여백(타이틀 위 호흡)만 유지. */
 .brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
   margin-bottom: 64px;
-}
-
-.diamond {
-  width: 10px;
-  height: 10px;
-  background: #c8b8ce;
-  transform: rotate(45deg);
 }
 
 .wordmark {
