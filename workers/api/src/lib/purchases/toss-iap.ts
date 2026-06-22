@@ -1,8 +1,11 @@
 import type { WorkerEnv } from '../../types';
 
 // 앱인토스 인앱결제(IAP) 서버 지급. 소비성 크레딧 팩.
-// 콘솔에 등록하는 SKU와 키가 일치해야 한다(미일치 시 Unknown SKU로 거부).
+// 클라가 보내는 sku는 콘솔 "상품 ID"(ait....)다(토스 IAP는 sku=productId). 키가 일치해야 지급된다.
 export const TOSS_CREDITS_PER_SKU: Record<string, number> = {
+  'ait.0000040536.f7b25186.5c1a0276b0.1419199903': 3, // 스타터 3 크레딧
+  'ait.0000040536.e8c978b2.4c19968402.1419376677': 10, // 밸류 10 크레딧
+  // 레거시 내부 라벨 — 구 .ait 클라 호환(신규 .ait 출시 후 제거 가능).
   credits_starter_3: 3,
   credits_value_10: 10,
 };
