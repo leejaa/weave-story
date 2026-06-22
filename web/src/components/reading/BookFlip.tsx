@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react';
-import lottie from 'lottie-web';
+// lottie_light: 표현식 평가기(eval 사용)를 제외한 경량 빌드. 앱인토스 보안 정책상
+// eval 코드가 금지되어 풀 빌드(lottie-web) 대신 light 빌드를 쓴다. 직접 만든 JSON은
+// After Effects 표현식을 쓰지 않으므로(순수 도형/키프레임) light 빌드로 동일하게 렌더된다.
+import lottie from 'lottie-web/build/player/lottie_light';
 import styles from './BookFlip.module.css';
 
 type Props = {
