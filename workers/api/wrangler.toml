@@ -1,4 +1,7 @@
 name = "weave-story-api"
+# CI 토큰엔 account 조회 권한이 없어 자동 탐지가 실패한다(2026-06-18 배포 실패 원인).
+# account_id 는 비밀이 아니므로 설정에 고정해 CI/로컬 모두 안정적으로 배포되게 한다.
+account_id = "d82edb9e0df87cd8b607a0df0bca1b4b"
 main = "src/index.ts"
 compatibility_date = "2025-05-13"
 compatibility_flags = ["nodejs_compat"]
