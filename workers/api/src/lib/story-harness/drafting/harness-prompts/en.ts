@@ -11,12 +11,13 @@ import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
 import { langDisplayName } from '../../../ai/story-lang';
 import { formatStoryState } from '../../../ai/story-generation';
-import { narrativePhase, chapterEventBeat, type NarrativePhase, type EventBeat } from '../narrative-phase';
+import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
+import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
 
 // Per-arc-phase (act) pacing guidance — see narrative-phase.ts.
 const EN_PHASE: Record<NarrativePhase, string> = {
   setup: 'This is the setup (act 1). Ground the world, the characters, and the protagonist\'s desire and wound, and plant the seed of the central conflict. Do not reveal every secret yet.',
-  rising: 'This is the rising action (act 2). Escalate the conflict and the stakes. Add new obstacles, relational tension, and competing interests; let the protagonist\'s desire and wound begin to collide.',
+  rising: 'This is the rising action (act 2). Escalate the conflict and the stakes, but DEVELOP and start paying off the threads already opened. Do not keep stacking new mysteries; let the protagonist\'s desire and wound collide.',
   turn: 'This is the turn (midpoint). Raise the crisis with a reversal or an exposed secret. From here, hold back major new threads and start converging the conflicts already opened.',
   resolution: 'This is the convergence toward the climax. Begin paying off open threads; do not introduce new characters or subplots. Drive tension to just before the climax.',
   final: 'This is the final chapter. Deliver the climax and resolve the central conflict. Pay off the protagonist\'s desire and wound emotionally, tie up remaining threads, and close with resonance.',
@@ -30,6 +31,13 @@ const EN_EVENT_BEAT: Record<EventBeat, string> = {
   allianceShift: 'shift in alliances — an ally/enemy alignment flips or a new player cuts in.',
   reversal: 'reversal — the situation turns out the opposite of what the protagonist expected.',
   costSurfaces: 'cost surfaces — the fallout/price of an earlier choice lands concretely.',
+};
+
+// Hook accounting directive — orthogonal to EventBeat. Stops the monotonic pile-up.
+const EN_HOOK_DIRECTIVE: Record<HookDirective, string> = {
+  plant_ok: 'Hook accounting: you may plant about one new hook. But the body must actually advance via this chapter\'s event — do not just drop hooks and stop.',
+  payoff_due: 'Hook accounting (important): this chapter must CLEARLY RESOLVE at least one open loop within the body (the reader should feel they got an answer). Do not add new hooks without resolving one. A new hook is allowed only AFTER a payoff, and only one, directly tied to what you just resolved.',
+  converge: 'Hook accounting (converge): do NOT add any new hooks; focus only on resolving open loops. Pull the scattered threads into one direction.',
 };
 
 // Readability-first prose guardrail — curbs the alignment-model mannerisms (antithesis spam, telling, abstract monologue).
@@ -173,9 +181,41 @@ export const EN: HarnessGuide = {
           ? a.previousChaptersSummaries.map(s => `Chapter ${s.chapterNumber}: ${s.summary}`).join('\n')
           : 'None');
     const retry = a.previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+
+    // Blueprint (if present) + hook accounting. Falls back to legacy behavior when absent (older stories).
+    const bp = a.storyBible?.blueprint ?? null;
+    const progress = a.estimatedChapters > 0 ? a.nextChapterNumber / a.estimatedChapters : 1;
+    const directive = hookDirective(a.nextChapterNumber, a.estimatedChapters, a.storyState?.openLoops?.length ?? 0);
+    const arc = bp ? currentArc(bp, progress) : null;
+    const oldestLoops = (a.storyState?.openLoops ?? []).slice(0, 2);
+    const blueprintSection = bp
+      ? [
+          '',
+          '[Story blueprint — global plan (never deviate)]',
+          formatBlueprintSpine(bp),
+          '',
+          '[Genre lock]',
+          formatGenreLock(bp),
+          '- Keep this story\'s genre to the end. Unless the genre IS mystery/detective, do not drift into mystery/procedural conventions of endlessly dropping clues or withholding information.',
+          ...(arc ? ['', '[This chapter\'s role — blueprint arc]', formatArc(arc)] : []),
+        ].join('\n')
+      : '';
+    const hookSection = [
+      '',
+      '[Hook accounting — strict]',
+      EN_HOOK_DIRECTIVE[a.isFinal ? 'converge' : directive],
+      oldestLoops.length
+        ? `- Currently open loops (oldest first): ${oldestLoops.map(l => `"${l}"`).join(', ')}. When you resolve, close the oldest first.`
+        : '',
+      progress > 0.45 && !a.isFinal
+        ? '- From here on, do not open more loops than you close (the total number of unresolved loops must not grow).'
+        : '',
+    ].filter(Boolean).join('\n');
+
     return [
       langOverride(a.outputLanguage),
       bibleSection(a.storyBible),
+      blueprintSection,
       '',
       `[User's original premise]\n${a.prompt}`,
       `Total chapters: ${a.estimatedChapters}`,
@@ -197,11 +237,12 @@ export const EN: HarnessGuide = {
       '[This chapter\'s event — most important]',
       '- This chapter must contain ONE concrete event that changes the situation as the direct consequence of the last choice. Do not fill it with interior rumination, recap, or circling in place.',
       '- That event must change the state of at least one of: power, relationships, secrets, survival, location — versus the previous chapter.',
-      '- Where possible, advance one step toward the drive (the protagonist\'s current goal), or threaten it anew. If there are open loops, touch or pay off one.',
+      '- Advance one step toward the drive (the protagonist\'s current goal), or threaten it anew.',
       `- Vary the KIND of event where possible (do not repeat the same kind as the previous chapter): ${beat}`,
+      hookSection,
       a.isFinal
         ? '- This is the final chapter. Bring the story to a close in the body.'
-        : '- At the end of the body, leave one fresh hook (a question, threat, arrival, or discovery) and stop on a decision moment that calls for the next choice.',
+        : '- End the body on a decision moment that calls for the next choice. The closing hook must obey "Hook accounting" above — it must be a planned question from the blueprint or one that arises naturally from the loop you just resolved; do not add an unrelated new mystery each chapter.',
       '',
       '[Narrative phase — this chapter\'s role]',
       EN_PHASE[phase],

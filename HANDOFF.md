@@ -6,6 +6,22 @@ Last updated: 2026-06-23
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
 
+## 2026-06-23 — Phase A: 스토리 청사진(Blueprint) 도입 (떡밥 회수 강제 + 장르 고정)
+
+"자정 편의점" 검증에서 두 문제 확인 → 같은 뿌리(전역 청사진 부재): ① 떡밥이 회수 없이
+단조 누적돼 4~5화에 내용 붕괴, ② 타이핑 프롬프트는 장르 잠금이 없어 미스터리로 쏠림.
+
+- **청사진**: 생성 시 1회 **opus-4.7**로 `story_bibles.blueprint`(JSONB, nullable) 작성 —
+  장르 고정 + 척추(spine) + **fraction 기반 마이크로-아크(떡밥 plant→payoff 스케줄)**.
+  모듈 `workers/api/src/lib/story-harness/blueprint/`. 삽입: `run-first-chapter-harness.ts`
+  saveStoryBible 직후(비치명적). `stories.genre`를 blueprint.genre로 일치(라벨 불일치 해소).
+- **떡밥 회수 강제(엄격)**: `narrative-phase.ts` `hookDirective()`(plant_ok/payoff_due/converge,
+  EventBeat와 직교). 4개 언어 `buildNextDraft`에 청사진·장르고정·아크·회수 블록 주입,
+  가장 오래된 떡밥부터 회수, 중반(>0.45) 이후 net 증가 금지. "매 화 끝 훅 의무"는 완화.
+- **장르 고정**: 청사진 genre + avoid("추리·미스터리화 금지")를 매 화 주입.
+- **하위호환**: blueprint=null(옛 스토리)이면 빌더가 기존 phase 동작으로 폴백. 컬럼 nullable·비파괴.
+- 버전 bump `@2026-06-23-2`. 정본: [`STORY_GENERATION_ARCHITECTURE.md`](./workers/api/STORY_GENERATION_ARCHITECTURE.md) §3.
+
 ## 2026-06-23 — 스토리 생성 하네스 컨셉 전환 (백엔드 대대적 리팩토링)
 
 제품 컨셉 재정의: ~~일관된 장편소설~~ → **"얇은 척추(주인공 능동 목표 drive) 위에서

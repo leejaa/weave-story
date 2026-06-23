@@ -4,12 +4,13 @@
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
 import { formatStoryState } from '../../../ai/story-generation';
-import { narrativePhase, chapterEventBeat, type NarrativePhase, type EventBeat } from '../narrative-phase';
+import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
+import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
 
 // アーク段階(起承転結)ごとのペース配分の指針 — narrative-phase.ts を参照。
 const JA_PHASE: Record<NarrativePhase, string> = {
   setup: '今は導入部(起)です。世界と人物、主人公の欲望と傷を素早く定着させ、中心的な葛藤の火種を仕込んでください。まだすべての秘密を明かさないでください。',
-  rising: '今は展開部(承)です。葛藤と賭け金を大きくします。新たな障害・関係の緊張・利害を加え、主人公の欲望と傷が衝突し始めるようにしてください。',
+  rising: '今は展開部(承)です。葛藤と賭け金を大きくしつつ、広げてきた伏線を発展させ回収し始めてください。新しい謎ばかりを積み上げず、主人公の欲望と傷が衝突するようにしてください。',
   turn: '今は転換部(転)です。局面を覆す逆転や秘密の露見で危機を高めてください。この時点から新たな大きな伏線は控え、広げてきた葛藤を一つの方向へ収束させ始めます。',
   resolution: '今はクライマックスへ収束する区間です。未回収の伏線を回収し始め、新しい人物や新しいサブプロットを導入しないでください。緊張をクライマックス直前まで高めます。',
   final: 'これが最終章です。クライマックスを爆発させ、中心的な葛藤を決着させてください。主人公の欲望と傷に感情的な報酬を与え、残った伏線を回収し、余韻を残して閉じてください。',
@@ -23,6 +24,13 @@ const JA_EVENT_BEAT: Record<EventBeat, string> = {
   allianceShift: '関係の変化 — 味方/敵の構図が反転するか、新たな人物が割り込む。',
   reversal: '逆転 — 状況が主人公の予想と反対にひっくり返る。',
   costSurfaces: '代償の表面化 — 過去の選択の余波・代償が具体的に降りかかる。',
+};
+
+// 伏線会計の指示 — hookDirective(EventBeatと直交。新しい伏線を開くか閉じるか)。累積暴走を防ぐ。
+const JA_HOOK_DIRECTIVE: Record<HookDirective, string> = {
+  plant_ok: '伏線会計: 新しい伏線を一つ程度仕込んでも構いません。ただし本文はこの章の事件で実際に前進させ、伏線を投げるだけで終わらせないでください。',
+  payoff_due: '伏線会計(重要): この章では開いている伏線のうち最低一つを本文の中で「明確に回収」してください(読者が答えを得たと感じるように)。回収せず新しい伏線だけを追加しないでください。新しい伏線は回収した後に、その回収と直接つながるものを一つまで。',
+  converge: '伏線会計(収束): 新しい伏線は一切追加せず、開いた伏線の回収だけに集中してください。散らばった糸を一つの方向へまとめます。',
 };
 
 // 可読性優先の文体ガードレール — モデル特有の手癖(逆説の乱用・説明過多・抽象的独白)を抑える。
@@ -159,8 +167,40 @@ export const JA: HarnessGuide = {
           ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
           : 'なし');
     const retry = a.previousIssues?.length ? `\n\n[前回の結果で必ず直す問題]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+
+    // 設計図(あれば)+ 伏線会計。設計図がなければ(古い物語)従来の動作にフォールバック。
+    const bp = a.storyBible?.blueprint ?? null;
+    const progress = a.estimatedChapters > 0 ? a.nextChapterNumber / a.estimatedChapters : 1;
+    const directive = hookDirective(a.nextChapterNumber, a.estimatedChapters, a.storyState?.openLoops?.length ?? 0);
+    const arc = bp ? currentArc(bp, progress) : null;
+    const oldestLoops = (a.storyState?.openLoops ?? []).slice(0, 2);
+    const blueprintSection = bp
+      ? [
+          '',
+          '[物語の設計図 — 全体構成(絶対に逸脱しない)]',
+          formatBlueprintSpine(bp),
+          '',
+          '[ジャンル固定]',
+          formatGenreLock(bp),
+          '- この作品のジャンルを最後まで維持してください。ジャンルが推理/ミステリーでない限り、手がかりを延々と撒いたり情報を保留するミステリー・捜査物の作法に変質させないでください。',
+          ...(arc ? ['', '[この章の役割 — 設計図アーク]', formatArc(arc)] : []),
+        ].join('\n')
+      : '';
+    const hookSection = [
+      '',
+      '[伏線会計 — 厳格]',
+      JA_HOOK_DIRECTIVE[a.isFinal ? 'converge' : directive],
+      oldestLoops.length
+        ? `- 現在開いている伏線(古い順): ${oldestLoops.map(l => `「${l}」`).join('、')}。回収する際は最も古いものから閉じてください。`
+        : '',
+      progress > 0.45 && !a.isFinal
+        ? '- この時点からは、新しく開く伏線の数が閉じる伏線の数を超えないようにしてください(未回収の伏線の総数が増えてはいけません)。'
+        : '',
+    ].filter(Boolean).join('\n');
+
     return [
       bibleSection(a.storyBible),
+      blueprintSection,
       '',
       `[ユーザーの元の設定]\n${a.prompt}`,
       `全章数: ${a.estimatedChapters}`,
@@ -182,11 +222,12 @@ export const JA: HarnessGuide = {
       '[この章の事件 — 最重要]',
       '- この章には、直前の選択の直接の結果として状況を変える具体的な事件が「実際に」一つ起こらなければなりません。内面の反芻・状況整理・同じ場所での足踏みだけで埋めないでください。',
       '- その事件は、権力・関係・秘密・生存・場所のうち少なくとも一つの状態を直前の章から変えなければなりません。',
-      '- できればdrive(主人公の現在の目標)へ一歩前進させるか、その目標を新たに脅かしてください。未回収の伏線があれば一つに触れるか回収してください。',
+      '- drive(主人公の現在の目標)へ一歩前進させるか、その目標を新たに脅かしてください。',
       `- この章の事件の種類はできるだけ次に変奏してください(直前の章と同じ種類の繰り返し禁止): ${beat}`,
+      hookSection,
       a.isFinal
         ? '- 最終章です。本文で物語を完結させてください。'
-        : '- 本文の最後には、次の話へ引っ張る新しいフック(問い・脅威・登場・発見)を一つ残し、次の選択を呼ぶ決断の瞬間で止めます。',
+        : '- 本文の最後は、次の選択を呼ぶ決断の瞬間で止めます。終わりのフックは上の「伏線会計」に従ってください — 設計図上の計画された問いか、今回収した伏線から自然に派生したものに限り、毎章無関係な新しい謎を追加しないでください。',
       '',
       '[物語の段階 — この章の役割]',
       JA_PHASE[phase],

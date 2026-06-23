@@ -11,6 +11,8 @@ import { validateFirstChapterQuality } from '../validation/validate-first-chapte
 import { startGenerationRun, finishGenerationRun } from '../logging/generation-run-logger';
 import { serializeGenerationError as serializeError } from '../logging/serialize-error';
 import { saveStoryBible } from '../memory/save-story-bible';
+import { generateStoryBlueprint } from '../blueprint/generate-blueprint';
+import { saveStoryBlueprint } from '../blueprint/save-blueprint';
 import {
   FIRST_CHAPTER_HARNESS_MODEL,
   FIRST_CHAPTER_HARNESS_PROMPT_VERSION,
@@ -134,6 +136,25 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         });
       } catch (err) {
         console.error(`[harness:first] story bible save failed non_critical story=${params.storyId}`, err);
+      }
+
+      // One-time global blueprint (Phase A): plant→payoff schedule + genre lock that every
+      // later chapter references. Non-critical — if it fails the story still proceeds and the
+      // next-chapter builder simply falls back to legacy phase guidance.
+      try {
+        const blueprint = await generateStoryBlueprint({
+          apiKey: params.apiKey,
+          bible: parsedPackage.bible,
+          prompt: params.genCtx.prompt,
+          estimatedChapters: params.genCtx.estimatedChapters,
+          language: params.genCtx.language,
+        });
+        await saveStoryBlueprint({ db: params.db, storyId: params.storyId, blueprint });
+        console.log(
+          `[blueprint] story=${params.storyId} arcs=${blueprint.arcs.length} genre=${blueprint.genre}`,
+        );
+      } catch (err) {
+        console.error(`[blueprint] generation failed non_critical story=${params.storyId}`, err);
       }
 
       await finishGenerationRun({

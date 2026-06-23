@@ -138,7 +138,7 @@ export async function updateStoryState(params: {
     `Write all field values in ${langName}. Be concise and factual — a writer\'s memo, not prose.`,
     'NEVER contradict the CANON. Preserve established facts.',
     'drive = the protagonist\'s CURRENT active goal driving the story forward (update it as the goal evolves).',
-    'openLoops = unresolved hooks/mysteries still in play; drop ones that got resolved this chapter, add new ones.',
+    'openLoops = unresolved hooks/mysteries still in play, kept in OLDEST-FIRST order (oldest unresolved at the front). MUST remove any loop the chapter resolved; only add a loop the chapter genuinely opened. Do not let this list grow unbounded — if it is long, the story should be closing loops, not adding them.',
     'characterStates = key characters and their current condition/relationship.',
     'lastEvent = the concrete event that happened in the just-finished chapter.',
     'lastChoiceConsequence = how the reader\'s last choice directly caused/shaped this chapter (empty for chapter 1).',

@@ -4,12 +4,13 @@
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
 import { formatStoryState } from '../../../ai/story-generation';
-import { narrativePhase, chapterEventBeat, type NarrativePhase, type EventBeat } from '../narrative-phase';
+import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
+import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
 
 // 各敘事階段(起承轉結)的節奏指引 — 參見 narrative-phase.ts。
 const ZH_PHASE: Record<NarrativePhase, string> = {
   setup: '現在是開端(起)。請讓世界與人物、主角的欲望與傷痕迅速站穩，並埋下核心衝突的火種。先不要揭露所有祕密。',
-  rising: '現在是發展(承)。請放大衝突與賭注。加入新的障礙、關係張力與利害關係，讓主角的欲望與傷痕開始碰撞。',
+  rising: '現在是發展(承)。請放大衝突與賭注，同時發展並開始回收已鋪陳的伏筆。不要一味堆疊新謎團，讓主角的欲望與傷痕開始碰撞。',
   turn: '現在是轉折(轉)。以翻盤的逆轉或祕密的揭露把危機推高。從此刻起克制新的大伏筆，開始把已鋪陳的衝突收束到同一個方向。',
   resolution: '現在是朝高潮收束的區段。開始回收未解的伏筆，不要再引入新人物或新支線。把張力推到高潮之前。',
   final: '這是最後一章。請引爆高潮並了結核心衝突。給主角的欲望與傷痕情感上的回報，回收剩餘的伏筆，並以餘韻作結。',
@@ -23,6 +24,13 @@ const ZH_EVENT_BEAT: Record<EventBeat, string> = {
   allianceShift: '關係變化 — 盟友/敵對的格局翻轉，或有新人物介入。',
   reversal: '逆轉 — 局勢與主角的預期相反地翻轉。',
   costSurfaces: '代價浮現 — 過往選擇的後果、代價具體降臨。',
+};
+
+// 伏筆會計指示 — hookDirective(與 EventBeat 正交:決定開新伏筆或回收)。防止單調堆疊。
+const ZH_HOOK_DIRECTIVE: Record<HookDirective, string> = {
+  plant_ok: '伏筆會計:可以埋下大約一個新伏筆。但正文必須藉本章事件實際推進,不要只丟伏筆就結束。',
+  payoff_due: '伏筆會計(重要):本章必須在正文中「明確回收」至少一個已開的伏筆(讓讀者感到得到了答案)。不要不回收就只加新伏筆。新伏筆只能在回收之後、且與所回收者直接相關,至多一個。',
+  converge: '伏筆會計(收束):絕不可新增伏筆,只專注回收已開的伏筆。把散落的線索收攏到同一個方向。',
 };
 
 // 可讀性優先的文體護欄 — 抑制模型特有的習氣(濫用對偶、過度說明、抽象獨白)。
@@ -159,8 +167,40 @@ export const ZH_HANT: HarnessGuide = {
           ? a.previousChaptersSummaries.map(s => `第${s.chapterNumber}章: ${s.summary}`).join('\n')
           : '無');
     const retry = a.previousIssues?.length ? `\n\n[上次結果務必修正的問題]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+
+    // 設計圖(若有)+ 伏筆會計。若無設計圖(舊故事)則回退至原本行為。
+    const bp = a.storyBible?.blueprint ?? null;
+    const progress = a.estimatedChapters > 0 ? a.nextChapterNumber / a.estimatedChapters : 1;
+    const directive = hookDirective(a.nextChapterNumber, a.estimatedChapters, a.storyState?.openLoops?.length ?? 0);
+    const arc = bp ? currentArc(bp, progress) : null;
+    const oldestLoops = (a.storyState?.openLoops ?? []).slice(0, 2);
+    const blueprintSection = bp
+      ? [
+          '',
+          '[故事設計圖 — 整體架構(絕不偏離)]',
+          formatBlueprintSpine(bp),
+          '',
+          '[類型鎖定]',
+          formatGenreLock(bp),
+          '- 請將本作的類型維持到底。除非類型本身就是推理/懸疑,否則不要變質成不斷撒線索、保留資訊的懸疑·辦案套路。',
+          ...(arc ? ['', '[本章的角色 — 設計圖弧]', formatArc(arc)] : []),
+        ].join('\n')
+      : '';
+    const hookSection = [
+      '',
+      '[伏筆會計 — 嚴格]',
+      ZH_HOOK_DIRECTIVE[a.isFinal ? 'converge' : directive],
+      oldestLoops.length
+        ? `- 目前開著的伏筆(由舊到新): ${oldestLoops.map(l => `「${l}」`).join('、')}。回收時請從最舊的開始收。`
+        : '',
+      progress > 0.45 && !a.isFinal
+        ? '- 從此刻起,新開的伏筆數不可超過收掉的伏筆數(未回收伏筆的總數不可增加)。'
+        : '',
+    ].filter(Boolean).join('\n');
+
     return [
       bibleSection(a.storyBible),
+      blueprintSection,
       '',
       `[使用者原本的設定]\n${a.prompt}`,
       `總章數: ${a.estimatedChapters}`,
@@ -182,11 +222,12 @@ export const ZH_HANT: HarnessGuide = {
       '[本章的事件 — 最重要]',
       '- 本章必須有一個作為前一個選擇直接結果、足以改變局勢的具體事件「實際」發生。不要只用內心反芻、整理狀況、原地打轉來填滿。',
       '- 該事件必須讓權力、關係、祕密、生存、所在位置其中至少一項的狀態，與前一章有所不同。',
-      '- 盡量朝 drive(主角當前的目標)前進一步，或對該目標構成新的威脅。若有未回收的伏筆，碰觸或回收其中一個。',
+      '- 朝 drive(主角當前的目標)前進一步，或對該目標構成新的威脅。',
       `- 本章事件的種類請盡量做變奏(禁止與前一章重複同一種類): ${beat}`,
+      hookSection,
       a.isFinal
         ? '- 這是最後一章。請在正文中將故事完結。'
-        : '- 正文的結尾要留下一個牽引下一話的新鉤子(提問、威脅、登場、發現)，並停在召喚下一個選擇的抉擇時刻。',
+        : '- 正文結尾停在召喚下一個選擇的抉擇時刻。結尾的鉤子須遵守上方「伏筆會計」— 必須是設計圖中已規劃的提問,或由本章剛回收的伏筆自然衍生者;不要每章都加無關的新謎團。',
       '',
       '[敘事階段 — 本章的角色]',
       ZH_PHASE[phase],

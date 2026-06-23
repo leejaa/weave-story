@@ -143,6 +143,10 @@ export const storyBibles = pgTable('story_bibles', {
   wound: text('wound'),
   // 불변 캐논: 원본 프롬프트의 핵심 전제(사망/환생 등 메커니즘·장르)를 재해석 없이 고정. 1챕터 1회 기록, 이후 갱신 안 함. 매 챕터 가드레일.
   canon: text('canon'),
+  // 스토리 청사진(Phase A): 생성 시 1회 opus-4.7로 작성하는 전역 구성도 —
+  // 장르 고정 + 척추(spine) + fraction 기반 마이크로-아크(떡밥 plant→payoff 스케줄).
+  // 매 화 프롬프트가 참조해 떡밥 회수를 강제하고 장르 이탈을 막는다. nullable(하위호환: 옛 스토리는 폴백).
+  blueprint: jsonb('blueprint'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

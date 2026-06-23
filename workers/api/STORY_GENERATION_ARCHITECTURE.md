@@ -67,12 +67,36 @@ draft (본문)  ──▶  [짧으면] extend (이어쓰기)  ──▶  structu
 
 ## 3. 메모리 모델
 
-두 축으로 분리:
+세 축으로 분리:
 
 | 저장소 | 성격 | 내용 |
 |---|---|---|
 | `story_bibles.canon` | 불변(immutable) | 사용자 원 설정의 핵심 전제(죽음/전생/장르 등). 재해석 금지 가드레일. |
+| `story_bibles.blueprint` (JSONB) | 불변(전역 계획) | **청사진(Phase A)** — 생성 시 1회 opus-4.7로 작성. 장르 고정 + 척추 + fraction 기반 마이크로-아크(떡밥 plant→payoff 스케줄). |
 | `threads.story_state` (JSONB) | 롤링(가변) | 진행 상태. 매 화 Haiku가 갱신. |
+
+### `StoryBlueprint` 구조 (`story-harness/blueprint/`, Phase A 2026-06-23)
+```ts
+type StoryBlueprint = {
+  genre: string;            // 단일 확정 장르(이후 불변 잠금) — stories.genre도 이걸로 일치시킴
+  genreConventions: string[];
+  avoid: string[];          // 추리·미스터리화 금지 포함
+  spine: string;            // 주인공 핵심 능동 목표(불변)
+  centralQuestion: string;
+  endingDirection: string;
+  arcs: { fromProgress; toProgress; goal; plant; payoff }[]; // progress(=n/total) 기반, 길이 무관
+};
+```
+**왜**: "전역 아웃라인 부재"로 매 화가 즉흥 누적 → 떡밥 폭주 + 장르 미스터리 쏠림. 청사진이
+각 화에 구체적 역할(아크)·장르 고정·plant→payoff 스케줄을 주입한다. 생성 위치:
+`run-first-chapter-harness.ts`의 `saveStoryBible()` 직후(비치명적 try/catch). 로드:
+`loadStoryBible()`가 zod 검증해 snapshot에 포함(검증 실패/null이면 빌더가 폴백).
+
+### 떡밥 회수 강제 (`narrative-phase.ts` `hookDirective()`)
+EventBeat(장면 결)와 **직교**한 떡밥 회계 축: progress·열린떡밥수로 `plant_ok`/`payoff_due`/
+`converge`를 산출. `buildNextDraft`가 이를 언어별 지시로 렌더 + 현재 openLoops에서 가장
+오래된 것부터 회수 지정 + 중반(>0.45) 이후 net 증가 금지. 기존 "매 화 끝 훅 의무"는 완화
+(끝 훅 = 계획된 질문이거나 방금 회수한 떡밥에서 파생된 것만).
 
 ### `StoryState` 구조 (`lib/ai/story-generation.ts`)
 ```ts

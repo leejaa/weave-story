@@ -6,13 +6,14 @@
 // ② 구조적 상태(story_state) 주입, ③ 인과적 선택지, ④ 문체 가드레일, ⑤ 짧고 빠른 길이.
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
-import { narrativePhase, chapterEventBeat, type NarrativePhase, type EventBeat } from '../narrative-phase';
+import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
 import { formatStoryState } from '../../../ai/story-generation';
+import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
 
 // 챕터의 아크 단계(기·승·전·결)별 페이싱 지침.
 const KO_PHASE: Record<NarrativePhase, string> = {
   setup: '지금은 도입부(기)입니다. 세계와 인물, 주인공의 욕망과 상처를 빠르게 자리잡게 하고 중심 갈등의 불씨를 심으세요. 아직 모든 비밀을 드러내지 마세요.',
-  rising: '지금은 전개부(승)입니다. 갈등과 판돈을 키우세요. 새 장애물·관계 긴장·이해관계를 더하고, 주인공의 욕망과 상처가 충돌하기 시작하게 하세요.',
+  rising: '지금은 전개부(승)입니다. 갈등과 판돈을 키우되, 벌여둔 떡밥을 발전시키고 회수하기 시작하세요. 끝없이 새 미스터리만 쌓지 말고, 주인공의 욕망과 상처가 충돌하게 하세요.',
   turn: '지금은 전환부(전)입니다. 판을 뒤집는 반전이나 비밀의 노출로 위기를 끌어올리세요. 이 시점부터 새로운 큰 떡밥은 자제하고, 벌여둔 갈등들을 한 방향으로 모으기 시작하세요.',
   resolution: '지금은 절정으로 수렴하는 구간입니다. 열린 떡밥을 회수하기 시작하고, 새 인물이나 새 서브플롯을 도입하지 마세요. 긴장을 절정 직전까지 끌어올리세요.',
   final: '이것이 마지막 챕터입니다. 절정을 터뜨리고 중심 갈등을 매듭지으세요. 주인공의 욕망과 상처에 감정적 보상을 주고, 남은 떡밥을 회수하며 여운 있게 닫으세요.',
@@ -26,6 +27,13 @@ const KO_EVENT_BEAT: Record<EventBeat, string> = {
   allianceShift: '관계 변화 — 동맹·적대 구도가 뒤집히거나 새 인물이 끼어든다.',
   reversal: '반전 — 상황이 주인공의 예상과 반대로 뒤집힌다.',
   costSurfaces: '대가 표면화 — 지난 선택의 후폭풍·대가가 구체적으로 닥친다.',
+};
+
+// 떡밥 회계 지시 — hookDirective(장면 결과 직교: 새 떡밥을 열지/닫을지). 누적 폭주 차단.
+const KO_HOOK_DIRECTIVE: Record<HookDirective, string> = {
+  plant_ok: '떡밥 회계: 새 떡밥을 하나 정도 심어도 됩니다. 단, 본문은 이번 화 사건으로 실제 전진해야 하며 떡밥만 던지고 끝내지 마세요.',
+  payoff_due: '떡밥 회계(중요): 이번 화에는 열려 있는 떡밥 중 최소 1개를 본문 안에서 "명확히 회수"하세요(독자가 답을 얻었다고 느끼게). 회수 없이 새 떡밥만 추가하지 마세요. 새 떡밥은 회수한 뒤에, 그 회수와 직접 연결된 것으로 하나까지만.',
+  converge: '떡밥 회계(수렴): 새 떡밥을 절대 추가하지 말고 열린 떡밥을 회수하는 데만 집중하세요. 흩어진 가닥을 한 방향으로 모읍니다.',
 };
 
 // 가독성 우선 문체 가드레일 — 정렬 모델 특유의 매너리즘(역설 남발·telling·추상 독백)을 억제.
@@ -162,8 +170,40 @@ export const KO: HarnessGuide = {
           ? a.previousChaptersSummaries.map(s => `챕터 ${s.chapterNumber}: ${s.summary}`).join('\n')
           : '없음');
     const retry = a.previousIssues?.length ? `\n\n[이전 결과에서 반드시 고칠 문제]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
+
+    // 청사진(있으면) + 떡밥 회계. 청사진이 없으면(옛 스토리) 기존 동작으로 폴백.
+    const bp = a.storyBible?.blueprint ?? null;
+    const progress = a.estimatedChapters > 0 ? a.nextChapterNumber / a.estimatedChapters : 1;
+    const directive = hookDirective(a.nextChapterNumber, a.estimatedChapters, a.storyState?.openLoops?.length ?? 0);
+    const arc = bp ? currentArc(bp, progress) : null;
+    const oldestLoops = (a.storyState?.openLoops ?? []).slice(0, 2);
+    const blueprintSection = bp
+      ? [
+          '',
+          '[이야기 청사진 — 전체 구성(절대 이탈 금지)]',
+          formatBlueprintSpine(bp),
+          '',
+          '[장르 고정]',
+          formatGenreLock(bp),
+          '- 이 작품의 장르를 끝까지 유지하세요. 장르가 추리/미스터리가 아니라면, 단서만 계속 흘리거나 정보를 보류하는 미스터리·수사물 관습으로 변질시키지 마세요.',
+          ...(arc ? ['', '[이번 화의 역할 — 청사진 아크]', formatArc(arc)] : []),
+        ].join('\n')
+      : '';
+    const hookSection = [
+      '',
+      '[떡밥 회계 — 엄격]',
+      KO_HOOK_DIRECTIVE[a.isFinal ? 'converge' : directive],
+      oldestLoops.length
+        ? `- 현재 열린 떡밥(오래된 순): ${oldestLoops.map(l => `「${l}」`).join(', ')}. 회수할 때는 가장 오래된 것부터 닫으세요.`
+        : '',
+      progress > 0.45 && !a.isFinal
+        ? '- 이 시점부터는 새로 여는 떡밥 수가 닫는 떡밥 수를 넘지 않게 하세요(전체 미해결 떡밥이 늘면 안 됩니다).'
+        : '',
+    ].filter(Boolean).join('\n');
+
     return [
       bibleSection(a.storyBible),
+      blueprintSection,
       '',
       `[사용자 원 설정]\n${a.prompt}`,
       `전체 챕터 수: ${a.estimatedChapters}`,
@@ -185,11 +225,12 @@ export const KO: HarnessGuide = {
       '[이번 화의 사건 — 가장 중요]',
       '- 이번 화에는 직전 선택의 직접 결과로 상황을 바꾸는 구체적 사건이 "실제로" 하나 벌어져야 합니다. 내면 반추·상황 정리·같은 자리 맴돌기로만 채우지 마세요.',
       '- 그 사건은 권력·관계·비밀·생존·위치 중 최소 하나의 상태를 직전 화와 달라지게 만들어야 합니다.',
-      '- 가능하면 drive(주인공의 현재 목표)를 향해 한 걸음 전진하거나, 그 목표를 새롭게 위협하세요. 열린 떡밥이 있으면 하나를 건드리거나 회수하세요.',
+      '- drive(주인공의 현재 목표)를 향해 한 걸음 전진하거나, 그 목표를 새롭게 위협하세요.',
       `- 이번 화 사건의 결은 가급적 다음으로 변주하세요(직전 화와 같은 종류 반복 금지): ${beat}`,
+      hookSection,
       a.isFinal
         ? '- 마지막 챕터입니다. 본문에서 이야기를 완결지으세요.'
-        : '- 본문의 마지막에는 다음 화로 끌고 갈 새로운 훅(질문·위협·등장·발견) 하나를 남기고, 다음 선택을 부르는 결정의 순간에서 멈춥니다.',
+        : '- 본문의 마지막에는 다음 선택을 부르는 결정의 순간에서 멈춥니다. 끝의 훅은 위 "떡밥 회계"를 지키세요 — 청사진상 계획된 질문이거나 방금 회수한 떡밥에서 자연히 파생된 것이어야 하며, 매 화 무관한 새 미스터리를 추가하지 마세요.',
       '',
       '[서사 단계 — 이 챕터의 역할]',
       KO_PHASE[phase],
