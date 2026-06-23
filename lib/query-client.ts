@@ -35,5 +35,7 @@ const persister = createAsyncStoragePersister({
 export const persistOptions = {
   persister,
   maxAge: 24 * 60 * 60 * 1000, // 24h — older snapshots are discarded
-  buster: 'v1', // bump to invalidate all persisted cache on breaking changes
+  // v2: 샘플카드 응답 구조 변경(prompts 언어별) 후, 디스크에 남은 구버전(영어) 스냅샷이
+  // 그대로 렌더되는 문제 → 영구 캐시 전체 무효화.
+  buster: 'v2',
 };
