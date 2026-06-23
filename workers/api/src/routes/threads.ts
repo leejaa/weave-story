@@ -5,6 +5,7 @@ import { threads, stories, chapters, interventions, users } from '../lib/schema'
 import { requireAuth } from '../lib/auth/middleware';
 import { buildChapterContext, type PrevChapterRow } from '../lib/threads/chapter-context';
 import { normalizeStoryLang } from '../lib/ai/story-lang';
+import type { StoryState } from '../lib/ai/story-generation';
 import { previousChapterExcerpt } from '../lib/ai/chapter-excerpt';
 import { loadStoryBible } from '../lib/story-harness/memory/load-story-bible';
 import { createFirstChapterGenerationJob, createNextChapterGenerationJob } from '../lib/queue/story-generation-jobs';
@@ -208,7 +209,7 @@ threadsRouter.post('/:id/choose', genLimit, async (c) => {
       setupAnswers: stories.setupAnswers,
       storyId: threads.storyId,
       language: stories.language,
-      recap: threads.recap,
+      storyState: threads.storyState,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))
@@ -256,7 +257,7 @@ threadsRouter.post('/:id/choose', genLimit, async (c) => {
 
   const nextChapterNumber = chapterNumber + 1;
   const answers = threadRow.setupAnswers as { prompt?: string };
-  // 불변 캐논(가드레일) — recap 갱신 시 모순 방지용. 프롬프트에는 harness가 바이블로 따로 싣는다.
+  // 불변 캐논(가드레일) — 상태 갱신 시 모순 방지용. 프롬프트에는 harness가 바이블로 따로 싣는다.
   const canon = (await loadStoryBible(db, threadRow.storyId))?.canon ?? null;
   const genCtx = {
     threadId,
@@ -267,7 +268,7 @@ threadsRouter.post('/:id/choose', genLimit, async (c) => {
     // 입력 다이어트: 직전 챕터 전문 대신 결정 장면이 담긴 뒷부분만 발췌(게이트웨이 부담↓).
     previousChapterContent: previousChapterExcerpt(currentChapter?.content ?? ''),
     previousChaptersSummaries,
-    recap: threadRow.recap,
+    storyState: threadRow.storyState as StoryState | null,
     canon,
     chosenOption: chosenText,
     choiceKind: hasChoice ? ('choice' as const) : ('free_input' as const),

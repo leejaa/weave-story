@@ -17,3 +17,30 @@ export function narrativePhase(chapterNumber: number, totalChapters: number): Na
   if (progress <= 0.8) return 'turn';
   return 'resolution';
 }
+
+// The KIND of event a chapter should deliver. The arc phase (above) controls pacing/escalation;
+// this rotates the *type* of beat so consecutive chapters don't all feel like the same scene
+// (the "every chapter floats in place" failure). Per-language guides map each beat to a hint.
+export type EventBeat =
+  | 'confrontation'
+  | 'revelation'
+  | 'externalThreat'
+  | 'allianceShift'
+  | 'reversal'
+  | 'costSurfaces';
+
+const EVENT_BEAT_CYCLE: EventBeat[] = [
+  'confrontation',
+  'revelation',
+  'externalThreat',
+  'allianceShift',
+  'reversal',
+  'costSurfaces',
+];
+
+// Rotates through the beat cycle by chapter number. Chapter 1 isn't routed here (it has its own
+// opening template), so the cycle is anchored on the continuation chapters.
+export function chapterEventBeat(chapterNumber: number): EventBeat {
+  const idx = ((chapterNumber - 2) % EVENT_BEAT_CYCLE.length + EVENT_BEAT_CYCLE.length) % EVENT_BEAT_CYCLE.length;
+  return EVENT_BEAT_CYCLE[idx];
+}

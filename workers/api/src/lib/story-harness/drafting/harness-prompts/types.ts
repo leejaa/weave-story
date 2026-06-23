@@ -1,6 +1,7 @@
 // Shared shapes for the per-language harness prompt builders (draft + structure
 // stages, for the first chapter and every subsequent chapter).
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
+import type { StoryState } from '../../../ai/story-generation';
 
 export type FirstDraftArgs = {
   prompt: string;
@@ -28,8 +29,8 @@ export type NextDraftArgs = {
   previousChapterNumber: number;
   previousChapterContent: string;
   previousChaptersSummaries: { chapterNumber: number; summary: string }[];
-  // 롤링 진행 메모("지금까지의 이야기"). 있으면 챕터별 요약 나열 대신 이걸 쓴다.
-  recap?: string | null;
+  // 구조적 진행 상태(threads.story_state). 있으면 챕터별 요약 나열 대신 이걸 쓴다.
+  storyState?: StoryState | null;
   chosenOption: string;
   choiceKind?: 'choice' | 'free_input';
   attempt: number;

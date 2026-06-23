@@ -2,10 +2,16 @@
 // Also serves as the fallback harness for any language not natively supported
 // (e.g. Indonesian, Spanish). In that case `outputLanguage` is set on args and
 // a language override instruction is prepended so the model writes in that language.
+//
+// Concept (2026-06-23 refactor): not a "consistent long novel" but a thin spine
+// (the protagonist's active goal) where every chapter delivers a concrete event
+// that is the direct consequence of the prior choice, leaves a fresh hook, and reads
+// fast. See ko.ts for the canonical commentary.
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { HarnessGuide } from './types';
 import { langDisplayName } from '../../../ai/story-lang';
-import { narrativePhase, type NarrativePhase } from '../narrative-phase';
+import { formatStoryState } from '../../../ai/story-generation';
+import { narrativePhase, chapterEventBeat, type NarrativePhase, type EventBeat } from '../narrative-phase';
 
 // Per-arc-phase (act) pacing guidance — see narrative-phase.ts.
 const EN_PHASE: Record<NarrativePhase, string> = {
@@ -15,6 +21,47 @@ const EN_PHASE: Record<NarrativePhase, string> = {
   resolution: 'This is the convergence toward the climax. Begin paying off open threads; do not introduce new characters or subplots. Drive tension to just before the climax.',
   final: 'This is the final chapter. Deliver the climax and resolve the central conflict. Pay off the protagonist\'s desire and wound emotionally, tie up remaining threads, and close with resonance.',
 };
+
+// The KIND of event this chapter should deliver — rotated so consecutive chapters don't feel the same.
+const EN_EVENT_BEAT: Record<EventBeat, string> = {
+  confrontation: 'confrontation — a deferred conflict finally erupts head-on.',
+  revelation: 'revelation — a hidden fact, identity, or clue comes to light.',
+  externalThreat: 'external threat — an out-of-control threat (an enemy, an incident, time pressure) bears down.',
+  allianceShift: 'shift in alliances — an ally/enemy alignment flips or a new player cuts in.',
+  reversal: 'reversal — the situation turns out the opposite of what the protagonist expected.',
+  costSurfaces: 'cost surfaces — the fallout/price of an earlier choice lands concretely.',
+};
+
+// Readability-first prose guardrail — curbs the alignment-model mannerisms (antithesis spam, telling, abstract monologue).
+const EN_PROSE_GUARDRAIL = [
+  '[Prose guardrail — readability first]',
+  '- Do not overuse antithesis/parallelism ("not X but Y", "the more ... the more ..."). Once or twice per chapter is plenty.',
+  '- Do not pile on abstract interior monologue or conceptual narration; show through action, dialogue, and the senses (show, don\'t tell).',
+  '- Do not repeat the same metaphor/motif (light, shadow, heartbeat, temperature, etc.).',
+  '- Vary sentence length. Mix in short, sharp sentences to build rhythm.',
+  '- Use dialogue actively to move the scene.',
+].join('\n');
+
+// Length/format — short, fast web fiction. (draft stage)
+const EN_LENGTH = [
+  '[Length and format]',
+  '- content must be between 1,000 and 1,600 words of English. Keep it tight and event-driven; do not pad.',
+  '- 8–14 paragraphs, each separated by a blank line. Do not let any paragraph run too long.',
+  '- Do not summarize scenes; show them as real events through action and dialogue.',
+  '- This response writes ONLY the body (content) and the title fields. Choices are made in the next step.',
+  '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
+].join('\n');
+
+// Causal choice rules — structure stage.
+const EN_CHOICE_RULES = [
+  '[Choice rules — causal and active]',
+  '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',
+  '- Both choices must be the protagonist\'s ACTIVE response to this chapter\'s event.',
+  '- The two choices must lead to clearly DIFFERENT next events (different directions, different risks, different outcomes).',
+  '- Forbid "observe/avoid/retreat" choices that fail to move the situation forward (stay calm, play dumb, wait, think it over).',
+  '- consequence must name the concrete threat or what stands to be lost.',
+  '- Do not invent events outside the body. Do not include dialogue in situation.',
+].join('\n');
 
 function langOverride(outputLanguage?: string): string {
   if (!outputLanguage || outputLanguage === 'en') return '';
@@ -47,7 +94,7 @@ export const EN: HarnessGuide = {
   firstDraftSystem: [
     'You are a lead author on a serialized web-fiction editorial team, writing in English.',
     'Open events fast and create strong choice pressure so the reader keeps turning pages from the very first chapter on mobile.',
-    'Combine literary prose with web-fiction hooks.',
+    'Make it read fast above all — show through scene, action, and dialogue rather than conceptual narration.',
   ].join('\n'),
   firstStructureSystem: [
     'You are a web-fiction editor working in English.',
@@ -56,9 +103,9 @@ export const EN: HarnessGuide = {
   ].join('\n'),
   nextDraftSystem: [
     'You are a serialized author on a web-fiction editorial team, writing in English.',
-    'Carry over the previous chapter and the reader\'s choice, and write the next chapter where the cost of that choice surfaces as real events.',
-    'Do not merely reference the chosen option — develop it into a result that immediately shakes power, relationships, secrets, or survival.',
-    'The action the reader chose or typed MUST actually happen in the body. Do not block or nullify it — develop the world it changes, creatively.',
+    'Carry over the previous chapter and the reader\'s choice, and write the next chapter where the cost of that choice surfaces as a real event.',
+    'Every chapter must contain one concrete event that changes the situation as the direct consequence of the last choice. Do not circle in place or fill the chapter with interior rumination.',
+    'The action the reader chose or typed MUST actually happen in the body. Do not block or nullify it — develop the world it changes.',
   ].join('\n'),
   nextStructureSystem: [
     'You are a web-fiction editor working in English.',
@@ -79,19 +126,16 @@ export const EN: HarnessGuide = {
       EN_PHASE.setup,
       '',
       '[First-chapter design principles]',
-      '- Within the first 3 paragraphs, break the protagonist\'s ordinary life or safety with an event.',
+      '- Within the first 2–3 paragraphs, break the protagonist\'s ordinary life or safety with an event. Do not drag out the setup.',
       '- If the prompt specifies a premise-transition event (death, reincarnation, regression, transmigration, etc.), that event MUST actually happen within this first chapter. Do not end the chapter as a "prologue" that only shows the before-state.',
-      '- Genre lock: do NOT add mystery, noir, detective, or thriller elements not present in the original prompt. Maintain the genre and tone the prompt establishes.',
-      '- The protagonist must not merely be surprised or wait — they should hold dangerous information or face a dangerous choice.',
-      '- End the body at a decision moment that shakes at least one of: power, relationships, secrets, survival, false accusation, a contract, betrayal.',
+      '- Genre lock: do NOT add mystery, noir, detective, or thriller elements not present in the original prompt.',
+      '- Plant the seed of an active goal (drive) that will pull the story forward. The protagonist wants something and moves, rather than merely being surprised or waiting.',
+      '- End the body at a decision moment (a hook) that shakes at least one of: power, relationships, secrets, survival, false accusation, a contract, betrayal.',
       '- Do not end on a trivial reaction like "answers calmly" or "pretends not to know."',
       '',
-      '[Length and format — very important]',
-      '- content must be between 2600 and 3200 words of English. Under ~1600 words is a failure.',
-      '- 18–24 paragraphs, each separated by a blank line.',
-      '- Each paragraph runs 2–4 sentences. Do not summarize scenes; show them as real events.',
-      '- This response writes ONLY the body (content) and the title fields. Choices are made in the next step.',
-      '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
+      EN_PROSE_GUARDRAIL,
+      '',
+      EN_LENGTH,
     ].join('\n');
   },
   buildFirstStructure: ({ prompt, estimatedChapters, content, previousIssues, hintGenre }) => {
@@ -117,22 +161,17 @@ export const EN: HarnessGuide = {
       '- bible.forbidden_patterns must include "adding mystery/noir/thriller subplots not in the original premise."',
       '- situation: summarize the decision moment where the body ends in 1–2 sentences. Do not include dialogue.',
       '- question: a single-line question posed to the reader.',
-      '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',
       '',
-      '[Choices must stake something high]',
-      '- Each of the two choices must stake a clear danger or loss — a secret, a life, betrayal, evidence, identity, revenge, survival, a contract.',
-      '- consequence must name the concrete threat or what stands to be lost.',
-      '- The two choices must point in different directions; passive reactions like "stay calm / play dumb / wait" are forbidden.',
-      '- Do not invent new events outside the body.',
+      EN_CHOICE_RULES,
     ].join('\n');
   },
   buildNextDraft: (a) => {
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
-    const recap = a.recap?.trim()
-      ? a.recap.trim()
-      : (a.previousChaptersSummaries.length > 0
+    const beat = EN_EVENT_BEAT[chapterEventBeat(a.nextChapterNumber)];
+    const stateText = formatStoryState(a.storyState)
+      ?? (a.previousChaptersSummaries.length > 0
           ? a.previousChaptersSummaries.map(s => `Chapter ${s.chapterNumber}: ${s.summary}`).join('\n')
-          : 'No summary');
+          : 'None');
     const retry = a.previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${a.previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     return [
       langOverride(a.outputLanguage),
@@ -143,34 +182,33 @@ export const EN: HarnessGuide = {
       `Chapter to write now: ${a.nextChapterNumber}`,
       `Generation attempt: ${a.attempt}/2`,
       retry,
-      `[Story so far]\n${recap}`,
+      `[Current story state]\n${stateText}`,
       `[Previous chapter ${a.previousChapterNumber} body]\n${a.previousChapterContent}`,
       `[Reader's choice]\n${a.chosenOption}`,
       '',
       '[The reader\'s chosen action MUST actually happen — most important]',
       '- The action written in "Reader\'s choice" above must literally occur within the first 1–2 paragraphs of the body.',
       '- Do not let it be merely attempted and then blocked, pre-empted by another character, or turned into a "tried but failed."',
-      '- If the action is decisive (e.g., killing someone), it actually happens to that target; then branch the story through the new problems it creates — a corpse, exposure risk, a power vacuum, a clue lost or gained.',
       a.choiceKind === 'free_input'
         ? '- This action was typed directly by the reader. Carry it out as literally as possible.'
         : '- Carry out the action exactly as the option states; do not silently swap it for a different action.',
       '- However, if the action is physically impossible or breaks the established world, do not ignore it — execute the closest version that honors the reader\'s intent.',
       '',
+      '[This chapter\'s event — most important]',
+      '- This chapter must contain ONE concrete event that changes the situation as the direct consequence of the last choice. Do not fill it with interior rumination, recap, or circling in place.',
+      '- That event must change the state of at least one of: power, relationships, secrets, survival, location — versus the previous chapter.',
+      '- Where possible, advance one step toward the drive (the protagonist\'s current goal), or threaten it anew. If there are open loops, touch or pay off one.',
+      `- Vary the KIND of event where possible (do not repeat the same kind as the previous chapter): ${beat}`,
+      a.isFinal
+        ? '- This is the final chapter. Bring the story to a close in the body.'
+        : '- At the end of the body, leave one fresh hook (a question, threat, arrival, or discovery) and stop on a decision moment that calls for the next choice.',
+      '',
       '[Narrative phase — this chapter\'s role]',
       EN_PHASE[phase],
       '',
-      '[Next-chapter principles]',
-      '- Within the first 2 paragraphs, show the result that changed because of the reader\'s choice.',
-      '- The cost of the choice must alter at least one of: relationships, evidence, power, survival risk.',
-      '- Do not re-explain prior emotions and events; push forward with new pressure.',
-      '- Do not summarize scenes; develop through action, dialogue, and discovery.',
-      a.isFinal ? '- This is the final chapter. Bring the story to a close in the body.' : '- End the body at a decision moment that calls for the next choice.',
+      EN_PROSE_GUARDRAIL,
       '',
-      '[Length and format — very important]',
-      '- content must be between 2500 and 3200 words of English. Under ~1600 words is a failure.',
-      '- 18–24 paragraphs, each separated by a blank line.',
-      '- This response writes ONLY the body (content) and the title. Choices are made in the next step.',
-      '- Never put a choice list or a question to the reader inside the body (no "[Choice]", "Options", "①/②", "A)/B)"). End the body as narrative prose only.',
+      EN_LENGTH,
     ].join('\n');
   },
   buildNextStructure: ({ prompt, estimatedChapters, nextChapterNumber, content, previousIssues }) => {
@@ -187,29 +225,24 @@ export const EN: HarnessGuide = {
       '[Extraction rules]',
       '- situation: summarize the decision moment where the body ends in 1–2 sentences. Do not include dialogue.',
       '- question: a single-line question posed to the reader.',
-      '- choices: exactly 2. Each has text (a concrete action) and consequence (a hint of the outcome).',
       '',
-      '[Choices must stake something high]',
-      '- Each of the two choices must stake a clear danger or loss — a secret, a life, betrayal, evidence, identity, revenge, survival, a contract.',
-      '- consequence must name the concrete threat or what stands to be lost.',
-      '- The two choices must point in different directions; passive reactions like "stay calm / play dumb / wait" are forbidden.',
-      '- Do not invent new events outside the body.',
+      EN_CHOICE_RULES,
     ].join('\n');
   },
   buildExtend: ({ currentContent, deficitChars, isFinal, outputLanguage }) =>
     [
       langOverride(outputLanguage),
-      'Below is the chapter body so far. It is too short — keep writing to extend it.',
+      'Below is the chapter body so far. It is a little short — keep writing to extend it.',
       '─────────────',
       currentContent,
       '─────────────',
-      '[Continuation rules — very important]',
+      '[Continuation rules]',
       '- Do not start a new chapter. Continue naturally from the last scene of the body above.',
       '- Do not repeat or re-output anything already written. Output only the new body that follows.',
-      `- Write at least ${Math.max(deficitChars, 600)} more characters. Do not summarize — develop through action, dialogue, and discovery.`,
+      `- Write roughly ${Math.max(deficitChars, 400)} more characters. Do not summarize — develop through action, dialogue, and discovery.`,
       '- Separate each paragraph with a blank line.',
       isFinal
         ? '- This is the final chapter. Let the continuation bring the story to a natural close.'
-        : '- End the continuation on a decision moment that demands the next choice.',
+        : '- End the continuation on a fresh hook and a decision moment that demands the next choice.',
     ].join('\n'),
 };

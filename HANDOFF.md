@@ -1,10 +1,33 @@
 # Weave Story Handoff
 
-Last updated: 2026-06-14
+Last updated: 2026-06-23
 
 > **Secrets / env / credentials:** see [`SECRETS_AND_ENV.md`](./SECRETS_AND_ENV.md)
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
+
+## 2026-06-23 — 스토리 생성 하네스 컨셉 전환 (백엔드 대대적 리팩토링)
+
+제품 컨셉 재정의: ~~일관된 장편소설~~ → **"얇은 척추(주인공 능동 목표 drive) 위에서
+매 화가 직전 선택의 직접 결과로 사건 1개를 터뜨리고 끝에 새 훅을 남기는, 인과 선택·
+고가독성 인터랙티브 픽션"**. 챕터 길이 ~1,800–2,800자로 하향(웹소설형). **클라 무수정**
+(응답 계약 + 비종결 선택지 2개 규칙 유지). 정본 설계문서:
+[`workers/api/STORY_GENERATION_ARCHITECTURE.md`](./workers/api/STORY_GENERATION_ARCHITECTURE.md).
+
+- **메모리 모델 교체**: 손실 recap(1,200자 텍스트) → `threads.story_state` JSONB
+  (drive/열린 떡밥/인물 상태/직전 사건/직전 선택 결과/위치·시점). Neon 마이그레이션
+  적용 완료(nullable·비파괴, `recap` 컬럼은 전환기 호환 위해 잔존). 매 화 Haiku가
+  `updateStoryState()`로 갱신(구 `generateStoryRecap` 대체), canon 모순 방지.
+- **사건 강제 + 비트 회전**: `narrative-phase.ts`에 `EVENT_BEAT_CYCLE`(6비트) +
+  `chapterEventBeat()` 추가. buildNextDraft가 "이번 화 사건 1개 + 끝 훅 + drive 진전"
+  강제, 같은 비트 반복 방지.
+- **프롬프트 4개 언어 리팩토링**(ko/en/ja/zh-hant): 공유 상수 `*_EVENT_BEAT`/
+  `*_PROSE_GUARDRAIL`/`*_LENGTH`/`*_CHOICE_RULES`. 문체 가드레일(역설 남발·telling·
+  추상독백·모티프 반복 금지, 문장 길이 다양화, 대화 활용). 인과·능동 선택지(후퇴 금지).
+- **길이 게이트 하향**: `EXTEND_TARGET` 4500→1800, `MIN_PARAGRAPHS` 8→5. 본문 길이는
+  여전히 비-게이트(짧으면 extend가 처리). **"선택지 2개" 게이트 유지(클라 호환)**.
+- **버전 bump**: `FIRST/NEXT_CHAPTER_HARNESS_PROMPT_VERSION = @2026-06-23-1`. 모델은
+  opus-4.7 유지. 배포 완료(Version 93771a2a).
 
 ## 2026-06-14 — 백엔드 하드닝 · 앱인토스 풀 연동 · 성능/관측성
 

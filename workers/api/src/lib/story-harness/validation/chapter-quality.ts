@@ -6,7 +6,9 @@
 // gate: a short body is grown by the continuation pass (extend-chapter-body), not rejected
 // here. The "stakes"/"distinctness" scores are computed for telemetry but are NOT gates.
 
-const MIN_PARAGRAPHS = 8;
+// Lowered 8→5 for short web-fiction chapters (~1,800–2,800 chars). Still catches a body
+// dumped as one or two blobs, without rejecting a legitimately tight, fast chapter.
+const MIN_PARAGRAPHS = 5;
 
 // Passive/reactive choice phrasings the product explicitly wants to avoid.
 const TRIVIAL_PATTERNS = [

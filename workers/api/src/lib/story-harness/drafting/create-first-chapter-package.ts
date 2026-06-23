@@ -15,7 +15,8 @@ import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
 // CJK-oriented floor (chars); English bodies run far longer in chars so they never trip it.
-const EXTEND_TARGET = 4500;
+// Lowered 4500→1800 for the web-fiction concept (short, fast chapters ~1,800–2,800 chars).
+const EXTEND_TARGET = 1800;
 
 type Params = {
   apiKey: string;
