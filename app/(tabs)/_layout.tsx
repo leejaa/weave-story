@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/icon';
 import { useAuth } from '@/lib/auth/client/context';
 import { usePalette } from '@/hooks/use-palette';
+import { useResumeReading } from '@/hooks/use-resume-reading';
 import { FONTS } from '@/constants/colors';
 
 export default function TabLayout() {
@@ -12,6 +13,9 @@ export default function TabLayout() {
   const c = usePalette();
   const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
+
+  // 콜드 스타트 시 리더 상태로 종료된 기록이 있으면 그 스레드로 자동 이동(이어읽기).
+  useResumeReading(state === 'authenticated');
 
   if (state === 'loading') {
     return (

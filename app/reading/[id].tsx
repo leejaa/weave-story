@@ -4,7 +4,6 @@ import {
   FlatList,
   Text,
   Alert,
-  Pressable,
   StyleSheet,
   useWindowDimensions,
   type LayoutChangeEvent,
@@ -12,7 +11,6 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ChapterRibbon } from '@/components/chapter-ribbon';
-import { Icon } from '@/components/ui/icon';
 import { TextPage } from '@/components/reading/text-page';
 import { ChoiceEntryPage } from '@/components/reading/choice-entry-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
@@ -22,10 +20,10 @@ import { HiddenPage } from '@/components/reading/hidden-page';
 import { ReportSheet } from '@/components/reading/report-sheet';
 import { PaywallModal } from '@/components/ui/paywall-modal';
 import { postReport, type ReportReason } from '@/lib/api/fetch';
-import { shareStory } from '@/lib/share/share-story';
 import { useThreadDetail } from '@/hooks/use-thread-detail';
 import { usePalette } from '@/hooks/use-palette';
 import { useReadingPosition } from '@/hooks/use-reading-position';
+import { useActiveReading } from '@/hooks/use-active-reading';
 import { buildPages } from '@/lib/reading/build-pages';
 import { trackChapterViewed, trackStoryCompleted } from '@/lib/analytics';
 import { FONTS, SIZES } from '@/constants/colors';
@@ -39,6 +37,8 @@ export default function ReadingScreen() {
   const flatRef = useRef<FlatList>(null);
 
   const { t } = useTranslation('reading');
+  // 리더에 머무는 동안 "읽는 중" 표시 — 앱이 리더 상태로 종료되면 다음 실행에서 이어읽기.
+  useActiveReading(id);
   const { data, isLoading, choosing, isInsufficientCredits, clearChooseError, retryFirstChapter, retrying } = useThreadDetail(id);
   const [visibleChapter, setVisibleChapter] = useState<number>(1);
   const [listHeight, setListHeight] = useState(0);
@@ -186,7 +186,6 @@ export default function ReadingScreen() {
         totalChapters={estimatedChapters}
         onBack={() => router.back()}
         onReport={reportTarget ? () => setReportVisible(true) : undefined}
-        onShare={() => shareStory({ title, threadId: id })}
       />
 
       <FlatList
@@ -237,13 +236,6 @@ export default function ReadingScreen() {
             {item.type === 'end' && (
               <View style={styles.centered}>
                 <Text style={[styles.endMark, { color: c.inkFaint }]}>{t('end')}</Text>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => shareStory({ title, threadId: id })}
-                  style={({ pressed }) => [styles.endShare, { borderColor: c.rule, opacity: pressed ? 0.7 : 1 }]}>
-                  <Icon name="share" size={15} color={c.inkSoft} />
-                  <Text style={[styles.endShareText, { color: c.inkSoft }]}>{t('share.cta')}</Text>
-                </Pressable>
               </View>
             )}
           </View>
@@ -267,19 +259,5 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.mono,
     fontSize: SIZES.sm,
     letterSpacing: 2,
-  },
-  endShare: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 28,
-    paddingVertical: 11,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderRadius: 999,
-  },
-  endShareText: {
-    fontFamily: FONTS.sansMedium,
-    fontSize: SIZES.sm,
   },
 });

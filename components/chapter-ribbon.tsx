@@ -13,10 +13,9 @@ type Props = {
   totalChapters: number;
   onBack?: () => void;
   onReport?: () => void;
-  onShare?: () => void;
 };
 
-export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport, onShare }: Props) {
+export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('reading');
@@ -41,17 +40,6 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport,
             {t('nowReading')}
           </Text>
         </View>
-
-        {onShare ? (
-          <Pressable
-            onPress={onShare}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={tc('a11y.share')}
-            style={[styles.reportButton, { borderColor: c.rule, backgroundColor: c.paperRaised }]}>
-            <Icon name="share" size={15} color={c.inkFaint} />
-          </Pressable>
-        ) : null}
 
         {onReport ? (
           <Pressable
