@@ -11,7 +11,8 @@ import { MOCK_SAMPLE_CARDS } from './cards.mock';
  */
 async function fetchSampleCards(): Promise<SampleCardData[]> {
   try {
-    const rows = await api.get<SampleCardData[]>('/api/sample-cards');
+    // 웹앱(앱인토스)은 한국어 전용 → ko 프롬프트 풀을 받는다.
+    const rows = await api.get<SampleCardData[]>('/api/sample-cards?lang=ko');
     return rows.length ? rows : MOCK_SAMPLE_CARDS;
   } catch {
     return MOCK_SAMPLE_CARDS;

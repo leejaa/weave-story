@@ -14,6 +14,21 @@ export const sampleCards = pgTable('sample_cards', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
+// 샘플카드 탭 시 랜덤 선택되는 프롬프트 풀. genre별·언어별 다행(多行). 클라 하드코딩/로케일
+// 대신 DB가 단일 소스 — SQL로 개별 프롬프트를 언제든 추가/수정/비활성화 가능.
+// lang은 StoryLang 캐논값('ko'|'en'|'ja'|'zh-Hant'). API가 ?lang으로 필터링.
+export const samplePrompts = pgTable('sample_prompts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  genre: text('genre').notNull(), // sample_cards.genre 와 매칭
+  lang: text('lang').notNull(),
+  body: text('body').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  genreLangIdx: index('sample_prompts_genre_lang_idx').on(table.genre, table.lang),
+}));
+
 export const testItems = pgTable('test_items', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
@@ -141,8 +156,11 @@ export const threads = pgTable('threads', {
   startedAt: timestamp('started_at', { withTimezone: true }).defaultNow().notNull(),
   lastReadAt: timestamp('last_read_at', { withTimezone: true }).defaultNow().notNull(),
   finishedAt: timestamp('finished_at', { withTimezone: true }),
-  // 롤링 진행 메모: "지금까지의 이야기" + 열린 떡밥 + 인물 상태 + 아크 위치. 챕터마다 갱신.
+  // (deprecated) 롤링 진행 메모. story_state로 교체됨. 전환기 호환 위해 컬럼만 유지.
   recap: text('recap'),
+  // 구조적 진행 상태(JSONB): drive(주인공 능동 목표) + 열린 떡밥 + 인물 상태 + 직전 사건/선택 결과 + 위치/시점.
+  // 챕터마다 Haiku로 갱신. 손실 압축 recap을 대체하는 정석 메모리.
+  storyState: jsonb('story_state'),
 }, (t) => [
   index('idx_threads_user_id').on(t.userId),
   index('idx_threads_story_id').on(t.storyId),

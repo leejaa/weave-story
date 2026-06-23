@@ -20,7 +20,8 @@ export async function postClaimDailyReward(): Promise<DailyRewardResult> {
 }
 
 export async function fetchSampleCards(): Promise<SampleCardData[]> {
-  const res = await authFetch('/api/sample-cards');
+  // 스토리 언어별 프롬프트 풀(서버 DB)을 받기 위해 lang 전달.
+  const res = await authFetch(`/api/sample-cards?lang=${encodeURIComponent(storyLanguage())}`);
   await throwIfError(res);
   return res.json();
 }

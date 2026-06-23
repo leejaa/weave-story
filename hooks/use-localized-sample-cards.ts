@@ -11,10 +11,13 @@ function localizeSampleCard(
   t: TFn,
 ): SampleCardData {
   const baseKey = `sampleCards.${card.genre}`;
+  // 프롬프트 풀은 서버 DB(card.prompts)가 단일 소스. 비어 있으면 로케일 → 카드 기본값 순으로 폴백.
   const rawPrompts = t(`${baseKey}.prompts`, { returnObjects: true, defaultValue: null });
-  const prompts: string[] = Array.isArray(rawPrompts) && rawPrompts.length > 0
-    ? rawPrompts
-    : [t(`${baseKey}.prompt`, { defaultValue: card.prompt })];
+  const prompts: string[] = card.prompts?.length
+    ? card.prompts
+    : Array.isArray(rawPrompts) && rawPrompts.length > 0
+      ? rawPrompts
+      : [t(`${baseKey}.prompt`, { defaultValue: card.prompt })];
 
   return {
     ...card,
