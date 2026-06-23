@@ -21,7 +21,7 @@ async function fetchSampleCards(): Promise<SampleCardData[]> {
 
 export function useSampleCards() {
   return useQuery({
-    queryKey: queryKeys.sampleCards(),
+    queryKey: queryKeys.sampleCards('ko'),
     queryFn: fetchSampleCards,
     staleTime: 30 * 60 * 1000,
     initialData: MOCK_SAMPLE_CARDS, // 첫 페인트부터 카드가 보이도록
