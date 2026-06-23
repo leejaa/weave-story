@@ -148,7 +148,6 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
       apiKey: env.AI_GATEWAY_API_KEY,
       coverWorkerUrl: env.CF_COVER_WORKER_URL,
       coverWorkerApiKey: env.AI_GATEWAY_API_KEY,
-      useHarness: env.USE_STORY_HARNESS !== 'false',
     });
 
     // 운영자 알림 — 첫 챕터 완성(best-effort). 여기 도달 = 생성 성공.
@@ -176,7 +175,6 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     genCtx: job.genCtx,
     db,
     apiKey: env.AI_GATEWAY_API_KEY,
-    useHarness: env.USE_STORY_HARNESS !== 'false',
   });
 
   const hiddenNext = await moderateGeneratedChapter(job, env, db);

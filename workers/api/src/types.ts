@@ -10,7 +10,6 @@ export type WorkerEnv = {
   // 네이티브 Rate Limiting 바인딩. 미설정 시 미들웨어가 통과(no-op).
   AUTH_RATE_LIMITER?: RateLimiter; // 인증 엔드포인트 — IP 키
   GEN_RATE_LIMITER?: RateLimiter; // AI 생성 엔드포인트 — userId 키
-  USE_STORY_HARNESS?: string;
   // Server-authoritative chapter count per story. When unset, defaults to 20.
   // Tunable here so length changes never require a client redeploy (esp. appintoss store review).
   STORY_CHAPTER_COUNT?: string;

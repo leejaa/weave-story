@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { chapters, stories, threads } from '../schema';
-import { generateNextChapter, generateFirstChapter, generateStoryRecap } from '../ai/story-generation';
+import { generateStoryRecap } from '../ai/story-generation';
 import type { ContinuationContext, SetupContext } from '../ai/story-generation';
 import type { DB } from '../db';
 import { sendChapterReadyPush } from '../push';
@@ -13,7 +13,6 @@ type GenerateNextParams = {
   genCtx: ContinuationContext;
   db: DB;
   apiKey: string;
-  useHarness?: boolean;
 };
 
 type GenerateFirstParams = {
@@ -25,21 +24,18 @@ type GenerateFirstParams = {
   apiKey: string;
   coverWorkerUrl: string;
   coverWorkerApiKey: string;
-  useHarness?: boolean;
 };
 
 /**
  * Runs inside the story-generation queue consumer.
  * Throws generation errors so Cloudflare Queues can retry the job.
  */
-export async function generateNextChapterBackground({ chapterId, genCtx, db, apiKey, useHarness = true }: GenerateNextParams): Promise<void> {
+export async function generateNextChapterBackground({ chapterId, genCtx, db, apiKey }: GenerateNextParams): Promise<void> {
   const { threadId = '?', nextChapterNumber } = genCtx;
   const tag = `[bg] thread=${threadId} chapter=${nextChapterNumber}`;
   const startMs = Date.now();
 
-  const generated = useHarness
-    ? await runNextChapterHarness({ chapterId, genCtx, db, apiKey })
-    : await generateNextChapter(genCtx, apiKey);
+  const generated = await runNextChapterHarness({ chapterId, genCtx, db, apiKey });
 
   const [saved] = await db.update(chapters).set({
     title: generated.chapterTitle,
@@ -103,14 +99,12 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
  * Throws generation errors so Cloudflare Queues can retry the job.
  */
 export async function generateFirstChapterBackground({
-  storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey, useHarness = true,
+  storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey,
 }: GenerateFirstParams): Promise<void> {
   const tag = `[bg] story=${storyId}`;
   const startMs = Date.now();
 
-  const generated = useHarness
-    ? await runFirstChapterHarness({ storyId, threadId, chapterId, genCtx, db, apiKey })
-    : await generateFirstChapter(genCtx, apiKey);
+  const generated = await runFirstChapterHarness({ storyId, threadId, chapterId, genCtx, db, apiKey });
 
   const [saved] = await db.update(chapters).set({
       title: generated.chapterTitle,
