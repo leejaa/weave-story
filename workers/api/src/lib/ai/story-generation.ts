@@ -11,7 +11,7 @@
 // loops, character states, and the consequence of the last choice — instead of one
 // 1,200-char blob that drifted and lost the through-line.
 import { createGateway } from '@ai-sdk/gateway';
-import { generateText, Output } from 'ai';
+import { generateStructured } from '../story-harness/drafting/structured-generation';
 import { z } from 'zod';
 import { type StoryLang, normalizeStoryLang, langDisplayName } from './story-lang';
 
@@ -154,12 +154,12 @@ export async function updateStoryState(params: {
     .filter(Boolean)
     .join('\n\n');
 
-  const { output } = await generateText({
+  // generateStructured: 스키마 검증 실패 시 검증 메시지를 피드백해 1회 재작성(상태 누락 방지).
+  const { output } = await generateStructured({
     model: gateway('anthropic/claude-haiku-4-5-20251001'),
     system,
     prompt,
-    maxOutputTokens: 2000,
-    output: Output.object({ schema: StoryStateSchema }),
+    schema: StoryStateSchema,
   });
 
   console.log(

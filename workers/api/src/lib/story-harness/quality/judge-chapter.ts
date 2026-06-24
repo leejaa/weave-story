@@ -1,11 +1,11 @@
 import { createGateway } from '@ai-sdk/gateway';
-import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { chapterJudgements } from '../../schema';
 import type { DB } from '../../db';
 import type { StoryLang } from '../../ai/story-lang';
 import type { StoryOutline } from '../outline/outline-schema';
 import { beatForChapter, formatOutlineSpine, formatBeat } from '../outline/format-outline';
+import { generateStructured } from '../drafting/structured-generation';
 
 // 의미적 품질 심사(측정). 게이트 아님 — 생성 후 비치명적으로 채점해 chapter_judgements에 저장.
 // 사용자가 겪던 실제 문제(중심미스터리 정체·고아떡밥·주인공 척추 납치·장르 드리프트)를 수치화.
@@ -64,12 +64,12 @@ export async function judgeChapter(params: {
       ].join('\n'),
     ].filter(Boolean).join('\n\n');
 
-    const { output } = await generateText({
+    // generateStructured: 스키마 검증 실패 시 검증 메시지를 피드백해 1회 재작성(누락 방지).
+    const { output } = await generateStructured({
       model: gateway(JUDGE_MODEL),
       system,
       prompt,
-      maxOutputTokens: 1500,
-      output: Output.object({ schema: JudgeSchema }),
+      schema: JudgeSchema,
     });
 
     const base = (output.coherence / 5) * 30 + (output.centralAdvance / 2) * 15
