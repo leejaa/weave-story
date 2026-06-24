@@ -7,6 +7,8 @@ export type SampleCardData = {
   imageUrl: string | null;
   prompt: string;
   prompts: string[];
+  /** 제목+프롬프트 쌍 풀(서버 DB). 카드 렌더 시 하나를 랜덤 선택해 제목·프롬프트로 쓴다. */
+  samples?: { title: string; body: string }[];
   displayOrder: number;
 };
 

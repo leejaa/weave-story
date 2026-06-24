@@ -9,6 +9,8 @@ export type SampleCardData = {
   prompt: string;
   /** 로컬라이즈된 프롬프트 변형들(선택). 없으면 prompt 사용 */
   prompts?: string[];
+  /** 제목+프롬프트 쌍 풀(서버 DB). 카드 렌더 시 하나를 랜덤 선택해 제목·프롬프트로 쓴다. */
+  samples?: { title: string; body: string }[];
   displayOrder: number;
 };
 

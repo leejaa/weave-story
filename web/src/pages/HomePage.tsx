@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { SampleCardData } from '@/lib/types';
 import type { ExpandRect } from '@/features/expand/BookExpand';
 import { useBookExpand } from '@/features/expand/BookExpand';
@@ -11,12 +12,23 @@ export function HomePage() {
   const { data: cards } = useSampleCards();
   const { start } = useBookExpand();
 
+  // 카드별로 {제목, 프롬프트} 쌍을 한 번 랜덤 선택해 제목·프롬프트를 함께 고정한다.
+  // (제목과 내용이 일치하도록 — 쌍이 깨지지 않게.) 홈 재진입(remount)마다 새로 뽑힌다.
+  const displayCards = useMemo<SampleCardData[]>(
+    () =>
+      cards.map((card) => {
+        const pool = card.samples?.length
+          ? card.samples
+          : [{ title: card.title, body: card.prompt }];
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        return { ...card, title: pick.title || card.title, prompt: pick.body };
+      }),
+    [cards],
+  );
+
   const handleSelect = (card: SampleCardData, rect: ExpandRect | null) => {
-    // 탭마다 카드 프롬프트 풀(서버 DB 제공)에서 랜덤 선택. 풀 없으면 카드 기본 prompt.
-    const pool = card.prompts?.length ? card.prompts : [card.prompt];
-    const prompt = pool[Math.floor(Math.random() * pool.length)];
-    // 카드 커버가 풀스크린으로 확대 → 펼친 책 미리보기로 전환
-    start({ ...card, prompt }, rect);
+    // 제목·프롬프트는 displayCards에서 이미 한 쌍으로 정해졌다. 그대로 사용.
+    start(card, rect);
   };
 
   return (
@@ -25,7 +37,7 @@ export function HomePage() {
       <div className={styles.content}>
         <HomeHeadline />
         <div className={styles.railWrap}>
-          <BookRail cards={cards} onSelect={handleSelect} />
+          <BookRail cards={displayCards} onSelect={handleSelect} />
         </div>
       </div>
     </div>

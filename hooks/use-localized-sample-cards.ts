@@ -11,7 +11,22 @@ function localizeSampleCard(
   t: TFn,
 ): SampleCardData {
   const baseKey = `sampleCards.${card.genre}`;
-  // 프롬프트 풀은 서버 DB(card.prompts)가 단일 소스. 비어 있으면 로케일 → 카드 기본값 순으로 폴백.
+  const genreLabel = t(`${baseKey}.genreLabel`, { defaultValue: card.genreLabel });
+
+  // 1순위: 서버 DB의 {제목, 본문} 쌍 풀. 한 쌍을 랜덤 선택해 제목·프롬프트를 함께 고정한다
+  // (제목과 내용이 일치하도록). 카드 목록 재계산(remount/언어변경)마다 새로 뽑힌다.
+  if (card.samples?.length) {
+    const pick = card.samples[Math.floor(Math.random() * card.samples.length)];
+    return {
+      ...card,
+      genreLabel,
+      title: pick.title || t(`${baseKey}.title`, { defaultValue: card.title }),
+      prompt: pick.body,
+      prompts: [pick.body],
+    };
+  }
+
+  // 폴백(구 데이터/오프라인): 로케일 프롬프트 풀 → 카드 기본값.
   const rawPrompts = t(`${baseKey}.prompts`, { returnObjects: true, defaultValue: null });
   const prompts: string[] = card.prompts?.length
     ? card.prompts
@@ -21,7 +36,7 @@ function localizeSampleCard(
 
   return {
     ...card,
-    genreLabel: t(`${baseKey}.genreLabel`, { defaultValue: card.genreLabel }),
+    genreLabel,
     title: t(`${baseKey}.title`, { defaultValue: card.title }),
     prompt: prompts[0],
     prompts,

@@ -21,6 +21,9 @@ export const samplePrompts = pgTable('sample_prompts', {
   id: uuid('id').defaultRandom().primaryKey(),
   genre: text('genre').notNull(), // sample_cards.genre 와 매칭
   lang: text('lang').notNull(),
+  // 샘플 책 제목 — body(프롬프트)와 한 쌍. 카드 렌더 시 {title, body} 쌍을 랜덤 선택해
+  // 제목으로 노출하고 그 body를 생성 프롬프트로 쓴다. nullable(구 데이터 호환: 없으면 카드 기본 제목).
+  title: text('title'),
   body: text('body').notNull(),
   sortOrder: integer('sort_order').notNull().default(0),
   isActive: boolean('is_active').notNull().default(true),
