@@ -32,6 +32,24 @@ export const samplePrompts = pgTable('sample_prompts', {
   genreLangIdx: index('sample_prompts_genre_lang_idx').on(table.genre, table.lang),
 }));
 
+// 플롯 구조 템플릿 라이브러리(Phase B). 스토리 생성 시 장르에 맞는 템플릿을 랜덤 픽해서
+// 전체 아웃라인(기능 비트 시트)의 "골격"으로 쓴다. DB가 단일 소스 — 배포 없이 SQL로 튜닝.
+// beats/endingShapes는 구조 골격(내용 아님, 언어 중립)이라 lang 구분 없음.
+export const plotStructures = pgTable('plot_structures', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(), // 예: '회귀 복수 아크', 'save-the-cat', '후더닛'
+  description: text('description').notNull(),
+  applicableGenres: jsonb('applicable_genres').notNull().default('["ANY"]'), // string[] (장르 키 또는 'ANY')
+  applicableTones: jsonb('applicable_tones').notNull().default('[]'), // string[] (선택)
+  beats: jsonb('beats').notNull().default('[]'), // 기능 비트 골격: [{ function, purpose, pacing }]
+  endingShapes: jsonb('ending_shapes').notNull().default('[]'), // 결말 아키타입 2~3개
+  isActive: boolean('is_active').notNull().default(true),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  activeIdx: index('plot_structures_active_idx').on(table.isActive),
+}));
+
 export const testItems = pgTable('test_items', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),

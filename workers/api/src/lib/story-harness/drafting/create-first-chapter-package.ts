@@ -12,6 +12,8 @@ import { extendChapterBody } from './extend-chapter-body';
 import { stripTrailingChoiceBlock } from './strip-choice-block';
 import { harnessGuide } from './harness-prompts';
 import { FIRST_CHAPTER_HARNESS_MODEL } from '../types';
+import type { StoryOutline } from '../outline/outline-schema';
+import { beatForChapter } from '../outline/format-outline';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
 // CJK-oriented floor (chars); English bodies run far longer in chars so they never trip it.
@@ -23,6 +25,7 @@ type Params = {
   genCtx: SetupContext;
   attempt: number;
   previousIssues?: string[];
+  outline?: StoryOutline | null;
 };
 
 type GenerateResult = {
@@ -73,6 +76,8 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
       previousIssues: params.previousIssues,
       outputLanguage: params.genCtx.outputLanguage,
       hintGenre: params.genCtx.hintGenre,
+      outline: params.outline ?? null,
+      beat: params.outline ? beatForChapter(params.outline, 1) : null,
     }),
     schema: ChapterDraftSchema,
   });

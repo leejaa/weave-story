@@ -11,8 +11,10 @@ import { validateFirstChapterQuality } from '../validation/validate-first-chapte
 import { startGenerationRun, finishGenerationRun } from '../logging/generation-run-logger';
 import { serializeGenerationError as serializeError } from '../logging/serialize-error';
 import { saveStoryBible } from '../memory/save-story-bible';
-import { generateStoryBlueprint } from '../blueprint/generate-blueprint';
-import { saveStoryBlueprint } from '../blueprint/save-blueprint';
+import { generateStoryOutline } from '../outline/generate-outline';
+import { saveStoryOutline } from '../outline/save-outline';
+import { classifyGenre } from '../outline/classify-genre';
+import type { StoryOutline } from '../outline/outline-schema';
 import {
   FIRST_CHAPTER_HARNESS_MODEL,
   FIRST_CHAPTER_HARNESS_PROMPT_VERSION,
@@ -64,6 +66,29 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
   let previousIssues: string[] | undefined;
   let lastError: unknown;
 
+  // Phase B — 아웃라인 우선: 1화 생성 전에 전체 아웃라인을 1회 저작한다(장르 확정 → 템플릿 픽 →
+  // 아웃라인). 1화도 아웃라인 비트1을 렌더. 실패하면 outline=null → 레거시 경로로 폴백.
+  let outline: StoryOutline | null = null;
+  try {
+    const genre = params.genCtx.hintGenre?.trim()
+      || (await classifyGenre(params.apiKey, params.genCtx.prompt));
+    outline = await generateStoryOutline({
+      db: params.db,
+      apiKey: params.apiKey,
+      premise: params.genCtx.prompt,
+      genre,
+      estimatedChapters: params.genCtx.estimatedChapters,
+      language: params.genCtx.language,
+    });
+    await saveStoryOutline({ db: params.db, storyId: params.storyId, outline });
+    console.log(
+      `[outline] story=${params.storyId} structure="${outline.structureName}" beats=${outline.beats.length} genre=${outline.genre} endings=${outline.endings.length}`,
+    );
+  } catch (err) {
+    console.error(`[outline] generation failed non_critical — falling back to legacy story=${params.storyId}`, err);
+    outline = null;
+  }
+
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const startMs = Date.now();
     const runId = await startGenerationRun({
@@ -89,6 +114,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         genCtx: params.genCtx,
         attempt,
         previousIssues,
+        outline,
       });
 
       const parsedPackage = FirstChapterPackageSchema.parse(firstChapterPackage);
@@ -128,33 +154,18 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         throw error;
       }
 
-      try {
-        await saveStoryBible({
-          db: params.db,
-          storyId: params.storyId,
-          bible: parsedPackage.bible,
-        });
-      } catch (err) {
-        console.error(`[harness:first] story bible save failed non_critical story=${params.storyId}`, err);
-      }
-
-      // One-time global blueprint (Phase A): plant→payoff schedule + genre lock that every
-      // later chapter references. Non-critical — if it fails the story still proceeds and the
-      // next-chapter builder simply falls back to legacy phase guidance.
-      try {
-        const blueprint = await generateStoryBlueprint({
-          apiKey: params.apiKey,
-          bible: parsedPackage.bible,
-          prompt: params.genCtx.prompt,
-          estimatedChapters: params.genCtx.estimatedChapters,
-          language: params.genCtx.language,
-        });
-        await saveStoryBlueprint({ db: params.db, storyId: params.storyId, blueprint });
-        console.log(
-          `[blueprint] story=${params.storyId} arcs=${blueprint.arcs.length} genre=${blueprint.genre}`,
-        );
-      } catch (err) {
-        console.error(`[blueprint] generation failed non_critical story=${params.storyId}`, err);
+      // 아웃라인이 있으면 story_bibles는 이미 saveStoryOutline으로 저장됨(아웃라인 파생 + blueprint=outline).
+      // 아웃라인이 없을 때만(폴백) 챕터1 structure에서 추출한 bible을 저장.
+      if (!outline) {
+        try {
+          await saveStoryBible({
+            db: params.db,
+            storyId: params.storyId,
+            bible: parsedPackage.bible,
+          });
+        } catch (err) {
+          console.error(`[harness:first] story bible save failed non_critical story=${params.storyId}`, err);
+        }
       }
 
       await finishGenerationRun({

@@ -6,6 +6,23 @@ Last updated: 2026-06-23
 > for the full inventory, locations, and regeneration runbook. All required
 > Cloudflare Worker secrets are set (production is self-sufficient if local is lost).
 
+## 2026-06-24 — Phase B: 사전 저작 아웃라인 + 비트 렌더 (응집·개연 해결)
+
+Phase A로도 떡밥이 서로 안 엮이고 단발 증식 + 주인공 척추가 조연 사연에 납치되는 산만함이 남음
+(즉흥 마르코프 연쇄의 한계). 인터랙티브 게임 표준 **"string of pearls"** 로 전환:
+
+- **plot_structures** 테이블(신규): 구조 템플릿 라이브러리(15개, 장르 태그). 생성 시 장르 매칭 랜덤 픽.
+  `story-harness/outline/` 모듈(schema/pick/generate/save/format/classify-genre).
+- **아웃라인 우선**: 1화 생성 전에 전체 아웃라인 1회 저작(opus) — centralMystery(question+intendedAnswer)·
+  spine·cast·relationships·**기능 비트 시트(beats[i]=i화)**·2~3 endings. `story_bibles.blueprint` 컬럼 재사용,
+  bible 필드는 아웃라인에서 파생. 위치: `run-first-chapter-harness.ts`(attempt 루프 전, 비치명적 폴백).
+- **매 화 = 비트 렌더**: `beatForChapter(outline, n)` 서수 매핑. 공유 `render-outline-prompt.ts`(4개 언어 위임).
+  규칙: 선택은 본문에서 실제 실행(=비트로 가는 경로) + 같은 기능 비트로 수렴 + 중심 미스터리 한 조각 전진 +
+  주인공 본인 척추 전진 + **고아 떡밥 금지**. 마지막 화는 누적 성향(요약 기반)으로 endings 중 택1.
+- **장르 분류**: hintGenre 없으면 haiku classifyGenre.
+- 기본 챕터 수 20→**12**(stories.ts). 버전 `@2026-06-24-B`. **하위호환**: outline 없으면 Phase A/레거시 폴백.
+- MVP 범위: choiceLeanings는 요약 기반(별도 누적 미구현), story_state는 연속성용으로 유지(렌더 모드선 미주입).
+
 ## 2026-06-23 — Phase A: 스토리 청사진(Blueprint) 도입 (떡밥 회수 강제 + 장르 고정)
 
 "자정 편의점" 검증에서 두 문제 확인 → 같은 뿌리(전역 청사진 부재): ① 떡밥이 회수 없이

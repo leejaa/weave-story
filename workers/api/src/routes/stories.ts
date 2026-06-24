@@ -35,8 +35,9 @@ storiesRouter.post('/', genLimit, async (c) => {
   // story length can be tuned from the worker alone (appintoss would otherwise need a store
   // review per change). Override via STORY_CHAPTER_COUNT; defaults to a standard one-volume book.
   const envChapterCount = Number(c.env.STORY_CHAPTER_COUNT);
+  // Phase B(아웃라인): 사전 저작 비트 시트는 짧을수록 비트가 탄탄해 완결·응집이 좋아 기본 12화.
   const estimatedChapters = Math.min(50, Math.max(1,
-    Number.isFinite(envChapterCount) && envChapterCount > 0 ? Math.floor(envChapterCount) : 20));
+    Number.isFinite(envChapterCount) && envChapterCount > 0 ? Math.floor(envChapterCount) : 12));
   const detectedLang = detectPromptLanguage(prompt ?? '');
   const language = languageToHarnessLang(detectedLang);
   const outputLanguage = detectedLang !== language ? detectedLang : undefined;

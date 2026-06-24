@@ -6,6 +6,7 @@ import type { HarnessGuide } from './types';
 import { formatStoryState } from '../../../ai/story-generation';
 import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
 import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
+import { renderFirstDraftPrompt, renderNextDraftPrompt } from './render-outline-prompt';
 
 // アーク段階(起承転結)ごとのペース配分の指針 — narrative-phase.ts を参照。
 const JA_PHASE: Record<NarrativePhase, string> = {
@@ -107,7 +108,9 @@ export const JA: HarnessGuide = {
     '与えられた章の本文を読み、次の話へつながる読者の選択肢を正確に抽出します。',
     '本文にない新しい事件を作らず、本文の最終場面が生んだ選択の圧力をそのまま使います。',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
+  buildFirstDraft: (a) => {
+    if (a.outline && a.beat) return renderFirstDraftPrompt(a, { guardrail: JA_PROSE_GUARDRAIL, length: JA_LENGTH });
+    const { prompt, estimatedChapters, attempt, previousIssues, hintGenre } = a;
     const retry = previousIssues?.length ? `\n\n[前回の結果で必ず直す問題]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     const genreHint = hintGenre ? `\n[選択したジャンル: ${hintGenre}]\nこのジャンルに合った雰囲気と演出を維持してください。このジャンルにないミステリー・ノワール・スリラー要素を追加しないでください。\n` : '';
     return [
@@ -160,6 +163,7 @@ export const JA: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    if (a.outline && a.beat) return renderNextDraftPrompt(a, { guardrail: JA_PROSE_GUARDRAIL, length: JA_LENGTH });
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const beat = JA_EVENT_BEAT[chapterEventBeat(a.nextChapterNumber)];
     const stateText = formatStoryState(a.storyState)

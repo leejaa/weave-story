@@ -2,6 +2,7 @@
 // stages, for the first chapter and every subsequent chapter).
 import type { StoryBibleSnapshot } from '../../memory/load-story-bible';
 import type { StoryState } from '../../../ai/story-generation';
+import type { StoryOutline, OutlineBeat } from '../../outline/outline-schema';
 
 export type FirstDraftArgs = {
   prompt: string;
@@ -11,6 +12,9 @@ export type FirstDraftArgs = {
   outputLanguage?: string;
   // 샘플카드에서 선택한 장르 힌트(FANTASY, ROMANCE 등). 프롬프트에 없는 장르 이탈 방지에 사용.
   hintGenre?: string;
+  // Phase B: 전체 아웃라인 + 이번 화 비트(있으면 렌더 모드, 없으면 레거시).
+  outline?: StoryOutline | null;
+  beat?: OutlineBeat | null;
 };
 
 export type FirstStructureArgs = {
@@ -37,6 +41,9 @@ export type NextDraftArgs = {
   previousIssues?: string[];
   isFinal: boolean;
   outputLanguage?: string;
+  // Phase B: 전체 아웃라인 + 이번 화 비트(있으면 렌더 모드, 없으면 Phase A/레거시).
+  outline?: StoryOutline | null;
+  beat?: OutlineBeat | null;
 };
 
 export type NextStructureArgs = {

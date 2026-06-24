@@ -13,6 +13,7 @@ import { generateStructured, clamp } from './structured-generation';
 import { extendChapterBody } from './extend-chapter-body';
 import { stripTrailingChoiceBlock } from './strip-choice-block';
 import { harnessGuide } from './harness-prompts';
+import { beatForChapter } from '../outline/format-outline';
 
 // Bodies under this length get a continuation pass instead of failing/regenerating.
 // CJK-oriented floor (chars); English bodies run far longer in chars so they never trip it.
@@ -81,6 +82,8 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
       previousIssues: params.previousIssues,
       isFinal,
       outputLanguage: params.genCtx.outputLanguage,
+      outline: params.storyBible?.outline ?? null,
+      beat: params.storyBible?.outline ? beatForChapter(params.storyBible.outline, params.genCtx.nextChapterNumber) : null,
     }),
     schema: NextChapterDraftSchema,
   });

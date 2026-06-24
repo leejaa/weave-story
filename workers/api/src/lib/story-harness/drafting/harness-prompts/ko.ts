@@ -9,6 +9,7 @@ import type { HarnessGuide } from './types';
 import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
 import { formatStoryState } from '../../../ai/story-generation';
 import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
+import { renderFirstDraftPrompt, renderNextDraftPrompt } from './render-outline-prompt';
 
 // 챕터의 아크 단계(기·승·전·결)별 페이싱 지침.
 const KO_PHASE: Record<NarrativePhase, string> = {
@@ -110,7 +111,9 @@ export const KO: HarnessGuide = {
     '주어진 챕터 본문을 읽고, 다음 화로 이어지는 독자 선택지를 정확하게 추출합니다.',
     '본문에 없는 새 사건을 만들지 않고, 본문의 마지막 장면이 만든 선택 압박을 그대로 사용합니다.',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
+  buildFirstDraft: (a) => {
+    if (a.outline && a.beat) return renderFirstDraftPrompt(a, { guardrail: KO_PROSE_GUARDRAIL, length: KO_LENGTH });
+    const { prompt, estimatedChapters, attempt, previousIssues, hintGenre } = a;
     const retry = previousIssues?.length ? `\n\n[이전 결과에서 반드시 고칠 문제]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     const genreHint = hintGenre ? `\n[선택한 장르: ${hintGenre}]\n이 장르에 맞는 분위기와 연출을 유지하세요. 이 장르에 없는 추리·누아르·미스터리·스릴러 요소를 추가하지 마세요.\n` : '';
     return [
@@ -163,6 +166,7 @@ export const KO: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    if (a.outline && a.beat) return renderNextDraftPrompt(a, { guardrail: KO_PROSE_GUARDRAIL, length: KO_LENGTH });
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const beat = KO_EVENT_BEAT[chapterEventBeat(a.nextChapterNumber)];
     const stateText = formatStoryState(a.storyState)

@@ -13,6 +13,7 @@ import { langDisplayName } from '../../../ai/story-lang';
 import { formatStoryState } from '../../../ai/story-generation';
 import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
 import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
+import { renderFirstDraftPrompt, renderNextDraftPrompt } from './render-outline-prompt';
 
 // Per-arc-phase (act) pacing guidance — see narrative-phase.ts.
 const EN_PHASE: Record<NarrativePhase, string> = {
@@ -120,7 +121,9 @@ export const EN: HarnessGuide = {
     'Read the given chapter body and accurately extract the reader choices that lead into the next chapter.',
     'Do not invent events not in the body; use the choice pressure created by the final scene of the body.',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, outputLanguage, hintGenre }) => {
+  buildFirstDraft: (a) => {
+    if (a.outline && a.beat) return langOverride(a.outputLanguage) + renderFirstDraftPrompt(a, { guardrail: EN_PROSE_GUARDRAIL, length: EN_LENGTH });
+    const { prompt, estimatedChapters, attempt, previousIssues, outputLanguage, hintGenre } = a;
     const retry = previousIssues?.length ? `\n\n[Problems from the previous result you MUST fix]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     const genreHint = hintGenre ? `\n[Selected genre: ${hintGenre}]\nMaintain the tone and style of this genre. Do not add mystery, noir, or thriller elements that are absent from this genre.\n` : '';
     return [
@@ -174,6 +177,7 @@ export const EN: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    if (a.outline && a.beat) return langOverride(a.outputLanguage) + renderNextDraftPrompt(a, { guardrail: EN_PROSE_GUARDRAIL, length: EN_LENGTH });
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const beat = EN_EVENT_BEAT[chapterEventBeat(a.nextChapterNumber)];
     const stateText = formatStoryState(a.storyState)

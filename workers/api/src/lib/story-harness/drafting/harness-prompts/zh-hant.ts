@@ -6,6 +6,7 @@ import type { HarnessGuide } from './types';
 import { formatStoryState } from '../../../ai/story-generation';
 import { narrativePhase, chapterEventBeat, hookDirective, type NarrativePhase, type EventBeat, type HookDirective } from '../narrative-phase';
 import { currentArc, formatBlueprintSpine, formatGenreLock, formatArc } from '../../blueprint/format-blueprint';
+import { renderFirstDraftPrompt, renderNextDraftPrompt } from './render-outline-prompt';
 
 // 各敘事階段(起承轉結)的節奏指引 — 參見 narrative-phase.ts。
 const ZH_PHASE: Record<NarrativePhase, string> = {
@@ -107,7 +108,9 @@ export const ZH_HANT: HarnessGuide = {
     '你會讀完給定章節的正文，準確地萃取出通往下一話的讀者選項。',
     '不要捏造正文中沒有的新事件，直接沿用正文最終場景所產生的選擇壓力。',
   ].join('\n'),
-  buildFirstDraft: ({ prompt, estimatedChapters, attempt, previousIssues, hintGenre }) => {
+  buildFirstDraft: (a) => {
+    if (a.outline && a.beat) return renderFirstDraftPrompt(a, { guardrail: ZH_PROSE_GUARDRAIL, length: ZH_LENGTH });
+    const { prompt, estimatedChapters, attempt, previousIssues, hintGenre } = a;
     const retry = previousIssues?.length ? `\n\n[上次結果務必修正的問題]\n${previousIssues.map(i => `- ${i}`).join('\n')}\n` : '';
     const genreHint = hintGenre ? `\n[已選擇的類型: ${hintGenre}]\n請維持符合這個類型的氛圍與演出。不要加入此類型所沒有的推理、黑色、驚悚元素。\n` : '';
     return [
@@ -160,6 +163,7 @@ export const ZH_HANT: HarnessGuide = {
     ].join('\n');
   },
   buildNextDraft: (a) => {
+    if (a.outline && a.beat) return renderNextDraftPrompt(a, { guardrail: ZH_PROSE_GUARDRAIL, length: ZH_LENGTH });
     const phase: NarrativePhase = a.isFinal ? 'final' : narrativePhase(a.nextChapterNumber, a.estimatedChapters);
     const beat = ZH_EVENT_BEAT[chapterEventBeat(a.nextChapterNumber)];
     const stateText = formatStoryState(a.storyState)
