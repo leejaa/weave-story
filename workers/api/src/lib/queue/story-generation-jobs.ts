@@ -1,4 +1,4 @@
-import type { ContinuationContext, SetupContext } from '../ai/story-generation';
+import type { ContinuationContext, SetupContext, StoryState } from '../ai/story-generation';
 import type { StoryLang } from '../ai/story-lang';
 
 type StoryGenerationJobBase = {
@@ -31,7 +31,25 @@ export type JudgeChapterJob = StoryGenerationJobBase & {
   chosenOption: string | null;
 };
 
-export type StoryGenerationJob = FirstChapterGenerationJob | NextChapterGenerationJob | JudgeChapterJob;
+// 구조적 진행 상태(story_state) 갱신 잡 — 생성과 분리해 별도 큐 잡으로 돌린다.
+// updateStoryState는 haiku LLM 호출이라 생성 꼬리에 두면 호출 수명 한계에서 잘린다.
+// prevState 스냅샷(이 화 이전 상태)을 페이로드에 담아 멱등 보장(항상 같은 입력 → 동일 결과).
+export type UpdateStateJob = StoryGenerationJobBase & {
+  type: 'update-state';
+  threadId: string;
+  chapterId: string;
+  chapterNumber: number;
+  estimatedChapters: number;
+  language: StoryLang;
+  chosenOption: string | null;
+  prevState: StoryState | null;
+};
+
+export type StoryGenerationJob =
+  | FirstChapterGenerationJob
+  | NextChapterGenerationJob
+  | JudgeChapterJob
+  | UpdateStateJob;
 
 function createJobId(type: StoryGenerationJob['type'], id: string): string {
   return `${type}:${id}:${Date.now()}`;
@@ -73,6 +91,23 @@ export function createJudgeChapterJob(params: {
   return {
     type: 'judge-chapter',
     jobId: createJobId('judge-chapter', params.chapterId),
+    enqueuedAt: new Date().toISOString(),
+    ...params,
+  };
+}
+
+export function createUpdateStateJob(params: {
+  threadId: string;
+  chapterId: string;
+  chapterNumber: number;
+  estimatedChapters: number;
+  language: StoryLang;
+  chosenOption: string | null;
+  prevState: StoryState | null;
+}): UpdateStateJob {
+  return {
+    type: 'update-state',
+    jobId: createJobId('update-state', params.chapterId),
     enqueuedAt: new Date().toISOString(),
     ...params,
   };

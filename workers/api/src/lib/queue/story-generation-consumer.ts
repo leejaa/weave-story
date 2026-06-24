@@ -3,6 +3,7 @@ import { makeDb } from '../db';
 import { chapters, stories, users } from '../schema';
 import { generateFirstChapterBackground, generateNextChapterBackground } from '../threads/background';
 import { runJudgeChapterJob } from '../story-harness/quality/run-judge-job';
+import { runUpdateStateJob } from '../ai/run-update-state-job';
 import { notifyOwner } from '../notify/owner';
 import { moderateChapterContent } from '../moderation/classify';
 import { hideChapter } from '../moderation/enforce';
@@ -31,8 +32,8 @@ function getRetryDelaySeconds(attempts: number): number {
 }
 
 function getJobTag(job: StoryGenerationJob): string {
-  if (job.type === 'judge-chapter') {
-    return `[story-generation] type=judge-chapter job=${job.jobId} thread=${job.threadId} chapter=${job.chapterNumber} chapterId=${job.chapterId}`;
+  if (job.type === 'judge-chapter' || job.type === 'update-state') {
+    return `[story-generation] type=${job.type} job=${job.jobId} thread=${job.threadId} chapter=${job.chapterNumber} chapterId=${job.chapterId}`;
   }
   const threadPart = job.type === 'first-chapter'
     ? ` thread=${job.threadId}`
@@ -140,9 +141,13 @@ async function moderateGeneratedChapter(
 async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv): Promise<void> {
   const db = makeDb(env.DATABASE_URL);
 
-  // 심사 잡은 챕터가 이미 'ready'이므로 assertJobCanRun(생성용 가드)을 우회해 별도로 처리한다.
+  // 심사·상태갱신 잡은 챕터가 이미 'ready'이므로 assertJobCanRun(생성용 가드)을 우회해 별도로 처리한다.
   if (job.type === 'judge-chapter') {
     await runJudgeChapterJob({ db, apiKey: env.AI_GATEWAY_API_KEY, job });
+    return;
+  }
+  if (job.type === 'update-state') {
+    await runUpdateStateJob({ db, apiKey: env.AI_GATEWAY_API_KEY, job });
     return;
   }
 
@@ -159,7 +164,7 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
       apiKey: env.AI_GATEWAY_API_KEY,
       coverWorkerUrl: env.CF_COVER_WORKER_URL,
       coverWorkerApiKey: env.AI_GATEWAY_API_KEY,
-      judgeQueue: env.STORY_GENERATION_QUEUE,
+      queue: env.STORY_GENERATION_QUEUE,
     });
 
     // 운영자 알림 — 첫 챕터 완성(best-effort). 여기 도달 = 생성 성공.
@@ -187,7 +192,7 @@ async function processStoryGenerationJob(job: StoryGenerationJob, env: WorkerEnv
     genCtx: job.genCtx,
     db,
     apiKey: env.AI_GATEWAY_API_KEY,
-    judgeQueue: env.STORY_GENERATION_QUEUE,
+    queue: env.STORY_GENERATION_QUEUE,
   });
 
   const hiddenNext = await moderateGeneratedChapter(job, env, db);

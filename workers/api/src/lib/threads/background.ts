@@ -1,21 +1,19 @@
 import { and, eq } from 'drizzle-orm';
 import { chapters, stories, threads } from '../schema';
-import { updateStoryState } from '../ai/story-generation';
 import type { ContinuationContext, SetupContext } from '../ai/story-generation';
 import type { DB } from '../db';
 import { sendChapterReadyPush } from '../push';
-import { loadStoryBible } from '../story-harness/memory/load-story-bible';
 import { runFirstChapterHarness } from '../story-harness/pipeline/run-first-chapter-harness';
 import { runNextChapterHarness } from '../story-harness/pipeline/run-next-chapter-harness';
 import { enqueueStoryGenerationJob } from '../queue/story-generation-queue';
-import { createJudgeChapterJob, type StoryGenerationJob } from '../queue/story-generation-jobs';
+import { createJudgeChapterJob, createUpdateStateJob, type StoryGenerationJob } from '../queue/story-generation-jobs';
 
 type GenerateNextParams = {
   chapterId: string;
   genCtx: ContinuationContext;
   db: DB;
   apiKey: string;
-  judgeQueue: Queue<StoryGenerationJob>;
+  queue: Queue<StoryGenerationJob>;
 };
 
 type GenerateFirstParams = {
@@ -27,14 +25,14 @@ type GenerateFirstParams = {
   apiKey: string;
   coverWorkerUrl: string;
   coverWorkerApiKey: string;
-  judgeQueue: Queue<StoryGenerationJob>;
+  queue: Queue<StoryGenerationJob>;
 };
 
 /**
  * Runs inside the story-generation queue consumer.
  * Throws generation errors so Cloudflare Queues can retry the job.
  */
-export async function generateNextChapterBackground({ chapterId, genCtx, db, apiKey, judgeQueue }: GenerateNextParams): Promise<void> {
+export async function generateNextChapterBackground({ chapterId, genCtx, db, apiKey, queue }: GenerateNextParams): Promise<void> {
   const { threadId = '?', nextChapterNumber } = genCtx;
   const tag = `[bg] thread=${threadId} chapter=${nextChapterNumber}`;
   const startMs = Date.now();
@@ -61,45 +59,10 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
 
   console.log(`${tag} chapter saved elapsed=${Date.now() - startMs}ms`);
 
-  // 의미적 품질 심사를 별도 큐 잡으로 위임(저장 직후, 긴 후처리 LLM 전에 enqueue) — 비치명적.
-  // 생성 호출의 꼬리에 매달면 호출 수명 한계에서 잘려 누락되므로, 신선한 호출에서 돌게 한다.
+  // 저장 이후의 후처리는 전부 '빠른' 작업(푸시 + enqueue)만 둔다 — 긴 LLM 후처리를 생성
+  // 호출 꼬리에 두면 호출 수명 한계에서 잘려 누락되므로, 심사·상태갱신은 독립 큐 잡으로 위임한다.
   if (threadId !== '?') {
-    try {
-      await enqueueStoryGenerationJob(judgeQueue, createJudgeChapterJob({
-        threadId,
-        chapterId,
-        chapterNumber: nextChapterNumber,
-        language: genCtx.language,
-        chosenOption: genCtx.chosenOption ?? null,
-      }));
-    } catch (err) {
-      console.error(`${tag} judge enqueue failed non_critical`, err);
-    }
-  }
-
-  // 구조적 진행 상태(story_state) 갱신 — 손실 recap을 대체. 캐논 모순 방지 + 떡밥/인물/직전결과 추적.
-  try {
-    const newState = await updateStoryState({
-      prevState: genCtx.storyState ?? null,
-      chapterContent: generated.content,
-      chosenOption: genCtx.chosenOption,
-      canon: genCtx.canon ?? null,
-      chapterNumber: nextChapterNumber,
-      estimatedChapters: genCtx.estimatedChapters,
-      threadId,
-      apiKey,
-      language: genCtx.language,
-    });
-    if (threadId !== '?') {
-      await db.update(threads).set({ storyState: newState }).where(eq(threads.id, threadId));
-    }
-    console.log(`${tag} state saved elapsed=${Date.now() - startMs}ms`);
-  } catch (err) {
-    console.error(`${tag} state failed non_critical elapsed=${Date.now() - startMs}ms`, err);
-  }
-
-  // Notify the user (best-effort) that the next chapter is ready.
-  if (threadId !== '?') {
+    // 1) 사용자 알림을 가장 먼저(가장 빠르고, 더는 상태갱신 LLM 뒤에서 지연되지 않음).
     try {
       const [row] = await db
         .select({ userId: threads.userId, title: stories.title })
@@ -112,6 +75,34 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
     } catch (err) {
       console.error(`${tag} push failed non_critical`, err);
     }
+
+    // 2) 품질 심사 잡 enqueue(비치명적).
+    try {
+      await enqueueStoryGenerationJob(queue, createJudgeChapterJob({
+        threadId,
+        chapterId,
+        chapterNumber: nextChapterNumber,
+        language: genCtx.language,
+        chosenOption: genCtx.chosenOption ?? null,
+      }));
+    } catch (err) {
+      console.error(`${tag} judge enqueue failed non_critical`, err);
+    }
+
+    // 3) 구조적 진행 상태(story_state) 갱신 잡 enqueue. prevState는 '이 화 이전' 스냅샷이라 멱등.
+    try {
+      await enqueueStoryGenerationJob(queue, createUpdateStateJob({
+        threadId,
+        chapterId,
+        chapterNumber: nextChapterNumber,
+        estimatedChapters: genCtx.estimatedChapters,
+        language: genCtx.language,
+        chosenOption: genCtx.chosenOption ?? null,
+        prevState: genCtx.storyState ?? null,
+      }));
+    } catch (err) {
+      console.error(`${tag} state enqueue failed non_critical`, err);
+    }
   }
 }
 
@@ -120,7 +111,7 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
  * Throws generation errors so Cloudflare Queues can retry the job.
  */
 export async function generateFirstChapterBackground({
-  storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey, judgeQueue,
+  storyId, threadId, chapterId, genCtx, db, apiKey, coverWorkerUrl, coverWorkerApiKey, queue,
 }: GenerateFirstParams): Promise<void> {
   const tag = `[bg] story=${storyId}`;
   const startMs = Date.now();
@@ -148,9 +139,22 @@ export async function generateFirstChapterBackground({
 
   console.log(`${tag} done title="${generated.title}" elapsed=${Date.now() - startMs}ms`);
 
-  // 의미적 품질 심사를 별도 큐 잡으로 위임(저장 직후, 긴 후처리 LLM 전에 enqueue) — 비치명적.
+  // 저장 이후는 전부 '빠른' 작업(푸시 + enqueue + 커버요청)만 둔다 — 긴 LLM 후처리(상태 생성)는
+  // 독립 큐 잡으로 위임해 생성 호출 꼬리 절단의 영향을 받지 않게 한다.
+
+  // 1) 사용자 알림을 가장 먼저.
   try {
-    await enqueueStoryGenerationJob(judgeQueue, createJudgeChapterJob({
+    const [s] = await db.select({ userId: stories.userId }).from(stories).where(eq(stories.id, storyId));
+    if (s) {
+      await sendChapterReadyPush({ db, userId: s.userId, threadId, storyTitle: generated.title, language: genCtx.language, kind: 'first' });
+    }
+  } catch (err) {
+    console.error(`${tag} push failed non_critical`, err);
+  }
+
+  // 2) 품질 심사 잡 enqueue(비치명적).
+  try {
+    await enqueueStoryGenerationJob(queue, createJudgeChapterJob({
       threadId,
       chapterId,
       chapterNumber: 1,
@@ -161,27 +165,22 @@ export async function generateFirstChapterBackground({
     console.error(`${tag} judge enqueue failed non_critical`, err);
   }
 
-  // 초기 구조적 상태(story_state) 생성 — 1챕터 본문 + 캐논 기반. 이후 챕터마다 갱신.
+  // 3) 초기 구조적 상태(story_state) 생성 잡 enqueue(1화는 prevState=null).
   try {
-    const bible = await loadStoryBible(db, storyId);
-    const newState = await updateStoryState({
-      prevState: null,
-      chapterContent: generated.content,
-      chosenOption: null,
-      canon: bible?.canon ?? null,
+    await enqueueStoryGenerationJob(queue, createUpdateStateJob({
+      threadId,
+      chapterId,
       chapterNumber: 1,
       estimatedChapters: genCtx.estimatedChapters,
-      threadId,
-      apiKey,
       language: genCtx.language,
-    });
-    await db.update(threads).set({ storyState: newState }).where(eq(threads.id, threadId));
-    console.log(`${tag} state saved elapsed=${Date.now() - startMs}ms`);
+      chosenOption: null,
+      prevState: null,
+    }));
   } catch (err) {
-    console.error(`${tag} state failed non_critical elapsed=${Date.now() - startMs}ms`, err);
+    console.error(`${tag} state enqueue failed non_critical`, err);
   }
 
-  // Cover image — non-critical
+  // 4) 커버 이미지 — non-critical(커버 워커로 요청 전송, LLM 아님).
   try {
     await fetch(coverWorkerUrl, {
       method: 'POST',
@@ -190,15 +189,5 @@ export async function generateFirstChapterBackground({
     });
   } catch (err) {
     console.error(`${tag} cover enqueue failed non_critical elapsed=${Date.now() - startMs}ms`, err);
-  }
-
-  // Notify the user (best-effort) that their story's first chapter is ready.
-  try {
-    const [s] = await db.select({ userId: stories.userId }).from(stories).where(eq(stories.id, storyId));
-    if (s) {
-      await sendChapterReadyPush({ db, userId: s.userId, threadId, storyTitle: generated.title, language: genCtx.language, kind: 'first' });
-    }
-  } catch (err) {
-    console.error(`${tag} push failed non_critical`, err);
   }
 }
