@@ -1,9 +1,57 @@
 # Weave Story — 스토리 생성 아키텍처 (정본)
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24
 
 이 문서는 Weave Story의 AI 챕터 생성 파이프라인의 정본 설계문서다. 코드가 진실의
 원천이지만, "왜 이렇게 설계했는가"와 전체 흐름은 여기에 정리한다.
+
+> **읽는 순서 / 현행 모델 안내**
+> - **현행 주력 = Phase B(아웃라인 우선 + 비트 렌더)** — §0 참조. 신규 스토리는 전부 이 경로.
+> - **Phase A(즉흥 + 청사진)** = outline이 없을 때의 **레거시 폴백**. §3의 blueprint·hookDirective·
+>   §6의 EVENT_BEAT 등은 폴백 경로 설명이다.
+> - **관측·디버깅·품질 측정**은 §8.
+
+---
+
+## 0. Phase B — 사전 저작 아웃라인 + 비트 렌더 (현행 주력, 2026-06-24)
+
+**문제(Phase A 한계)**: 매 화를 "직전 선택의 직접 결과 사건 1개"로 즉흥 생성 → 마르코프
+연쇄라 떡밥이 서로 안 엮이고 단발 증식, 주인공 척추가 조연 사연에 납치(산만).
+
+**해결**: 인터랙티브 게임 표준 **"string of pearls"**. 생성 시점에 **전체 아웃라인을 1회
+저작**하고, 매 화는 그 **기능(function) 비트를 렌더**한다. 선택은 페이크가 아니라 — 본문에서
+**실제로 실행되되(선택 무산 금지)** 같은 기능 비트로 수렴 + 관계/서브플롯 강조 + 누적으로
+2~3 결말 분기.
+
+핵심 원칙: **비트는 "사건"이 아니라 "기능"으로 고정.** ("5화에 구미호 사망" ❌ → "5화에
+주인공이 율의 진짜 목적에 한 발 다가감" ✅) → 어떤 선택이든 본문에서 실행하면서 같은 비트 달성.
+
+### 흐름
+1. **장르 확정** — `hintGenre`(카드) 또는 `classifyGenre()`(haiku, 타이핑 프롬프트).
+2. **템플릿 픽** — `plot_structures`(DB, 구조 템플릿 15개·장르 태그) 중 장르 매칭 랜덤 1개.
+   → 구조 다양성(같은 전제도 매번 다른 골격).
+3. **아웃라인 저작**(opus-4.7, 스토리당 1회) — `story-harness/outline/generate-outline.ts`.
+   `run-first-chapter-harness.ts`에서 **1화 생성 전에** 실행(아웃라인 우선). `StoryOutline`을
+   `story_bibles.blueprint` 컬럼에 저장 + bible 필드 파생. `stories.genre` 일치.
+4. **매 화 = 비트 렌더** — `beatForChapter(outline, n)`(서수: beats[n-1]=n화). 공유
+   `harness-prompts/render-outline-prompt.ts`를 4개 언어 빌더가 위임 호출. 규칙: 선택 실제 실행 +
+   기능 비트 수렴 + **중심 미스터리 한 조각 전진** + **주인공 본인 척추 전진** + **고아 떡밥 금지**.
+5. **마지막 화** — 누적 성향(현재 MVP: 이전 화 요약 기반)으로 `outline.endings` 중 택1 완결.
+
+### `StoryOutline` (`story-harness/outline/outline-schema.ts`)
+```ts
+type StoryOutline = {
+  genre; tone; logline; structureName;       // 사용 템플릿명
+  spine;                                      // 주인공 능동 목표(불변 척추)
+  centralMystery: { question; intendedAnswer }; // 작품 관통 질문 + 내부용 정답
+  cast: { name; role; want; secret? }[];      // 주인공 + 재등장 인물
+  relationships: { between; dynamic; arc }[];
+  beats: { index; function; centralAdvance; protagonistStake; plant?; payoff? }[]; // length=estimatedChapters
+  endings: { id; condition; shape }[];        // 2~3개
+};
+```
+기본 챕터 수 **12**(stories.ts, `STORY_CHAPTER_COUNT`로 override). 하위호환: outline 없으면
+`loadStoryBible().outline=null` → 빌더가 Phase A/레거시 경로로 폴백.
 
 ---
 
@@ -59,9 +107,12 @@ draft (본문)  ──▶  [짧으면] extend (이어쓰기)  ──▶  structu
 
 모델: 본문/구조 모두 **opus-4.7**(문장력 최상위, KEEP). 상태/모더레이션은 haiku-4-5.
 
+> Phase B에선 이 draft가 **아웃라인 비트 렌더**(render-outline-prompt.ts)로 대체된다.
+> 아래 2단계 설명은 outline이 없는 폴백 경로 기준.
+
 프롬프트 버전 상수: `story-harness/types.ts`
-- `FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-23-1'`
-- `NEXT_CHAPTER_HARNESS_PROMPT_VERSION  = 'next-chapter-harness@2026-06-23-1'`
+- `FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-24-B'`
+- `NEXT_CHAPTER_HARNESS_PROMPT_VERSION  = 'next-chapter-harness@2026-06-24-B'`
 
 ---
 
@@ -158,6 +209,37 @@ extend가 해결):
 - 두 선택지 완전 중복 → 재시도
 
 "stakes"/"distinctness" 점수는 텔레메트리용으로 계산만 하고 게이트하지 않는다.
+이 게이트는 **구조(shape)만** 본다 — 의미적 품질은 §8의 LLM 심사가 측정한다.
+
+---
+
+## 8. 관측 · 디버깅 · 품질 측정 (2026-06-24)
+
+"이야기가 이상할 때 무엇이 문제인지"를 추적·측정하는 인프라.
+
+### (A) 추적 가시성 — `generation_runs` 테이블
+챕터 생성 시도마다 1행(`logging/generation-run-logger.ts`). 컬럼: stage·status·attempt·
+model·promptVersion·**inputSnapshot**·**outputSnapshot**·**qualityScores**·error·elapsedMs +
+story/thread/chapter FK.
+- **실제 프롬프트 + 사용 비트 저장**: `create{First,Next}ChapterPackage`가 `debug{draftSystem,
+  draftPrompt, structurePrompt, beatIndex, beatFunction, mode}`를 반환 → `outputSnapshot.debug`.
+  (이전엔 프롬프트가 어디에도 없었음. 전체 storyBible 중복 적재는 요약으로 축소.)
+- **아웃라인 생성도 기록**: stage=`outline`(chapterNumber=0), outputSnapshot에 전체 아웃라인.
+- stage 값: `outline` | `first_chapter_package` | `next_chapter_package`.
+
+### (B) 의미적 품질 측정 — `chapter_judgements` 테이블 + `quality/judge-chapter.ts`
+매 화 생성·노출 **후** sonnet이 채점(비치명적, background.ts; 게이트 아님 = 측정). 컬럼:
+overall(0~100)·scores·flags·rationale.
+- scores: coherence(0-5)·**centralAdvance**(중심 미스터리 전진 0-2)·**protagonistFocus**
+  (주인공 척추 0-2)·choiceExecuted(선택 실제 실행).
+- flags(true=문제): **orphanHook**(고아 떡밥)·**spineHijack**(조연이 주인공 납치)·**genreDrift**.
+
+### 조회 도구 — `scripts/story-debug.mjs`
+```
+node scripts/story-debug.mjs <threadId> [--prompts]
+```
+아웃라인 요약 → 화별 [상태·비트·품질 게이트·심사 점수·플래그·근거] → 평균 점수 + 플래그 누적.
+DATABASE_URL은 `.env.local`에서 읽음.
 
 ---
 

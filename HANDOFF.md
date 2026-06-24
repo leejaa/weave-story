@@ -23,6 +23,14 @@ Phase A로도 떡밥이 서로 안 엮이고 단발 증식 + 주인공 척추가
 - 기본 챕터 수 20→**12**(stories.ts). 버전 `@2026-06-24-B`. **하위호환**: outline 없으면 Phase A/레거시 폴백.
 - MVP 범위: choiceLeanings는 요약 기반(별도 누적 미구현), story_state는 연속성용으로 유지(렌더 모드선 미주입).
 
+### 생성 품질 디버깅·측정 시스템 (같은 날)
+- **추적(A)**: `generation_runs.outputSnapshot.debug`에 실제 draft/structure 프롬프트 + 사용 비트 저장
+  (create{First,Next}ChapterPackage가 debug 반환). 아웃라인 생성도 `generation_runs`(stage=outline)에 기록.
+- **측정(B)**: `chapter_judgements` 테이블 + `quality/judge-chapter.ts`(sonnet) — 매 화 응집·중심미스터리
+  전진·주인공 척추·선택 실행 점수 + 고아떡밥/척추납치/장르드리프트 플래그(0~100). background.ts에서
+  챕터 저장 후 비치명적 호출(사용자 영향 없음, 게이트 아님).
+- **조회**: `node scripts/story-debug.mjs <threadId> [--prompts]` — 화별 비트·품질·심사·프롬프트 + 요약.
+
 ## 2026-06-23 — Phase A: 스토리 청사진(Blueprint) 도입 (떡밥 회수 강제 + 장르 고정)
 
 "자정 편의점" 검증에서 두 문제 확인 → 같은 뿌리(전역 청사진 부재): ① 떡밥이 회수 없이
