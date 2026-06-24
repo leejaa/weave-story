@@ -31,6 +31,14 @@ type Params = {
 type GenerateResult = {
   firstChapterPackage: FirstChapterPackage;
   usage: unknown;
+  debug: {
+    draftSystem: string;
+    draftPrompt: string;
+    structurePrompt: string;
+    beatIndex: number | null;
+    beatFunction: string | null;
+    mode: 'outline' | 'legacy';
+  };
 };
 
 // ─── Code-side normalization ─────────────────────────────────────────────────
@@ -65,20 +73,23 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
   const model = gateway(FIRST_CHAPTER_HARNESS_MODEL);
   const g = harnessGuide(params.genCtx.language);
 
+  const beat = params.outline ? beatForChapter(params.outline, 1) : null;
+
   // Step 1 — write the chapter body (the only long field).
+  const draftPrompt = g.buildFirstDraft({
+    prompt: params.genCtx.prompt,
+    estimatedChapters: params.genCtx.estimatedChapters,
+    attempt: params.attempt,
+    previousIssues: params.previousIssues,
+    outputLanguage: params.genCtx.outputLanguage,
+    hintGenre: params.genCtx.hintGenre,
+    outline: params.outline ?? null,
+    beat,
+  });
   const draft = await generateStructured({
     model,
     system: g.firstDraftSystem,
-    prompt: g.buildFirstDraft({
-      prompt: params.genCtx.prompt,
-      estimatedChapters: params.genCtx.estimatedChapters,
-      attempt: params.attempt,
-      previousIssues: params.previousIssues,
-      outputLanguage: params.genCtx.outputLanguage,
-      hintGenre: params.genCtx.hintGenre,
-      outline: params.outline ?? null,
-      beat: params.outline ? beatForChapter(params.outline, 1) : null,
-    }),
+    prompt: draftPrompt,
     schema: ChapterDraftSchema,
   });
 
@@ -97,21 +108,30 @@ export async function createFirstChapterPackage(params: Params): Promise<Generat
   const draftBody = { ...draft.output, content: stripTrailingChoiceBlock(extended.content) };
 
   // Step 2 — derive bible + decision UI from the finished body (all short fields).
+  const structurePrompt = g.buildFirstStructure({
+    prompt: params.genCtx.prompt,
+    estimatedChapters: params.genCtx.estimatedChapters,
+    content: draftBody.content,
+    previousIssues: params.previousIssues,
+    hintGenre: params.genCtx.hintGenre,
+  });
   const structure = await generateStructured({
     model,
     system: g.firstStructureSystem,
-    prompt: g.buildFirstStructure({
-      prompt: params.genCtx.prompt,
-      estimatedChapters: params.genCtx.estimatedChapters,
-      content: draftBody.content,
-      previousIssues: params.previousIssues,
-      hintGenre: params.genCtx.hintGenre,
-    }),
+    prompt: structurePrompt,
     schema: ChapterStructureSchema,
   });
 
   return {
     firstChapterPackage: assemble(draftBody, structure.output),
     usage: { draft: draft.usage, extend: extended.usages, structure: structure.usage },
+    debug: {
+      draftSystem: g.firstDraftSystem,
+      draftPrompt,
+      structurePrompt,
+      beatIndex: beat?.index ?? null,
+      beatFunction: beat?.function ?? null,
+      mode: params.outline && beat ? 'outline' : 'legacy',
+    },
   };
 }

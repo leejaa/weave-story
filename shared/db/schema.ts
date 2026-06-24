@@ -228,6 +228,25 @@ export const generationRuns = pgTable('generation_runs', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
 });
 
+// 의미적 품질 심사(Phase B 디버깅·측정). 매 화 생성 후 LLM이 응집·중심미스터리 전진·고아떡밥·
+// 척추 납치·장르 드리프트·선택 실행을 채점해 저장. 게이트가 아니라 측정(나쁜 화 자동 탐지용).
+export const chapterJudgements = pgTable('chapter_judgements', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  storyId: uuid('story_id').references(() => stories.id, { onDelete: 'cascade' }),
+  threadId: uuid('thread_id').references(() => threads.id, { onDelete: 'cascade' }),
+  chapterId: uuid('chapter_id').references(() => chapters.id, { onDelete: 'cascade' }),
+  chapterNumber: integer('chapter_number').notNull(),
+  mode: text('mode'), // 'outline' | 'legacy'
+  overall: integer('overall'), // 0~100 종합 점수
+  scores: jsonb('scores'), // { centralAdvance, coherence, choiceExecuted, protagonistFocus, ... }
+  flags: jsonb('flags'), // { orphanHook, spineHijack, genreDrift } (true=문제)
+  rationale: text('rationale'),
+  model: text('model'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (t) => [
+  index('idx_chapter_judgements_thread').on(t.threadId, t.chapterNumber),
+]);
+
 export const interventions = pgTable('interventions', {
   id: uuid('id').defaultRandom().primaryKey(),
   threadId: uuid('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),

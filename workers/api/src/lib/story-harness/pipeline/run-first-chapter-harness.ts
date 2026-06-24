@@ -30,7 +30,7 @@ type Params = {
   genCtx: SetupContext;
 };
 
-function getOutputSnapshot(firstChapterPackage: FirstChapterPackage, usage: unknown): unknown {
+function getOutputSnapshot(firstChapterPackage: FirstChapterPackage, debug: unknown, usage: unknown): unknown {
   return {
     title: firstChapterPackage.story.title,
     genre: firstChapterPackage.story.genre,
@@ -39,7 +39,7 @@ function getOutputSnapshot(firstChapterPackage: FirstChapterPackage, usage: unkn
     situation: firstChapterPackage.story.situation,
     question: firstChapterPackage.story.question,
     choices: firstChapterPackage.story.choices,
-    bible: firstChapterPackage.bible,
+    debug, // 실제 프롬프트 + 사용 비트 (디버깅용)
     usage,
   };
 }
@@ -69,24 +69,58 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
   // Phase B — 아웃라인 우선: 1화 생성 전에 전체 아웃라인을 1회 저작한다(장르 확정 → 템플릿 픽 →
   // 아웃라인). 1화도 아웃라인 비트1을 렌더. 실패하면 outline=null → 레거시 경로로 폴백.
   let outline: StoryOutline | null = null;
-  try {
+  {
+    const outlineStartMs = Date.now();
     const genre = params.genCtx.hintGenre?.trim()
       || (await classifyGenre(params.apiKey, params.genCtx.prompt));
-    outline = await generateStoryOutline({
+    const outlineRunId = await startGenerationRun({
       db: params.db,
-      apiKey: params.apiKey,
-      premise: params.genCtx.prompt,
-      genre,
-      estimatedChapters: params.genCtx.estimatedChapters,
-      language: params.genCtx.language,
+      storyId: params.storyId,
+      threadId: params.threadId,
+      chapterId: params.chapterId,
+      chapterNumber: 0,
+      stage: 'outline',
+      promptVersion: FIRST_CHAPTER_HARNESS_PROMPT_VERSION,
+      model: 'anthropic/claude-opus-4.7',
+      inputSnapshot: { prompt: params.genCtx.prompt, estimatedChapters: params.genCtx.estimatedChapters, genre },
     });
-    await saveStoryOutline({ db: params.db, storyId: params.storyId, outline });
-    console.log(
-      `[outline] story=${params.storyId} structure="${outline.structureName}" beats=${outline.beats.length} genre=${outline.genre} endings=${outline.endings.length}`,
-    );
-  } catch (err) {
-    console.error(`[outline] generation failed non_critical — falling back to legacy story=${params.storyId}`, err);
-    outline = null;
+    try {
+      outline = await generateStoryOutline({
+        db: params.db,
+        apiKey: params.apiKey,
+        premise: params.genCtx.prompt,
+        genre,
+        estimatedChapters: params.genCtx.estimatedChapters,
+        language: params.genCtx.language,
+      });
+      await saveStoryOutline({ db: params.db, storyId: params.storyId, outline });
+      await finishGenerationRun({
+        db: params.db,
+        runId: outlineRunId,
+        status: 'succeeded',
+        outputSnapshot: {
+          structureName: outline.structureName,
+          beats: outline.beats.length,
+          centralMystery: outline.centralMystery,
+          endings: outline.endings,
+          outline, // 전체 아웃라인 — 디버깅·검증용
+        },
+        elapsedMs: Date.now() - outlineStartMs,
+      });
+      console.log(
+        `[outline] story=${params.storyId} structure="${outline.structureName}" beats=${outline.beats.length} genre=${outline.genre} endings=${outline.endings.length}`,
+      );
+    } catch (err) {
+      await finishGenerationRun({
+        db: params.db,
+        runId: outlineRunId,
+        status: 'failed',
+        error: serializeError(err),
+        elapsedMs: Date.now() - outlineStartMs,
+      });
+      console.error(`[outline] generation failed non_critical — falling back to legacy story=${params.storyId}`, err);
+      outline = null;
+    }
   }
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -109,7 +143,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
     });
 
     try {
-      const { firstChapterPackage, usage } = await createFirstChapterPackage({
+      const { firstChapterPackage, usage, debug } = await createFirstChapterPackage({
         apiKey: params.apiKey,
         genCtx: params.genCtx,
         attempt,
@@ -119,7 +153,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
 
       const parsedPackage = FirstChapterPackageSchema.parse(firstChapterPackage);
       const qualityScores = validateFirstChapterQuality(parsedPackage);
-      const outputSnapshot = getOutputSnapshot(parsedPackage, usage);
+      const outputSnapshot = getOutputSnapshot(parsedPackage, debug, usage);
 
       if (!qualityScores.passed && attempt < maxAttempts) {
         previousIssues = qualityScores.issues;

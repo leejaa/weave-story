@@ -52,6 +52,7 @@ async function loadChapterIdentity(db: DB, chapterId: string): Promise<ChapterId
 function getOutputSnapshot(
   nextChapterPackage: NextChapterPackage,
   storyBible: StoryBibleSnapshot,
+  debug: unknown,
   usage: unknown,
 ): unknown {
   return {
@@ -60,7 +61,10 @@ function getOutputSnapshot(
     situation: nextChapterPackage.situation,
     question: nextChapterPackage.question,
     choices: nextChapterPackage.choices,
-    storyBible,
+    // 전체 storyBible/outline은 story_bibles에 1번 있으니 스냅샷엔 요약만(중복·비대 방지).
+    genre: storyBible?.outline?.genre ?? storyBible?.genre ?? null,
+    structureName: storyBible?.outline?.structureName ?? null,
+    debug, // 실제 프롬프트 + 사용 비트 (디버깅용)
     usage,
   };
 }
@@ -107,14 +111,14 @@ export async function runNextChapterHarness(params: Params): Promise<NextChapter
         previousChapterNumber: params.genCtx.previousChapterNumber,
         chosenOption: params.genCtx.chosenOption,
         nextChapterNumber: params.genCtx.nextChapterNumber,
-        storyBible,
+        outlineStructure: storyBible?.outline?.structureName ?? null,
         attempt,
         previousIssues,
       },
     });
 
     try {
-      const { nextChapterPackage, usage } = await createNextChapterPackage({
+      const { nextChapterPackage, usage, debug } = await createNextChapterPackage({
         apiKey: params.apiKey,
         genCtx: params.genCtx,
         storyBible,
@@ -124,7 +128,7 @@ export async function runNextChapterHarness(params: Params): Promise<NextChapter
 
       const parsedPackage = NextChapterPackageSchema.parse(nextChapterPackage);
       const qualityScores = validateNextChapterQuality(parsedPackage, isFinal);
-      const outputSnapshot = getOutputSnapshot(parsedPackage, storyBible, usage);
+      const outputSnapshot = getOutputSnapshot(parsedPackage, storyBible, debug, usage);
 
       if (!qualityScores.passed && attempt < maxAttempts) {
         previousIssues = qualityScores.issues;

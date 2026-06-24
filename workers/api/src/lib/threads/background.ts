@@ -5,6 +5,7 @@ import type { ContinuationContext, SetupContext } from '../ai/story-generation';
 import type { DB } from '../db';
 import { sendChapterReadyPush } from '../push';
 import { loadStoryBible } from '../story-harness/memory/load-story-bible';
+import { judgeChapter } from '../story-harness/quality/judge-chapter';
 import { runFirstChapterHarness } from '../story-harness/pipeline/run-first-chapter-harness';
 import { runNextChapterHarness } from '../story-harness/pipeline/run-next-chapter-harness';
 
@@ -93,6 +94,27 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
       console.error(`${tag} push failed non_critical`, err);
     }
   }
+
+  // 의미적 품질 심사(측정, 비치명적) — chapter_judgements 저장. 챕터는 이미 저장·노출된 뒤라 사용자 영향 없음.
+  if (threadId !== '?') {
+    try {
+      const [st] = await db.select({ storyId: threads.storyId }).from(threads).where(eq(threads.id, threadId));
+      if (st) {
+        const bible = await loadStoryBible(db, st.storyId);
+        await judgeChapter({
+          db, apiKey, storyId: st.storyId, threadId, chapterId,
+          chapterNumber: nextChapterNumber,
+          mode: bible?.outline ? 'outline' : 'legacy',
+          language: genCtx.language,
+          outline: bible?.outline ?? null,
+          content: generated.content,
+          chosenOption: genCtx.chosenOption,
+        });
+      }
+    } catch (err) {
+      console.error(`${tag} judge failed non_critical`, err);
+    }
+  }
 }
 
 /**
@@ -167,5 +189,21 @@ export async function generateFirstChapterBackground({
     }
   } catch (err) {
     console.error(`${tag} push failed non_critical`, err);
+  }
+
+  // 의미적 품질 심사(측정, 비치명적).
+  try {
+    const bible = await loadStoryBible(db, storyId);
+    await judgeChapter({
+      db, apiKey, storyId, threadId, chapterId,
+      chapterNumber: 1,
+      mode: bible?.outline ? 'outline' : 'legacy',
+      language: genCtx.language,
+      outline: bible?.outline ?? null,
+      content: generated.content,
+      chosenOption: null,
+    });
+  } catch (err) {
+    console.error(`${tag} judge failed non_critical`, err);
   }
 }

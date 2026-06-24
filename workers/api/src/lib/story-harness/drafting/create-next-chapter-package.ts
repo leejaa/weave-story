@@ -28,9 +28,20 @@ type Params = {
   previousIssues?: string[];
 };
 
+// 디버깅용: 실제 모델에 들어간 프롬프트/시스템 + 사용된 비트. generation_runs.outputSnapshot에 저장.
+export type GenDebug = {
+  draftSystem: string;
+  draftPrompt: string;
+  structurePrompt: string | null;
+  beatIndex: number | null;
+  beatFunction: string | null;
+  mode: 'outline' | 'legacy';
+};
+
 type GenerateResult = {
   nextChapterPackage: NextChapterPackage;
   usage: unknown;
+  debug: GenDebug;
 };
 
 function assemble(draft: NextChapterDraft, structure: NextChapterStructure | null): NextChapterPackage {
@@ -63,28 +74,40 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
   const isFinal = params.genCtx.nextChapterNumber >= params.genCtx.estimatedChapters;
   const g = harnessGuide(params.genCtx.language);
 
+  const outline = params.storyBible?.outline ?? null;
+  const beat = outline ? beatForChapter(outline, params.genCtx.nextChapterNumber) : null;
+
   // Step 1 — write the chapter body (the only long field).
+  const draftPrompt = g.buildNextDraft({
+    storyBible: params.storyBible,
+    prompt: params.genCtx.prompt,
+    estimatedChapters: params.genCtx.estimatedChapters,
+    nextChapterNumber: params.genCtx.nextChapterNumber,
+    previousChapterNumber: params.genCtx.previousChapterNumber,
+    previousChapterContent: params.genCtx.previousChapterContent,
+    previousChaptersSummaries: params.genCtx.previousChaptersSummaries,
+    storyState: params.genCtx.storyState,
+    chosenOption: params.genCtx.chosenOption,
+    choiceKind: params.genCtx.choiceKind,
+    attempt: params.attempt,
+    previousIssues: params.previousIssues,
+    isFinal,
+    outputLanguage: params.genCtx.outputLanguage,
+    outline,
+    beat,
+  });
+  const debug: GenDebug = {
+    draftSystem: g.nextDraftSystem,
+    draftPrompt,
+    structurePrompt: null,
+    beatIndex: beat?.index ?? null,
+    beatFunction: beat?.function ?? null,
+    mode: outline && beat ? 'outline' : 'legacy',
+  };
   const draft = await generateStructured({
     model,
     system: g.nextDraftSystem,
-    prompt: g.buildNextDraft({
-      storyBible: params.storyBible,
-      prompt: params.genCtx.prompt,
-      estimatedChapters: params.genCtx.estimatedChapters,
-      nextChapterNumber: params.genCtx.nextChapterNumber,
-      previousChapterNumber: params.genCtx.previousChapterNumber,
-      previousChapterContent: params.genCtx.previousChapterContent,
-      previousChaptersSummaries: params.genCtx.previousChaptersSummaries,
-      storyState: params.genCtx.storyState,
-      chosenOption: params.genCtx.chosenOption,
-      choiceKind: params.genCtx.choiceKind,
-      attempt: params.attempt,
-      previousIssues: params.previousIssues,
-      isFinal,
-      outputLanguage: params.genCtx.outputLanguage,
-      outline: params.storyBible?.outline ?? null,
-      beat: params.storyBible?.outline ? beatForChapter(params.storyBible.outline, params.genCtx.nextChapterNumber) : null,
-    }),
+    prompt: draftPrompt,
     schema: NextChapterDraftSchema,
   });
 
@@ -110,24 +133,28 @@ export async function createNextChapterPackage(params: Params): Promise<Generate
     return {
       nextChapterPackage: assemble(draftBody, null),
       usage: { draft: draft.usage, extend: extended.usages },
+      debug,
     };
   }
 
+  const structurePrompt = g.buildNextStructure({
+    prompt: params.genCtx.prompt,
+    estimatedChapters: params.genCtx.estimatedChapters,
+    nextChapterNumber: params.genCtx.nextChapterNumber,
+    content: draftBody.content,
+    previousIssues: params.previousIssues,
+  });
+  debug.structurePrompt = structurePrompt;
   const structure = await generateStructured({
     model,
     system: g.nextStructureSystem,
-    prompt: g.buildNextStructure({
-      prompt: params.genCtx.prompt,
-      estimatedChapters: params.genCtx.estimatedChapters,
-      nextChapterNumber: params.genCtx.nextChapterNumber,
-      content: draftBody.content,
-      previousIssues: params.previousIssues,
-    }),
+    prompt: structurePrompt,
     schema: NextChapterStructureSchema,
   });
 
   return {
     nextChapterPackage: assemble(draftBody, structure.output),
     usage: { draft: draft.usage, extend: extended.usages, structure: structure.usage },
+    debug,
   };
 }
