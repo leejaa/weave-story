@@ -24,6 +24,8 @@ export function useSampleCards() {
     queryKey: queryKeys.sampleCards('ko'),
     queryFn: fetchSampleCards,
     staleTime: 30 * 60 * 1000,
-    initialData: MOCK_SAMPLE_CARDS, // 첫 페인트부터 카드가 보이도록
+    // placeholderData: 첫 페인트에 목업을 보여주되 "실데이터 없음"으로 취급 → 즉시 실 API 호출 후 교체.
+    // (initialData는 staleTime 동안 신선한 실데이터로 간주돼 fetch를 막아 MOCK에 고정되는 버그가 있었음)
+    placeholderData: MOCK_SAMPLE_CARDS,
   });
 }

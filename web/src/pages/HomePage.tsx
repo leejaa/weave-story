@@ -9,7 +9,7 @@ import { BookRail } from '@/components/home/BookRail';
 import styles from './HomePage.module.css';
 
 export function HomePage() {
-  const { data: cards } = useSampleCards();
+  const { data: cards = [] } = useSampleCards();
   const { start } = useBookExpand();
 
   // 재진입마다 카드 제목·프롬프트를 새로 뽑기 위한 seed. 앱인토스 웹뷰는 나갔다 들어와도
