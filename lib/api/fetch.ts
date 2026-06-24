@@ -103,6 +103,9 @@ export async function postCheckPrompt(prompt: string): Promise<CheckPromptResult
 export async function postCreateStory(params: {
   prompt: string;
   estimatedChapters: number;
+  // 샘플카드에서 고른 장르(예: 'MODERN_FANTASY'). 서버가 bible 장르 고정에 사용.
+  // 직접 타이핑한 자유 프롬프트면 없음(서버가 프롬프트에서 유추).
+  hintGenre?: string;
 }): Promise<{ threadId: string }> {
   const res = await authFetch('/api/stories', {
     method: 'POST',

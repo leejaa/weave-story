@@ -13,7 +13,7 @@ const DEFAULT_CHAPTERS = 10;
 export function useStoryPrompt() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { initialPrompt } = useLocalSearchParams<{ initialPrompt?: string }>();
+  const { initialPrompt, hintGenre } = useLocalSearchParams<{ initialPrompt?: string; hintGenre?: string }>();
   const [prompt, setPrompt] = useState(initialPrompt ?? '');
   const [showPaywall, setShowPaywall] = useState(false);
   // Keep the ['me'] query warm/active; credits are read from the cache at
@@ -37,12 +37,13 @@ export function useStoryPrompt() {
           params: {
             prompt: prompt.trim(),
             questions: JSON.stringify(check.questions.slice(0, 3)),
+            ...(hintGenre ? { hintGenre } : {}),
           },
         });
         return null;
       }
 
-      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS });
+      return postCreateStory({ prompt: prompt.trim(), estimatedChapters: DEFAULT_CHAPTERS, hintGenre });
     },
     onSuccess: (result) => {
       if (result) {

@@ -21,12 +21,12 @@ export default function RefineScreen() {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('weave');
-  const { prompt, questions: questionsJson } =
-    useLocalSearchParams<{ prompt: string; questions: string }>();
+  const { prompt, questions: questionsJson, hintGenre } =
+    useLocalSearchParams<{ prompt: string; questions: string; hintGenre?: string }>();
 
   const questions = JSON.parse(questionsJson ?? '[]') as string[];
   const { step, totalSteps, question, answer, setAnswer, isLastStep, isPending, error, rawError, proceed, back } =
-    useRefineFlow(prompt ?? '', questions);
+    useRefineFlow(prompt ?? '', questions, hintGenre);
 
   return (
     <KeyboardAvoidingView

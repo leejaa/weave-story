@@ -6,14 +6,14 @@ import { toUserMessage } from '@/lib/api/errors';
 
 const DEFAULT_CHAPTERS = 10;
 
-export function useRefineFlow(originalPrompt: string, questions: string[]) {
+export function useRefineFlow(originalPrompt: string, questions: string[], hintGenre?: string) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>(() => Array(questions.length).fill(''));
 
   const mutation = useMutation({
     mutationFn: (finalPrompt: string) =>
-      postCreateStory({ prompt: finalPrompt, estimatedChapters: DEFAULT_CHAPTERS }),
+      postCreateStory({ prompt: finalPrompt, estimatedChapters: DEFAULT_CHAPTERS, hintGenre }),
     onSuccess: ({ threadId }) => {
       router.replace(`/reading/${threadId}`);
     },

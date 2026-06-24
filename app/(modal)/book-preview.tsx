@@ -31,7 +31,7 @@ export default function BookPreviewRoute() {
       card={card}
       onClose={() => router.back()}
       onStart={() => {
-        router.replace({ pathname: '/setup', params: { initialPrompt: card.prompt } });
+        router.replace({ pathname: '/setup', params: { initialPrompt: card.prompt, hintGenre: card.genre } });
       }}
     />
   );
