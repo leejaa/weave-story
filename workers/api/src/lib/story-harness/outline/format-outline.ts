@@ -20,6 +20,9 @@ export function formatOutlineSpine(outline: StoryOutline): string {
     `- central mystery (the ONE question the whole story answers): ${outline.centralMystery.question}`,
     `- central truth (INTERNAL — reveal only the sliver this chapter's beat allows; never dump it): ${outline.centralMystery.intendedAnswer}`,
   ];
+  if (outline.worldRules?.length) {
+    lines.push(`- WORLD RULES (hard, never contradict; the core mechanic means exactly this): ${outline.worldRules.map(r => `· ${r}`).join(' ')}`);
+  }
   if (outline.cast?.length) {
     lines.push(`- cast: ${outline.cast.map((c) => `${c.name}(${c.role}; wants: ${c.want}${c.secret ? `; secret: ${c.secret}` : ''})`).join(' | ')}`);
   }

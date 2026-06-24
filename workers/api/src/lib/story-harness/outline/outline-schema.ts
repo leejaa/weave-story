@@ -27,6 +27,9 @@ export const StoryOutlineSchema = z.object({
     question: z.string().min(4).max(300), // 작품 전체를 관통하는 하나의 극적 질문
     intendedAnswer: z.string().min(4).max(500), // 내부용: 결국 밝혀질 답(독자에 직접 노출 X)
   }),
+  // 핵심 세계관 규칙 — "이 작품의 핵심 능력/설정이 구체적으로 무엇을 하고, 무엇은 못 하는가"를
+  // 무모호하게 못 박은 단정문들. 매 화 렌더에 주입되어 일관되게 지켜진다(개연성의 뼈대).
+  worldRules: z.array(z.string().min(4).max(240)).min(2).max(8),
   cast: z.array(z.object({
     name: z.string().min(1).max(80),
     role: z.string().min(2).max(120),

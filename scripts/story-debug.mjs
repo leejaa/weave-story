@@ -64,5 +64,5 @@ for (const ch of chs) {
 }
 
 // 요약: 평균 점수 + 플래그 합
-const [agg] = await sql.query("SELECT avg(overall)::int avg_overall, count(*) FILTER (WHERE (flags->>'orphanHook')::bool) orphan, count(*) FILTER (WHERE (flags->>'spineHijack')::bool) hijack, count(*) FILTER (WHERE (flags->>'genreDrift')::bool) drift FROM chapter_judgements WHERE thread_id=$1", [threadId]);
-console.log(`\n=== 요약: 평균 ${agg?.avg_overall ?? '-'}/100 | 고아떡밥 ${agg?.orphan ?? 0}회 · 척추납치 ${agg?.hijack ?? 0}회 · 장르드리프트 ${agg?.drift ?? 0}회 ===\n`);
+const [agg] = await sql.query("SELECT avg(overall)::int avg_overall, count(*) FILTER (WHERE (flags->>'orphanHook')::bool) orphan, count(*) FILTER (WHERE (flags->>'spineHijack')::bool) hijack, count(*) FILTER (WHERE (flags->>'genreDrift')::bool) drift, count(*) FILTER (WHERE (flags->>'coreAmbiguous')::bool) core_amb FROM chapter_judgements WHERE thread_id=$1", [threadId]);
+console.log(`\n=== 요약: 평균 ${agg?.avg_overall ?? '-'}/100 | 고아떡밥 ${agg?.orphan ?? 0}회 · 척추납치 ${agg?.hijack ?? 0}회 · 장르드리프트 ${agg?.drift ?? 0}회 · 핵심설정모호 ${agg?.core_amb ?? 0}회 ===\n`);
