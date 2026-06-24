@@ -1,4 +1,6 @@
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AppState } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSampleCards } from '@/hooks/use-sample-cards';
 import type { SampleCardData } from '@/lib/api/types';
@@ -14,7 +16,7 @@ function localizeSampleCard(
   const genreLabel = t(`${baseKey}.genreLabel`, { defaultValue: card.genreLabel });
 
   // 1순위: 서버 DB의 {제목, 본문} 쌍 풀. 한 쌍을 랜덤 선택해 제목·프롬프트를 함께 고정한다
-  // (제목과 내용이 일치하도록). 카드 목록 재계산(remount/언어변경)마다 새로 뽑힌다.
+  // (제목과 내용이 일치하도록). seed가 바뀔 때마다(재진입/포커스/언어변경) 새로 뽑힌다.
   if (card.samples?.length) {
     const pick = card.samples[Math.floor(Math.random() * card.samples.length)];
     return {
@@ -47,9 +49,21 @@ export function useLocalizedSampleCards() {
   const query = useSampleCards();
   const { t } = useTranslation('home');
 
+  // 홈 재진입마다 카드 제목·프롬프트를 새로 뽑기 위한 seed.
+  // 탭 포커스(useFocusEffect) + 앱 포그라운드 복귀(AppState 'active')에 갱신한다.
+  const [seed, setSeed] = useState(0);
+  useFocusEffect(useCallback(() => { setSeed((s) => s + 1); }, []));
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') setSeed((s) => s + 1);
+    });
+    return () => sub.remove();
+  }, []);
+
   const data = useMemo(
     () => query.data?.map((card) => localizeSampleCard(card, t as TFn)) ?? [],
-    [query.data, t],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [query.data, t, seed],
   );
 
   return {
