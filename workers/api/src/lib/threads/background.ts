@@ -70,7 +70,7 @@ export async function generateNextChapterBackground({ chapterId, genCtx, db, api
         .innerJoin(stories, eq(threads.storyId, stories.id))
         .where(eq(threads.id, threadId));
       if (row) {
-        await sendChapterReadyPush({ db, userId: row.userId, threadId, storyTitle: row.title, language: genCtx.language, kind: 'next' });
+        await sendChapterReadyPush({ db, userId: row.userId, threadId, chapterNumber: nextChapterNumber, storyTitle: row.title, language: genCtx.language, kind: 'next' });
       }
     } catch (err) {
       console.error(`${tag} push failed non_critical`, err);
@@ -146,7 +146,7 @@ export async function generateFirstChapterBackground({
   try {
     const [s] = await db.select({ userId: stories.userId }).from(stories).where(eq(stories.id, storyId));
     if (s) {
-      await sendChapterReadyPush({ db, userId: s.userId, threadId, storyTitle: generated.title, language: genCtx.language, kind: 'first' });
+      await sendChapterReadyPush({ db, userId: s.userId, threadId, chapterNumber: 1, storyTitle: generated.title, language: genCtx.language, kind: 'first' });
     }
   } catch (err) {
     console.error(`${tag} push failed non_critical`, err);

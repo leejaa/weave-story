@@ -33,11 +33,12 @@ export async function sendChapterReadyPush(params: {
   db: DB;
   userId: string;
   threadId: string;
+  chapterNumber: number;
   storyTitle: string | null;
   language: StoryLang;
   kind: Kind;
 }): Promise<void> {
-  const { db, userId, threadId, storyTitle, language, kind } = params;
+  const { db, userId, threadId, chapterNumber, storyTitle, language, kind } = params;
 
   const rows = await db
     .select({ token: pushTokens.token })
@@ -53,7 +54,11 @@ export async function sendChapterReadyPush(params: {
     body: copy.body(title),
     sound: 'default',
     channelId: 'default',
-    data: { threadId, kind, url: `/reading/${threadId}` },
+    priority: 'high' as const,
+    // iOS에서 알림 수신 시 앱을 백그라운드로 깨워 클라가 해당 챕터를 미리 프리페치하도록.
+    // (best-effort — iOS가 무음 깨우기를 스로틀링할 수 있음. Android 데이터 메시지는 더 잘 깸.)
+    _contentAvailable: true,
+    data: { threadId, chapterNumber, kind, url: `/reading/${threadId}` },
   }));
 
   try {
