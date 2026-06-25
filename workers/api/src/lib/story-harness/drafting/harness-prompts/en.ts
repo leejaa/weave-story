@@ -71,6 +71,8 @@ const EN_CHOICE_RULES = [
   '- The two choices must lead to clearly DIFFERENT next events (different directions, different risks, different outcomes).',
   '- Forbid "observe/avoid/retreat" choices that fail to move the situation forward (stay calm, play dumb, wait, think it over).',
   '- consequence must name the concrete threat or what stands to be lost.',
+  '- [grounded] Choices may only assume facts ALREADY established in the body/outline. Do NOT assert or invent new facts (an accident, a cause of injury, a place, a person, a setting) that the body never showed. (e.g., only "coma" was stated → do NOT offer "drive to the accident scene".)',
+  '- [convergent] Both choices must be routes that the already-open situation and the outline can absorb without contradiction. Do not create a branch that throws the story outside its design.',
   '- Do not invent events outside the body. Do not include dialogue in situation.',
 ].join('\n');
 

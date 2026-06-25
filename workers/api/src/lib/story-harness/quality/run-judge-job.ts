@@ -33,7 +33,7 @@ export async function runJudgeChapterJob(params: { db: DB; apiKey: string; job: 
   }
 
   const [chapter] = await db
-    .select({ content: chapters.content, status: chapters.status })
+    .select({ content: chapters.content, status: chapters.status, question: chapters.question, options: chapters.options })
     .from(chapters)
     .where(eq(chapters.id, job.chapterId))
     .limit(1);
@@ -41,6 +41,10 @@ export async function runJudgeChapterJob(params: { db: DB; apiKey: string; job: 
     console.warn(`${tag} skip chapter_missing status=${chapter?.status ?? 'none'}`);
     return;
   }
+
+  const choices = Array.isArray(chapter.options)
+    ? (chapter.options as Array<{ text?: string }>).map((o) => o?.text ?? '').filter(Boolean)
+    : [];
 
   const bible = await loadStoryBible(db, thread.storyId);
 
@@ -56,5 +60,7 @@ export async function runJudgeChapterJob(params: { db: DB; apiKey: string; job: 
     outline: bible?.outline ?? null,
     content: chapter.content,
     chosenOption: job.chosenOption,
+    question: chapter.question,
+    choices,
   });
 }

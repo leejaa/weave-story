@@ -22,6 +22,7 @@ const JudgeSchema = z.object({
   spineHijack: z.boolean(), // 조연 사연이 주인공 척추를 밀어냈나(true=문제)
   genreDrift: z.boolean(), // 고른 장르 이탈(특히 비미스터리인데 수사·추리물화)(true=문제)
   complexityCreep: z.boolean(), // 아웃라인에 없는 새 인물·설정·떡밥이 추가돼 복잡해졌나(true=문제)
+  choiceUngrounded: z.boolean(), // 제시된 선택지가 본문에 없는 사실을 전제/날조하거나 설계 밖으로 튕기나(true=문제)
   rationale: z.string().min(4).max(600),
 });
 
@@ -37,6 +38,8 @@ export async function judgeChapter(params: {
   outline: StoryOutline | null;
   content: string;
   chosenOption?: string | null;
+  question?: string | null; // 이 화 끝의 질문(선택지 근거 평가용)
+  choices?: string[] | null; // 이 화가 제시한 선택지들(선택지 근거 평가용)
 }): Promise<void> {
   try {
     const gateway = createGateway({ apiKey: params.apiKey });
@@ -50,6 +53,7 @@ export async function judgeChapter(params: {
       `[Outline / intended beat]\n${context}`,
       params.chosenOption ? `[Reader's choice that led into this chapter]\n${params.chosenOption}` : '[No reader choice — this is the opening chapter]',
       `[Chapter ${params.chapterNumber} body]\n${params.content}`,
+      params.choices?.length ? `[Choices offered at the END of this chapter]\n${params.question ? `Q: ${params.question}\n` : ''}${params.choices.map((c, i) => `${i + 1}. ${c}`).join('\n')}` : '',
       [
         'Judge each (readability and simplicity are TOP priorities):',
         '- coherence 0-5: overall causal/connected reading.',
@@ -62,6 +66,7 @@ export async function judgeChapter(params: {
         '- spineHijack: did a side character\'s sub-story take over the chapter? (true = problem)',
         '- genreDrift: did it drift from the GIVEN genre — especially turning a non-mystery story into a detective/investigation/whodunit plot? (true = problem)',
         '- complexityCreep: did it add NEW named characters, places, factions, world rules, or threads NOT in the outline, making it more complex? (true = problem)',
+        '- choiceUngrounded: do the offered choices assume/invent a fact NOT established in the body or outline (e.g., an accident, a cause, a place that was never shown), OR push the story off its design? (true = problem; false if no choices)',
         '- rationale: 1-3 sentences citing specifics from the text.',
       ].join('\n'),
     ].filter(Boolean).join('\n\n');
@@ -79,7 +84,8 @@ export async function judgeChapter(params: {
       + (output.protagonistFocus / 2) * 10 + (output.readability / 2) * 25
       + (output.simplicity / 2) * 15 + (output.choiceExecuted ? 10 : 0);
     const penalty = (output.orphanHook ? 10 : 0) + (output.spineHijack ? 15 : 0)
-      + (output.genreDrift ? 25 : 0) + (output.complexityCreep ? 20 : 0);
+      + (output.genreDrift ? 25 : 0) + (output.complexityCreep ? 20 : 0)
+      + (output.choiceUngrounded ? 15 : 0);
     const overall = Math.max(0, Math.min(100, Math.round(base - penalty)));
 
     await params.db.insert(chapterJudgements).values({
@@ -97,12 +103,12 @@ export async function judgeChapter(params: {
         simplicity: output.simplicity,
         choiceExecuted: output.choiceExecuted,
       },
-      flags: { orphanHook: output.orphanHook, spineHijack: output.spineHijack, genreDrift: output.genreDrift, complexityCreep: output.complexityCreep },
+      flags: { orphanHook: output.orphanHook, spineHijack: output.spineHijack, genreDrift: output.genreDrift, complexityCreep: output.complexityCreep, choiceUngrounded: output.choiceUngrounded },
       rationale: output.rationale,
       model: JUDGE_MODEL,
     });
 
-    const flagList = [output.orphanHook && 'orphan', output.spineHijack && 'hijack', output.genreDrift && 'drift', output.complexityCreep && 'complexityCreep']
+    const flagList = [output.orphanHook && 'orphan', output.spineHijack && 'hijack', output.genreDrift && 'drift', output.complexityCreep && 'complexityCreep', output.choiceUngrounded && 'choiceUngrounded']
       .filter(Boolean).join(',') || 'none';
     console.log(`[judge] thread=${params.threadId} chapter=${params.chapterNumber} overall=${overall} coh=${output.coherence} arc=${output.arcAdvance} read=${output.readability} simp=${output.simplicity} flags=${flagList}`);
   } catch (err) {
