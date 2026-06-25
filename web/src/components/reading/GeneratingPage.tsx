@@ -15,7 +15,6 @@ export function GeneratingPage() {
       </div>
       <p className={styles.title}>{g.title}</p>
       <p className={styles.body}>{g.body}</p>
-      <p className={styles.estimate}>{g.estimate}</p>
       <button
         className={styles.notify}
         onClick={request}

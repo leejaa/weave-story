@@ -20,7 +20,6 @@ export function GeneratingPage() {
       <StoryLoader
         title={t('generating.title')}
         subtitle={t('generating.body')}
-        estimate={t('generating.estimate')}
         notify={t('generating.notify')}
       />
     </View>

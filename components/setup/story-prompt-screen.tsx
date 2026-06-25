@@ -6,7 +6,6 @@ import { StoryPromptBackground } from './story-prompt-background';
 import { StoryPromptHeader } from './story-prompt-header';
 import { StoryPromptInputField } from './story-prompt-input-field';
 import { StoryPromptSubmitButton } from './story-prompt-submit-button';
-import { StoryWritingLoadingOverlay } from './story-writing-loading-overlay';
 import type { StoryPromptScreenProps } from './story-prompt-types';
 import { useStoryPromptLayout } from './use-story-prompt-layout';
 
@@ -75,9 +74,6 @@ export function StoryPromptScreen({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      {isPending ? (
-        <StoryWritingLoadingOverlay title={copy.loadingTitle} subtitle={copy.loadingSubtitle} />
-      ) : null}
     </View>
   );
 }

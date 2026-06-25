@@ -5,7 +5,6 @@ import { useStorySetup } from '@/features/setup/useStorySetup';
 import { SetupHeader } from '@/components/setup/SetupHeader';
 import { PromptInput } from '@/components/setup/PromptInput';
 import { SubmitButton } from '@/components/setup/SubmitButton';
-import { WritingOverlay } from '@/components/setup/WritingOverlay';
 import styles from './SetupPage.module.css';
 
 type SetupState = { prompt?: string; hintGenre?: string };
@@ -49,8 +48,6 @@ export function SetupPage() {
           />
         </div>
       </div>
-
-      {isPending && <WritingOverlay title={SETUP_COPY.loadingTitle} subtitle={SETUP_COPY.loadingSubtitle} />}
     </div>
   );
 }
