@@ -101,7 +101,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         outputSnapshot: {
           structureName: outline.structureName,
           beats: outline.beats.length,
-          centralMystery: outline.centralMystery,
+          centralArc: outline.centralArc,
           endings: outline.endings,
           outline, // 전체 아웃라인 — 디버깅·검증용
         },

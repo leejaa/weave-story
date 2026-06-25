@@ -21,8 +21,10 @@ export function renderFirstDraftPrompt(a: FirstDraftArgs, L: LangBlocks): string
     '',
     '[First-chapter rules]',
     '- Break the ordinary world within the first 2-3 paragraphs; do not drag the intro.',
-    "- Plant the seed of the protagonist's spine and the central mystery, but do NOT explain the whole truth.",
+    "- Plant the seed of the protagonist's spine and the central arc/goal, but do NOT explain everything up front.",
     '- The protagonist is ACTIVE — wants something and moves, not merely reacts.',
+    '- Stay faithful to the GIVEN genre and tone; do NOT turn it into a mystery/investigation unless the genre is mystery.',
+    '- Use ONLY the characters, places, and rules in the outline — do NOT invent new named entities or settings.',
     '- End on strong choice pressure (a decision moment), not a trivial reaction.',
     '',
     L.guardrail,
@@ -51,14 +53,15 @@ export function renderNextDraftPrompt(a: NextDraftArgs, L: LangBlocks): string {
     '[MOST IMPORTANT — execute the choice, then converge to the beat]',
     "- The reader's chosen action MUST actually happen in the first 1-2 paragraphs (never blocked or nullified). It is the ROUTE to this beat.",
     "- Whatever the choice, accomplish THIS beat's function within this chapter.",
-    '- Advance the central mystery only by the sliver the beat specifies — never dump the whole truth. ALSO move the protagonist\'s OWN stake forward.',
-    '- Do NOT invent orphan hooks unconnected to the outline / central mystery. A side character\'s sub-story must NOT hijack the protagonist\'s spine.',
+    '- Advance the central arc only by the step the beat specifies — never dump everything. ALSO move the protagonist\'s OWN stake forward.',
+    '- Use ONLY characters/places/rules already in the outline. Do NOT introduce any new named character, place, faction, world rule, or mystery. Deepen what exists instead of adding.',
+    '- Stay faithful to the GIVEN genre/tone; do NOT drift into a mystery/investigation plot unless the genre is mystery. A side character\'s sub-story must NOT hijack the protagonist\'s spine.',
     a.choiceKind === 'free_input'
       ? '- This action was typed by the reader — carry it out as literally as possible.'
       : '',
     a.isFinal
       ? `\n[Final chapter — resolve the story]\n${formatEndings(o, leanings)}`
-      : '- End on a decision moment that calls for the next choice. Any closing hook must derive from THIS beat or the central mystery — no unrelated new mystery.',
+      : '- End on a decision moment that calls for the next choice. Any closing hook must derive from THIS beat or the central arc — no unrelated new thread.',
     '',
     L.guardrail,
     '',

@@ -17,11 +17,11 @@ export function formatOutlineSpine(outline: StoryOutline): string {
     `- genre (locked): ${outline.genre}`,
     `- logline: ${outline.logline}`,
     `- spine (protagonist's active goal — every chapter serves this): ${outline.spine}`,
-    `- central mystery (the ONE question the whole story answers): ${outline.centralMystery.question}`,
-    `- central truth (INTERNAL — reveal only the sliver this chapter's beat allows; never dump it): ${outline.centralMystery.intendedAnswer}`,
+    `- central arc (the ONE goal/question the whole story is about — advance it, do NOT turn it into a mystery/investigation unless the genre is mystery): ${outline.centralArc.dramaticQuestion}`,
+    `- arc throughline (INTERNAL — how it develops; reveal only what this chapter's beat needs, never dump): ${outline.centralArc.throughline}`,
   ];
   if (outline.worldRules?.length) {
-    lines.push(`- WORLD RULES (hard, never contradict; the core mechanic means exactly this): ${outline.worldRules.map(r => `· ${r}`).join(' ')}`);
+    lines.push(`- WORLD RULES (the few hard facts; never contradict; do NOT add new ones): ${outline.worldRules.map(r => `· ${r}`).join(' ')}`);
   }
   if (outline.cast?.length) {
     lines.push(`- cast: ${outline.cast.map((c) => `${c.name}(${c.role}; wants: ${c.want}${c.secret ? `; secret: ${c.secret}` : ''})`).join(' | ')}`);
@@ -36,7 +36,7 @@ export function formatOutlineSpine(outline: StoryOutline): string {
 export function formatBeat(beat: OutlineBeat): string {
   const lines = [
     `- this chapter's FUNCTION (accomplish this; the reader's chosen action is the ROUTE to it): ${beat.function}`,
-    `- advance the central mystery this much (a sliver): ${beat.centralAdvance}`,
+    `- advance the central arc one step: ${beat.arcAdvance}`,
     `- move the PROTAGONIST'S own stake: ${beat.protagonistStake}`,
   ];
   if (beat.payoff) lines.push(`- pay off this earlier thread: ${beat.payoff}`);

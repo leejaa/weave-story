@@ -14,15 +14,15 @@ export async function saveStoryOutline(params: {
   const protagonist = o.cast[0]
     ? `${o.cast[0].name} — ${o.cast[0].role} (원하는 것: ${o.cast[0].want})`
     : '주인공';
-  const openThreads = o.beats.map((b) => b.plant).filter((p): p is string => !!p).slice(0, 8);
-  const canon = `장르: ${o.genre}. 중심 질문: ${o.centralMystery.question}. 척추: ${o.spine}`.slice(0, 800);
+  const openThreads = o.beats.map((b) => b.plant).filter((p): p is string => !!p).slice(0, 4);
+  const canon = `장르: ${o.genre}. 중심 아크: ${o.centralArc.dramaticQuestion}. 척추: ${o.spine}`.slice(0, 800);
 
   const fields = {
     logline: o.logline,
     genre: o.genre,
     tone: o.tone,
     protagonist,
-    centralConflict: o.centralMystery.question,
+    centralConflict: o.centralArc.dramaticQuestion,
     readerPromise: o.logline,
     openingThreat: o.beats[0]?.function ?? o.spine,
     openThreads,

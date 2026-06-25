@@ -1,6 +1,16 @@
 # Weave Story — 스토리 생성 아키텍처 (정본)
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
+
+> **v2 (2026-06-25-C) — 단순·장르충실·탈미스터리 전환**
+> - 강제 `centralMystery`(폭로 엔진) 제거 → **`centralArc{dramaticQuestion, throughline}`**(장르중립 목표/갈등).
+>   어떤 전제도 "누가 했나" 수사물로 변질되지 않게 함. 비트의 `centralAdvance`→`arcAdvance`.
+> - 단순함 하드캡: cast ≤4, worldRules ≤3(현실 배경은 0개 가능), relationships ≤4. 매 화 렌더는
+>   **아웃라인에 없는 새 인물·설정·떡밥 도입 금지**(조잡함 차단).
+> - 장르는 **클라 선택(hintGenre) 권위**. 템플릿 픽은 비미스터리 장르에 수사·복수 골격 배제.
+> - 문체 가드레일 4개 언어 강화(쉬운 단어·짧은 문장·추상 최소).
+> - judge 차원 개편: coreClarity/coreAmbiguous → **readability·simplicity** 점수 + **genreDrift(수사물화)·
+>   complexityCreep** 플래그. 가독성·단순성을 무겁게 가중.
 
 이 문서는 Weave Story의 AI 챕터 생성 파이프라인의 정본 설계문서다. 코드가 진실의
 원천이지만, "왜 이렇게 설계했는가"와 전체 흐름은 여기에 정리한다.
@@ -111,8 +121,8 @@ draft (본문)  ──▶  [짧으면] extend (이어쓰기)  ──▶  structu
 > 아래 2단계 설명은 outline이 없는 폴백 경로 기준.
 
 프롬프트 버전 상수: `story-harness/types.ts`
-- `FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-24-B'`
-- `NEXT_CHAPTER_HARNESS_PROMPT_VERSION  = 'next-chapter-harness@2026-06-24-B'`
+- `FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-25-C'`
+- `NEXT_CHAPTER_HARNESS_PROMPT_VERSION  = 'next-chapter-harness@2026-06-25-C'`
 
 ---
 

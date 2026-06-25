@@ -30,8 +30,9 @@ const o = bible?.blueprint;
 if (o && o.beats) {
   console.log(`\n[OUTLINE] structure="${o.structureName}" beats=${o.beats.length} endings=${o.endings?.length}`);
   console.log(`  spine: ${o.spine}`);
-  console.log(`  centralMystery: ${o.centralMystery?.question}`);
-  console.log(`    └ intendedAnswer: ${trunc(o.centralMystery?.intendedAnswer, 160)}`);
+  const arc = o.centralArc ?? (o.centralMystery ? { dramaticQuestion: o.centralMystery.question, throughline: o.centralMystery.intendedAnswer } : null);
+  console.log(`  centralArc: ${arc?.dramaticQuestion}`);
+  console.log(`    └ throughline: ${trunc(arc?.throughline, 160)}`);
   if (o.cast) console.log(`  cast: ${o.cast.map(c => c.name).join(', ')}`);
   if (o.endings) o.endings.forEach(e => console.log(`  ending(${e.id}): ${trunc(e.shape, 100)} [when ${trunc(e.condition, 60)}]`));
 } else {
@@ -49,7 +50,7 @@ for (const ch of chs) {
   const [jg] = await sql.query('SELECT overall, scores, flags, rationale FROM chapter_judgements WHERE thread_id=$1 AND chapter_number=$2 ORDER BY created_at DESC LIMIT 1', [threadId, ch.chapter_number]);
 
   console.log(`\n──────── ${ch.chapter_number}화: ${ch.title ?? ''} (${ch.len}자, ${ch.status}) ────────`);
-  if (beat) console.log(`  BEAT: ${trunc(beat.function, 140)}\n        central+: ${trunc(beat.centralAdvance, 100)} | 주인공: ${trunc(beat.protagonistStake, 100)}`);
+  if (beat) console.log(`  BEAT: ${trunc(beat.function, 140)}\n        arc+: ${trunc(beat.arcAdvance ?? beat.centralAdvance, 100)} | 주인공: ${trunc(beat.protagonistStake, 100)}`);
   if (run) console.log(`  GEN: status=${run.status} quality=${J(run.quality)}`);
   if (jg) {
     const flags = Object.entries(jg.flags ?? {}).filter(([, v]) => v).map(([k]) => k).join(',') || 'none';
@@ -64,5 +65,5 @@ for (const ch of chs) {
 }
 
 // 요약: 평균 점수 + 플래그 합
-const [agg] = await sql.query("SELECT avg(overall)::int avg_overall, count(*) FILTER (WHERE (flags->>'orphanHook')::bool) orphan, count(*) FILTER (WHERE (flags->>'spineHijack')::bool) hijack, count(*) FILTER (WHERE (flags->>'genreDrift')::bool) drift, count(*) FILTER (WHERE (flags->>'coreAmbiguous')::bool) core_amb FROM chapter_judgements WHERE thread_id=$1", [threadId]);
-console.log(`\n=== 요약: 평균 ${agg?.avg_overall ?? '-'}/100 | 고아떡밥 ${agg?.orphan ?? 0}회 · 척추납치 ${agg?.hijack ?? 0}회 · 장르드리프트 ${agg?.drift ?? 0}회 · 핵심설정모호 ${agg?.core_amb ?? 0}회 ===\n`);
+const [agg] = await sql.query("SELECT avg(overall)::int avg_overall, count(*) FILTER (WHERE (flags->>'orphanHook')::bool) orphan, count(*) FILTER (WHERE (flags->>'spineHijack')::bool) hijack, count(*) FILTER (WHERE (flags->>'genreDrift')::bool) drift, count(*) FILTER (WHERE (flags->>'complexityCreep')::bool) cx FROM chapter_judgements WHERE thread_id=$1", [threadId]);
+console.log(`\n=== 요약: 평균 ${agg?.avg_overall ?? '-'}/100 | 고아떡밥 ${agg?.orphan ?? 0}회 · 척추납치 ${agg?.hijack ?? 0}회 · 장르드리프트(수사물화) ${agg?.drift ?? 0}회 · 복잡도증가 ${agg?.cx ?? 0}회 ===\n`);

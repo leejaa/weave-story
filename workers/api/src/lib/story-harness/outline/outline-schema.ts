@@ -10,7 +10,7 @@ import { z } from 'zod';
 export const OutlineBeatSchema = z.object({
   index: z.number().int().min(1),
   function: z.string().min(4).max(300), // 이 화가 서사적으로 달성하는 것(사건 아님)
-  centralAdvance: z.string().min(2).max(300), // 중심 미스터리를 한 조각 어떻게 전진시키나
+  arcAdvance: z.string().min(2).max(300), // 중심 아크(목표/갈등)를 한 걸음 어떻게 전진시키나
   protagonistStake: z.string().min(2).max(300), // 주인공 본인 처지/목표가 어떻게 움직이나
   plant: z.string().max(240).optional().default(''), // 이 화가 심는 떡밥(있으면)
   payoff: z.string().max(240).optional().default(''), // 이 화가 회수하는 이전 떡밥(있으면)
@@ -23,24 +23,26 @@ export const StoryOutlineSchema = z.object({
   logline: z.string().min(10).max(300),
   structureName: z.string().min(2).max(120), // 사용한 plot_structures 템플릿명
   spine: z.string().min(4).max(300), // 주인공의 능동 목표(불변 척추)
-  centralMystery: z.object({
-    question: z.string().min(4).max(300), // 작품 전체를 관통하는 하나의 극적 질문
-    intendedAnswer: z.string().min(4).max(500), // 내부용: 결국 밝혀질 답(독자에 직접 노출 X)
+  // 중심 아크 — 작품 전체를 관통하는 "하나의 줄기". 장르중립: 미스터리(폭로)가 아니라
+  // 고른 장르에 맞는 목표/갈등. 모든 비트가 이 질문을 한 걸음씩 전진시켜 응집을 만든다.
+  centralArc: z.object({
+    dramaticQuestion: z.string().min(4).max(300), // 이 이야기가 답하려는 하나의 극적 질문/목표
+    throughline: z.string().min(4).max(400), // 그 질문이 처음→끝 어떻게 전개되는지(내부 설계)
   }),
-  // 핵심 세계관 규칙 — "이 작품의 핵심 능력/설정이 구체적으로 무엇을 하고, 무엇은 못 하는가"를
-  // 무모호하게 못 박은 단정문들. 매 화 렌더에 주입되어 일관되게 지켜진다(개연성의 뼈대).
-  worldRules: z.array(z.string().min(4).max(240)).min(2).max(8),
+  // 핵심 설정 규칙 — 명확성에 꼭 필요한 최소 단정문만(신화·설정 폭주 금지). 0~3개.
+  // 현실 배경 장르는 비어 있을 수 있다. 매 화 렌더에 주입되어 일관되게 지켜진다.
+  worldRules: z.array(z.string().min(4).max(240)).max(3).optional().default([]),
   cast: z.array(z.object({
     name: z.string().min(1).max(80),
     role: z.string().min(2).max(120),
     want: z.string().min(2).max(200),
     secret: z.string().max(240).optional().default(''),
-  })).min(1).max(6),
+  })).min(1).max(4),
   relationships: z.array(z.object({
     between: z.string().min(2).max(120),
     dynamic: z.string().min(2).max(200),
     arc: z.string().min(2).max(240),
-  })).max(6).optional().default([]),
+  })).max(4).optional().default([]),
   beats: z.array(OutlineBeatSchema).min(3).max(50),
   endings: z.array(z.object({
     id: z.string().min(1).max(40),

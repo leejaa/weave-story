@@ -43,12 +43,14 @@ const EN_HOOK_DIRECTIVE: Record<HookDirective, string> = {
 
 // Readability-first prose guardrail — curbs the alignment-model mannerisms (antithesis spam, telling, abstract monologue).
 const EN_PROSE_GUARDRAIL = [
-  '[Prose guardrail — readability first]',
-  '- Do not overuse antithesis/parallelism ("not X but Y", "the more ... the more ..."). Once or twice per chapter is plenty.',
-  '- Do not pile on abstract interior monologue or conceptual narration; show through action, dialogue, and the senses (show, don\'t tell).',
+  '[Prose guardrail — easy, fast reading (top priority)]',
+  '- Use simple, everyday words. Avoid difficult vocabulary, abstract jargon, and literary flourishes; use phrasing anyone understands at once.',
+  '- Keep sentences short and clear — one idea per sentence. No long, winding sentences.',
+  '- Antithesis/parallelism ("not X but Y", "the more ... the more ...") at most once per chapter; basically avoid it.',
+  '- Do not pile on abstract interior monologue or conceptual narration; show emotion through action, dialogue, and concrete scene (show, don\'t tell).',
   '- Do not repeat the same metaphor/motif (light, shadow, heartbeat, temperature, etc.).',
-  '- Vary sentence length. Mix in short, sharp sentences to build rhythm.',
-  '- Use dialogue actively to move the scene.',
+  '- Use dialogue actively to move the scene quickly and lightly.',
+  '- Do not dump information in expository lumps; reveal only what is needed, naturally.',
 ].join('\n');
 
 // Length/format — short, fast web fiction. (draft stage)
