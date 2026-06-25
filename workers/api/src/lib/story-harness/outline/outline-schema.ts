@@ -29,6 +29,13 @@ export const StoryOutlineSchema = z.object({
     dramaticQuestion: z.string().min(4).max(300), // 이 이야기가 답하려는 하나의 극적 질문/목표
     throughline: z.string().min(4).max(400), // 그 질문이 처음→끝 어떻게 전개되는지(내부 설계)
   }),
+  // 인과 앵커 — 독자가 "왜 그랬지?"라고 물을 만한 '주요 떡밥·핵심 행동/상태'와, 그것이
+  // 필연인 인과 사슬(원인→현재까지 어떻게 이어져→그래서 이 행동/상태가 당연). 요소를 늘리는 게
+  // 아니라 '있는 중요 요소'의 개연성을 뼈대에서 못 박는 층. 매 화 렌더·심사에 주입되어 지켜진다.
+  causalAnchors: z.array(z.object({
+    hook: z.string().min(4).max(200), // 정당화가 필요한 주요 떡밥/행동/상태(예: "서래가 본체로 안 돌아가려 함")
+    why: z.string().min(12).max(500), // 그것이 납득되는 인과 사슬(원인→경위→그래서 필연). 라벨 금지, 사슬로.
+  })).max(5).optional().default([]),
   // 핵심 설정 규칙 — 명확성에 꼭 필요한 최소 단정문만(신화·설정 폭주 금지). 0~3개.
   // 현실 배경 장르는 비어 있을 수 있다. 매 화 렌더에 주입되어 일관되게 지켜진다.
   worldRules: z.array(z.string().min(4).max(240)).max(3).optional().default([]),

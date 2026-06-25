@@ -28,6 +28,7 @@ export async function generateStoryOutline(params: {
     'ONE central arc = a SINGLE throughline that the whole story is about. EVERY beat advances this arc by one step (arcAdvance) AND moves the PROTAGONIST\'S own stake (protagonistStake). This single-thread focus is what keeps the story from scattering.',
     'The central arc is the goal/conflict that FITS THE GIVEN GENRE — it is NOT a mystery. Do NOT frame it as "who did it / uncover the hidden truth" unless the given genre is literally MYSTERY. For romance it is "will they end up together", for healing/slice-of-life it is "will the protagonist mend what is broken", etc. Honor the given genre faithfully; NEVER turn a non-mystery premise into a detective/investigation plot.',
     'KEEP IT SIMPLE AND READABLE. This is the top priority. Few characters (cast ≤ 4), few or no world rules (≤ 3, only what is strictly needed for clarity — NO mythology/lore escalation), few simultaneous open threads. Prefer a clean, elegant structure with steady hooks and ONE clear climax over a complex web. Plain, easy language everywhere.',
+    'CAUSAL TIGHTNESS (don\'t add elements — tighten the ones you already have). For the MAJOR hooks and pivotal decisions/states, give a convincing causal reason (cause → so → therefore) so a reader is persuaded rather than hand-waved. Record these load-bearing "why"s in causalAnchors. This is about being convincing — NOT about prescribing any particular wording, scene, or reveal; how it is written is up to the per-chapter generation.',
     'worldRules (optional, ≤3) = only the few hard facts needed so the reader is never confused about the premise. A realistic/contemporary premise may have NONE. Do NOT invent guilds, prophecies, factions, or secret histories unless the premise truly requires them.',
     'Plant→payoff should be MINIMAL and connected: only plant a hook if a later beat pays it off. No orphan hooks. Do not keep adding new mysteries each beat.',
   ].join(' ');
@@ -52,7 +53,8 @@ export async function generateStoryOutline(params: {
     templateBlock,
     '',
     'Produce the full StoryOutline (keep everything SIMPLE and genre-faithful):',
-    '- centralArc: the single dramatic question/goal the whole story is about (fit the GIVEN genre; NOT a mystery unless genre is MYSTERY), plus throughline (internal — how that question develops from start to finish).',
+    '- centralArc: the single dramatic question/goal the whole story is about (fit the GIVEN genre; NOT a mystery unless genre is MYSTERY), plus throughline (internal — how that question develops from start to finish, and WHY each major turn is inevitable).',
+    '- causalAnchors: 2-5. The major hooks/decisions/states a reader would question, each with a "why" written as a real causal reason (cause → so → therefore), not a bare label. Author these convincingly so per-chapter generation only fills in the rest.',
     '- worldRules: 0-3 only. The few hard facts needed so the premise is never confusing. Leave empty for realistic/contemporary premises. No mythology/lore building.',
     '- spine: the protagonist\'s active goal driving every chapter.',
     '- cast: the protagonist + at most 3 more KEY recurring characters (≤4 total). Simple, clear roles. secret is optional and should be rare.',

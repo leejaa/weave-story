@@ -17,12 +17,14 @@ const JudgeSchema = z.object({
   protagonistFocus: z.number().int().min(0).max(2), // 주인공 척추 중심(0 납치 ~ 2 주도)
   readability: z.number().int().min(0).max(2), // 가독성: 쉽고 명료해 한 번에 읽히나(0 난해 ~ 2 쉬움)
   simplicity: z.number().int().min(0).max(2), // 단순함: 설정·인물·떡밥이 깔끔한가(0 조잡 ~ 2 깔끔)
+  motivation: z.number().int().min(0).max(2), // 개연성: 핵심 행동/동기가 확립된 것으로 납득되나(0 비약·통보 ~ 2 촘촘)
   choiceExecuted: z.boolean(), // 독자 선택이 본문에서 실제로 실행됐나(1화는 true)
   orphanHook: z.boolean(), // 아웃라인/중심과 무관한 단발 떡밥이 생겼나(true=문제)
   spineHijack: z.boolean(), // 조연 사연이 주인공 척추를 밀어냈나(true=문제)
   genreDrift: z.boolean(), // 고른 장르 이탈(특히 비미스터리인데 수사·추리물화)(true=문제)
   complexityCreep: z.boolean(), // 아웃라인에 없는 새 인물·설정·떡밥이 추가돼 복잡해졌나(true=문제)
   choiceUngrounded: z.boolean(), // 제시된 선택지가 본문에 없는 사실을 전제/날조하거나 설계 밖으로 튕기나(true=문제)
+  causalGap: z.boolean(), // 핵심 행동·떡밥의 '왜'가 비약/통보거나 중요한 원인(예: 사인)이 미설명인가(true=문제)
   rationale: z.string().min(4).max(600),
 });
 
@@ -61,12 +63,14 @@ export async function judgeChapter(params: {
         "- protagonistFocus 0-2: did the protagonist's OWN arc/stake progress (0=hijacked by a side character, 2=protagonist drives)?",
         '- readability 0-2: is the prose EASY and clear — simple everyday words, short clear sentences, read once and understood? (0=dense/hard/over-literary, 2=effortless).',
         '- simplicity 0-2: is the storytelling uncluttered — few elements, clean and elegant, NOT a tangle of names/threads/lore? (0=cluttered/조잡, 2=clean).',
+        '- motivation 0-2: are the key actions/hooks causally convincing — do they follow plausibly from what the story (and the CAUSAL ANCHORS above) established? Judge whether a reader is PERSUADED, not the writing technique. (0=a leap / asserted without enough reason, 2=well-motivated).',
         '- choiceExecuted: was the reader\'s chosen action actually carried out in the prose? (true if no choice / opening chapter)',
         '- orphanHook: did it introduce a NEW hook unrelated to the outline/central arc? (true = problem)',
         '- spineHijack: did a side character\'s sub-story take over the chapter? (true = problem)',
         '- genreDrift: did it drift from the GIVEN genre — especially turning a non-mystery story into a detective/investigation/whodunit plot? (true = problem)',
         '- complexityCreep: did it add NEW named characters, places, factions, world rules, or threads NOT in the outline, making it more complex? (true = problem)',
         '- choiceUngrounded: do the offered choices assume/invent a fact NOT established in the body or outline (e.g., an accident, a cause, a place that was never shown), OR push the story off its design? (true = problem; false if no choices)',
+        '- causalGap: is a KEY action/hook left unconvincing — its "why" is a leap, glossed over, or an important cause is left unexplained? (true = problem). Judge persuasiveness only, not how it is phrased.',
         '- rationale: 1-3 sentences citing specifics from the text.',
       ].join('\n'),
     ].filter(Boolean).join('\n\n');
@@ -79,13 +83,14 @@ export async function judgeChapter(params: {
       schema: JudgeSchema,
     });
 
-    // 점수식: 가독성·단순성을 무겁게(사용자 최우선), 장르 이탈(수사물화)·복잡도 가중을 강하게 감점.
-    const base = (output.coherence / 5) * 25 + (output.arcAdvance / 2) * 15
-      + (output.protagonistFocus / 2) * 10 + (output.readability / 2) * 25
-      + (output.simplicity / 2) * 15 + (output.choiceExecuted ? 10 : 0);
+    // 점수식: 가독성·동기(개연성)를 무겁게, 장르 이탈(수사물화)·복잡도·인과 비약을 강하게 감점.
+    const base = (output.coherence / 5) * 20 + (output.arcAdvance / 2) * 10
+      + (output.protagonistFocus / 2) * 10 + (output.readability / 2) * 20
+      + (output.simplicity / 2) * 10 + (output.motivation / 2) * 20
+      + (output.choiceExecuted ? 10 : 0);
     const penalty = (output.orphanHook ? 10 : 0) + (output.spineHijack ? 15 : 0)
       + (output.genreDrift ? 25 : 0) + (output.complexityCreep ? 20 : 0)
-      + (output.choiceUngrounded ? 15 : 0);
+      + (output.choiceUngrounded ? 15 : 0) + (output.causalGap ? 20 : 0);
     const overall = Math.max(0, Math.min(100, Math.round(base - penalty)));
 
     await params.db.insert(chapterJudgements).values({
@@ -101,16 +106,17 @@ export async function judgeChapter(params: {
         protagonistFocus: output.protagonistFocus,
         readability: output.readability,
         simplicity: output.simplicity,
+        motivation: output.motivation,
         choiceExecuted: output.choiceExecuted,
       },
-      flags: { orphanHook: output.orphanHook, spineHijack: output.spineHijack, genreDrift: output.genreDrift, complexityCreep: output.complexityCreep, choiceUngrounded: output.choiceUngrounded },
+      flags: { orphanHook: output.orphanHook, spineHijack: output.spineHijack, genreDrift: output.genreDrift, complexityCreep: output.complexityCreep, choiceUngrounded: output.choiceUngrounded, causalGap: output.causalGap },
       rationale: output.rationale,
       model: JUDGE_MODEL,
     });
 
-    const flagList = [output.orphanHook && 'orphan', output.spineHijack && 'hijack', output.genreDrift && 'drift', output.complexityCreep && 'complexityCreep', output.choiceUngrounded && 'choiceUngrounded']
+    const flagList = [output.orphanHook && 'orphan', output.spineHijack && 'hijack', output.genreDrift && 'drift', output.complexityCreep && 'complexityCreep', output.choiceUngrounded && 'choiceUngrounded', output.causalGap && 'causalGap']
       .filter(Boolean).join(',') || 'none';
-    console.log(`[judge] thread=${params.threadId} chapter=${params.chapterNumber} overall=${overall} coh=${output.coherence} arc=${output.arcAdvance} read=${output.readability} simp=${output.simplicity} flags=${flagList}`);
+    console.log(`[judge] thread=${params.threadId} chapter=${params.chapterNumber} overall=${overall} coh=${output.coherence} read=${output.readability} simp=${output.simplicity} mot=${output.motivation} flags=${flagList}`);
   } catch (err) {
     console.error(`[judge] failed non_critical thread=${params.threadId} chapter=${params.chapterNumber}`, err);
   }

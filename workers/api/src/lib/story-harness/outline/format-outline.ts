@@ -20,6 +20,9 @@ export function formatOutlineSpine(outline: StoryOutline): string {
     `- central arc (the ONE goal/question the whole story is about — advance it, do NOT turn it into a mystery/investigation unless the genre is mystery): ${outline.centralArc.dramaticQuestion}`,
     `- arc throughline (INTERNAL — how it develops; reveal only what this chapter's beat needs, never dump): ${outline.centralArc.throughline}`,
   ];
+  if (outline.causalAnchors?.length) {
+    lines.push(`- CAUSAL ANCHORS (the established "why"s behind the major hooks/decisions — stay consistent with these and keep them convincing; never contradict them): ${outline.causalAnchors.map((a) => `· ${a.hook} ⇐ ${a.why}`).join(' | ')}`);
+  }
   if (outline.worldRules?.length) {
     lines.push(`- WORLD RULES (the few hard facts; never contradict; do NOT add new ones): ${outline.worldRules.map(r => `· ${r}`).join(' ')}`);
   }
