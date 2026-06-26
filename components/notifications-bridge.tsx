@@ -72,7 +72,16 @@ export function NotificationsBridge() {
       Sentry.addBreadcrumb({ category: 'push', message: `notification tapped (${source})`, data: { url: url ?? undefined, threadId: threadId ?? undefined } });
       // Kick the fetch first (non-blocking) so it overlaps the screen transition.
       if (threadId) prefetchThread(threadId);
-      if (url) router.push(url as never);
+      if (url) {
+        // 기존 reading 스택 위에 같은 화면이 또 쌓이지 않도록, 쌓여 있던 화면을 먼저 비우고(루트로)
+        // 새 화면을 push 한다. (콜드 스타트 등 비울 게 없으면 canDismiss=false라 그냥 push)
+        try {
+          if (router.canDismiss()) router.dismissAll();
+        } catch {
+          /* dismiss 불가 상황은 무시 */
+        }
+        router.push(url as never);
+      }
     };
 
     // Cold start: app opened by tapping a notification.
