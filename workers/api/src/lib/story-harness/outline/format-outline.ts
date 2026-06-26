@@ -13,13 +13,19 @@ export function beatForChapter(outline: StoryOutline, chapterNumber: number): Ou
 
 // 매 화 항상 주입되는 불변 척추(중심 미스터리 + spine + 인물/관계).
 export function formatOutlineSpine(outline: StoryOutline): string {
-  const lines = [
+  const lines: string[] = [];
+  // 심장 — 매 화 이 정서/메시지를 전달하도록 가장 먼저 박는다. (레거시 아웃라인엔 없을 수 있어 가드)
+  if (outline.emotionalCore?.feeling) {
+    lines.push(`- EMOTIONAL CORE (deliver THIS every chapter; the whole story serves it): feeling=${outline.emotionalCore.feeling} | message=${outline.emotionalCore.message}`);
+  }
+  lines.push(
+    `- tone/feel to hold (stay in this register; do NOT drift to mystery/thriller dread or secret-hunting unless the genre is mystery): ${outline.tone}`,
     `- genre (locked): ${outline.genre}`,
     `- logline: ${outline.logline}`,
     `- spine (protagonist's active goal — every chapter serves this): ${outline.spine}`,
     `- central arc (the ONE goal/question the whole story is about — advance it, do NOT turn it into a mystery/investigation unless the genre is mystery): ${outline.centralArc.dramaticQuestion}`,
     `- arc throughline (INTERNAL — how it develops; reveal only what this chapter's beat needs, never dump): ${outline.centralArc.throughline}`,
-  ];
+  );
   if (outline.causalAnchors?.length) {
     lines.push(`- CAUSAL ANCHORS (the established "why"s behind the major hooks/decisions — stay consistent with these and keep them convincing; never contradict them): ${outline.causalAnchors.map((a) => `· ${a.hook} ⇐ ${a.why}`).join(' | ')}`);
   }

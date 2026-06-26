@@ -50,6 +50,24 @@ export const plotStructures = pgTable('plot_structures', {
   activeIdx: index('plot_structures_active_idx').on(table.isActive),
 }));
 
+// 장르별 "정서 프로파일(레지스터)" 라이브러리. 한 장르에 여러 레지스터를 둘 수 있고(확장형),
+// 생성 시 전제에 맞는 레지스터를 하나 골라 emotionalCore·톤·템플릿·렌더·judge의 기준으로 쓴다.
+// (sample_prompts / plot_structures 와 동일 패턴 — 코드 배포 없이 행 추가로 확장)
+export const genreProfiles = pgTable('genre_profiles', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  genre: text('genre').notNull(), // MAIN_GENRE 코드(ROFAN/ROMANCE/MODERN_FANTASY/HISTORICAL/MYSTERY/SF/WUXIA)
+  registerName: text('register_name').notNull(), // 예: '잔잔한 경이·위로'
+  emotionalCore: text('emotional_core').notNull(), // 이 레지스터가 전하려는 감성·메시지·주제
+  touchstones: jsonb('touchstones').notNull().default('[]'), // string[] 대표작(느낌 앵커)
+  onMoves: jsonb('on_moves').notNull().default('[]'), // string[] 권장 무브
+  offMoves: jsonb('off_moves').notNull().default('[]'), // string[] 금지 무브
+  isActive: boolean('is_active').notNull().default(true),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  genreIdx: index('genre_profiles_genre_idx').on(table.genre, table.isActive),
+}));
+
 export const testItems = pgTable('test_items', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),

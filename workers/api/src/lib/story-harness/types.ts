@@ -1,8 +1,8 @@
 import type { FirstChapterResult, NextChapterResult } from '../ai/story-generation';
 
-export const FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-25-D';
+export const FIRST_CHAPTER_HARNESS_PROMPT_VERSION = 'first-chapter-harness@2026-06-26-E';
 export const FIRST_CHAPTER_HARNESS_MODEL = 'anthropic/claude-opus-4.7';
-export const NEXT_CHAPTER_HARNESS_PROMPT_VERSION = 'next-chapter-harness@2026-06-25-D';
+export const NEXT_CHAPTER_HARNESS_PROMPT_VERSION = 'next-chapter-harness@2026-06-26-E';
 export const NEXT_CHAPTER_HARNESS_MODEL = 'anthropic/claude-opus-4.7';
 
 export type FirstChapterQualityScores = {

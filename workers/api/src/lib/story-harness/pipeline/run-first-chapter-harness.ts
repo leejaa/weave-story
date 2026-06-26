@@ -14,6 +14,10 @@ import { saveStoryBible } from '../memory/save-story-bible';
 import { generateStoryOutline } from '../outline/generate-outline';
 import { saveStoryOutline } from '../outline/save-outline';
 import { classifyGenre } from '../outline/classify-genre';
+import { pickRegister } from '../outline/pick-register';
+
+// 레지스터 선택 방식 노브: 'fit'(전제 적합, 기본) | 'random'(다양성).
+const REGISTER_PICK_MODE = 'fit' as const;
 import type { StoryOutline } from '../outline/outline-schema';
 import {
   FIRST_CHAPTER_HARNESS_MODEL,
@@ -73,6 +77,14 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
     const outlineStartMs = Date.now();
     const genre = params.genCtx.hintGenre?.trim()
       || (await classifyGenre(params.apiKey, params.genCtx.prompt));
+    // 장르의 정서 레지스터 선택(전제 적합). emotionalCore·톤·렌더·judge의 기준이 된다.
+    const register = await pickRegister({
+      db: params.db,
+      apiKey: params.apiKey,
+      genre,
+      premise: params.genCtx.prompt,
+      mode: REGISTER_PICK_MODE,
+    });
     const outlineRunId = await startGenerationRun({
       db: params.db,
       storyId: params.storyId,
@@ -82,7 +94,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
       stage: 'outline',
       promptVersion: FIRST_CHAPTER_HARNESS_PROMPT_VERSION,
       model: 'anthropic/claude-opus-4.7',
-      inputSnapshot: { prompt: params.genCtx.prompt, estimatedChapters: params.genCtx.estimatedChapters, genre },
+      inputSnapshot: { prompt: params.genCtx.prompt, estimatedChapters: params.genCtx.estimatedChapters, genre, register: register ? { id: register.id, name: register.registerName } : null },
     });
     try {
       outline = await generateStoryOutline({
@@ -90,6 +102,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         apiKey: params.apiKey,
         premise: params.genCtx.prompt,
         genre,
+        register,
         estimatedChapters: params.genCtx.estimatedChapters,
         language: params.genCtx.language,
       });
@@ -108,7 +121,7 @@ export async function runFirstChapterHarness(params: Params): Promise<FirstChapt
         elapsedMs: Date.now() - outlineStartMs,
       });
       console.log(
-        `[outline] story=${params.storyId} structure="${outline.structureName}" beats=${outline.beats.length} genre=${outline.genre} endings=${outline.endings.length}`,
+        `[outline] story=${params.storyId} genre=${genre} register="${register?.registerName ?? '-'}" structure="${outline.structureName}" beats=${outline.beats.length} endings=${outline.endings.length}`,
       );
     } catch (err) {
       await finishGenerationRun({

@@ -21,6 +21,12 @@ export const StoryOutlineSchema = z.object({
   genre: z.string().min(2).max(80),
   tone: z.string().min(2).max(200),
   logline: z.string().min(10).max(300),
+  // 뼈대의 심장 — 이 이야기가 전하려는 감성·메시지·주제. 장르 레지스터(emotionalCore)에서
+  // 출발해 전제에 맞게 구체화한다. centralArc·비트·떡밥·클라이맥스는 전부 여기서 파생/봉사한다.
+  emotionalCore: z.object({
+    feeling: z.string().min(4).max(220), // 독자에게 남길 핵심 정서/경험
+    message: z.string().min(4).max(220), // 이 이야기가 말하려는 주제/메시지
+  }),
   structureName: z.string().min(2).max(120), // 사용한 plot_structures 템플릿명
   spine: z.string().min(4).max(300), // 주인공의 능동 목표(불변 척추)
   // 중심 아크 — 작품 전체를 관통하는 "하나의 줄기". 장르중립: 미스터리(폭로)가 아니라
