@@ -111,6 +111,7 @@ export function ReadingPage() {
     <div className={styles.screen}>
       <ChapterRibbon
         title={thread.title ?? '이야기'}
+        chapterTitle={thread.chapters.find((ch) => ch.chapterNumber === ribbonChapter)?.title ?? null}
         chapter={ribbonChapter}
         totalChapters={thread.estimatedChapters}
         onBack={() => navigate(-1)}

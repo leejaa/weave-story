@@ -184,6 +184,7 @@ export default function ReadingScreen() {
       />
       <ChapterRibbon
         title={title ?? ''}
+        chapterTitle={data?.chapters.find(ch => ch.chapterNumber === visibleChapter)?.title ?? null}
         chapter={visibleChapter}
         totalChapters={estimatedChapters}
         onBack={() => router.back()}

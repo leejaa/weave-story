@@ -3,6 +3,7 @@ import styles from './ChapterRibbon.module.css';
 
 type Props = {
   title: string;
+  chapterTitle?: string | null;
   chapter: number;
   totalChapters: number;
   onBack: () => void;
@@ -18,7 +19,7 @@ const ChevronLeft = () => (
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 /** 읽기 화면 상단 리본 — 뒤로/제목/북마크(CHAPTER NN / NN)/진행 바 (chapter-ribbon.tsx 대응). */
-export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) {
+export function ChapterRibbon({ title, chapterTitle, chapter, totalChapters, onBack }: Props) {
   const progress = Math.max(0, Math.min(1, chapter / Math.max(totalChapters, 1)));
   return (
     <div className={styles.ribbon}>
@@ -29,7 +30,7 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack }: Props) 
 
         <div className={styles.titleBlock}>
           <div className={styles.title}>{title}</div>
-          <div className={styles.position}>{READING_COPY.nowReading}</div>
+          <div className={styles.position}>{chapterTitle?.trim() || READING_COPY.nowReading}</div>
         </div>
 
         <div className={styles.bookmark}>

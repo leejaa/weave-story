@@ -9,13 +9,14 @@ import { FONTS, SIZES } from '@/constants/colors';
 
 type Props = {
   title: string;
+  chapterTitle?: string | null;
   chapter: number;
   totalChapters: number;
   onBack?: () => void;
   onReport?: () => void;
 };
 
-export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport }: Props) {
+export function ChapterRibbon({ title, chapterTitle, chapter, totalChapters, onBack, onReport }: Props) {
   const c = usePalette();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('reading');
@@ -36,8 +37,8 @@ export function ChapterRibbon({ title, chapter, totalChapters, onBack, onReport 
           <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>
             {title}
           </Text>
-          <Text style={[styles.position, { color: c.inkFaint }]}>
-            {t('nowReading')}
+          <Text style={[styles.position, { color: c.inkFaint }]} numberOfLines={1}>
+            {chapterTitle?.trim() || t('nowReading')}
           </Text>
         </View>
 
