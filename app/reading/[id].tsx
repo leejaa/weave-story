@@ -12,6 +12,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ChapterRibbon } from '@/components/chapter-ribbon';
 import { TextPage } from '@/components/reading/text-page';
+import { PromptPage } from '@/components/reading/prompt-page';
 import { ChoiceEntryPage } from '@/components/reading/choice-entry-page';
 import { GeneratingPage } from '@/components/reading/generating-page';
 import { InterventionPage } from '@/components/reading/intervention-page';
@@ -86,6 +87,7 @@ export default function ReadingScreen() {
         isCompleted,
         width,
         listHeight,
+        data.prompt,
       )
     : { pages: [], startIndex: 0 };
 
@@ -210,6 +212,7 @@ export default function ReadingScreen() {
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         renderItem={({ item }) => (
           <View style={{ width, height: listHeight || undefined, overflow: 'hidden' }}>
+            {item.type === 'prompt' && <PromptPage prompt={item.prompt} />}
             {item.type === 'text' && (
               <TextPage
                 content={item.content}

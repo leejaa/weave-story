@@ -2,6 +2,7 @@ import type { ChapterOption, Intervention, ThreadDetail } from '@/lib/types';
 import { paginate } from './paginate';
 
 export type ReadingPage =
+  | { key: string; type: 'prompt'; prompt: string }
   | { key: string; type: 'text'; chapterNumber: number; title: string | null; content: string; pageIndex: number; totalPages: number }
   | { key: string; type: 'entry'; chapterNumber: number; situation: string | null; question: string | null }
   | { key: string; type: 'choice'; chapterNumber: number; situation: string | null; question: string | null; options: ChapterOption[] }
@@ -23,6 +24,12 @@ function interventionText(thread: ThreadDetail, iv: Intervention): string {
  */
 export function buildPages(thread: ThreadDetail, width: number, height: number): ReadingPage[] {
   const pages: ReadingPage[] = [];
+
+  // 1화 앞 표지: 이 이야기를 만든 원본 프롬프트. 있으면 항상 맨 앞 한 장.
+  if (thread.prompt?.trim()) {
+    pages.push({ key: 'prompt-cover', type: 'prompt', prompt: thread.prompt.trim() });
+  }
+
   const chapters = [...thread.chapters].sort((a, b) => a.chapterNumber - b.chapterNumber);
   const ivByChapter = new Map(thread.interventions.map((iv) => [iv.chapterNumber, iv]));
 

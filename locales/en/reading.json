@@ -5,6 +5,10 @@
   "notFound": "Story not found.",
   "chapterFailed": "Chapter generation failed.\nPlease try again later.",
   "end": "— End —",
+  "promptCover": {
+    "label": "How it began",
+    "hint": "Swipe for Chapter 1 →"
+  },
   "choice": {
     "defaultQuestion": "What will you do?",
     "orInput": "Or type your own",

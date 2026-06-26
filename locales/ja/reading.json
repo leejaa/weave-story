@@ -5,6 +5,10 @@
   "notFound": "物語が見つかりません。",
   "chapterFailed": "章の生成に失敗しました。\nしばらくしてから再試行してください。",
   "end": "— 終 —",
+  "promptCover": {
+    "label": "この物語のはじまり",
+    "hint": "スワイプで1話へ →"
+  },
   "choice": {
     "defaultQuestion": "どうする？",
     "orInput": "または自分で入力",

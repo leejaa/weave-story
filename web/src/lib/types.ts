@@ -90,6 +90,8 @@ export type ThreadDetail = {
   mood: string | null;
   coverImageUrl: string | null;
   estimatedChapters: number;
+  // 원본 생성 프롬프트(사용자 입력 또는 샘플카드 전제). 1화 앞 표지에 노출.
+  prompt: string | null;
   chapters: Chapter[];
   interventions: Intervention[];
 };

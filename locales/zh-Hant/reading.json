@@ -5,6 +5,10 @@
   "notFound": "找不到這則故事。",
   "chapterFailed": "章節生成失敗。\n請稍後再試。",
   "end": "— 完 —",
+  "promptCover": {
+    "label": "故事的起點",
+    "hint": "滑動進入第 1 章 →"
+  },
   "choice": {
     "defaultQuestion": "你會怎麼做？",
     "orInput": "或是自行輸入",

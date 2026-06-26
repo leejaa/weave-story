@@ -80,6 +80,7 @@ export function makeMockThread(): ThreadDetail {
     mood: '설렘',
     coverImageUrl: 'https://pub-3b97af20ccef4afb950d53316d0100f7.r2.dev/covers/card-rofan.png',
     estimatedChapters: ESTIMATED,
+    prompt: '몰락 직전의 백작가 영애로 빙의했는데, 첫날부터 냉혈한 공작이 나를 약혼자로 지목했다.',
     chapters: [MOCK_CHAPTERS[0]],
     interventions: [],
   };

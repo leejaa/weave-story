@@ -24,4 +24,7 @@ export type HiddenPageItem = { key: string; type: 'hidden'; chapterNumber: numbe
 
 export type EndPageItem = { key: string; type: 'end' };
 
-export type PageItem = TextPageItem | ChoicePageItem | GeneratingPageItem | InterventionPageItem | HiddenPageItem | EndPageItem;
+// 1화 앞 표지 — 이 이야기를 만든 원본 프롬프트를 먼저 보여준다.
+export type PromptPageItem = { key: string; type: 'prompt'; prompt: string };
+
+export type PageItem = PromptPageItem | TextPageItem | ChoicePageItem | GeneratingPageItem | InterventionPageItem | HiddenPageItem | EndPageItem;

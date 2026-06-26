@@ -9,9 +9,16 @@ export function buildPages(
   isCompleted: boolean,
   width: number,
   listHeight: number,
+  prompt?: string | null,
 ): { pages: PageItem[]; startIndex: number } {
   const pages: PageItem[] = [];
   let startIndex = 0;
+
+  // 1화 앞 표지: 이 이야기를 만든 원본 프롬프트. 있으면 항상 맨 앞 한 장.
+  const hasPrompt = !!prompt?.trim();
+  if (hasPrompt) {
+    pages.push({ key: 'prompt-cover', type: 'prompt', prompt: prompt!.trim() });
+  }
 
   // Latest intervention per chapter (sorted by createdAt ASC so later entries win on retry)
   const ivByChapter = new Map<number, Intervention>();
@@ -107,6 +114,9 @@ export function buildPages(
   if (isCompleted && pages[pages.length - 1]?.type !== 'end') {
     pages.push({ key: 'end', type: 'end' });
   }
+
+  // 아직 1화에 머무는 첫 진입에는 표지(프롬프트)부터 보여준다(저장된 위치가 우선).
+  if (hasPrompt && currentChapterNumber === 1) startIndex = 0;
 
   return { pages, startIndex };
 }

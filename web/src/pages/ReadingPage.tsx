@@ -6,6 +6,7 @@ import { useReadingProgress } from '@/features/reading/useReadingProgress';
 import { ChapterRibbon } from '@/components/reading/ChapterRibbon';
 import { ReadingPager } from '@/components/reading/ReadingPager';
 import { TextPage } from '@/components/reading/TextPage';
+import { PromptPage } from '@/components/reading/PromptPage';
 import { ChoiceEntryPage } from '@/components/reading/ChoiceEntryPage';
 import { ChoicePage } from '@/components/reading/ChoicePage';
 import { InterventionPage } from '@/components/reading/InterventionPage';
@@ -57,6 +58,8 @@ export function ReadingPage() {
     if (gen >= 0) return setTargetIndex(gen);
     const restored = getRestoredOnce();
     if (restored !== null && restored < pages.length) return setTargetIndex(restored);
+    // 첫 진입(아직 1화)에는 표지(프롬프트)부터 보여준다.
+    if (curChapter === 1 && pages[0]?.type === 'prompt') return setTargetIndex(0);
     const firstCur = pages.findIndex((p) => p.type === 'text' && p.chapterNumber === curChapter);
     if (firstCur >= 0) setTargetIndex(firstCur);
   }, [curChapter, status, pages.length, getRestoredOnce]);
@@ -75,6 +78,8 @@ export function ReadingPage() {
 
   const renderPage = (p: RPage, i: number) => {
     switch (p.type) {
+      case 'prompt':
+        return <PromptPage prompt={p.prompt} />;
       case 'text':
         return <TextPage title={p.title} content={p.content} pageIndex={p.pageIndex} totalPages={p.totalPages} />;
       case 'entry':

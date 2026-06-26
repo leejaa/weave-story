@@ -102,12 +102,17 @@ threadsRouter.get('/:id', async (c) => {
       mood: stories.mood,
       coverImageUrl: stories.coverImageUrl,
       estimatedChapters: stories.estimatedChapters,
+      setupAnswers: stories.setupAnswers,
     })
     .from(threads)
     .innerJoin(stories, eq(threads.storyId, stories.id))
     .where(and(eq(threads.id, threadId), eq(threads.userId, userId)));
 
   if (!row) return c.json({ error: 'Not found' }, 404);
+
+  // 원본 생성 프롬프트(사용자가 입력했거나 샘플카드로 셋된 전제) — 1화 앞 표지에 노출.
+  const { setupAnswers, ...rest } = row;
+  const prompt = (setupAnswers as { prompt?: string } | null)?.prompt ?? null;
 
   const [allChapters, allInterventions] = await Promise.all([
     db.select().from(chapters).where(eq(chapters.threadId, threadId)).orderBy(asc(chapters.chapterNumber)),
@@ -122,7 +127,7 @@ threadsRouter.get('/:id', async (c) => {
       : ch,
   );
 
-  return c.json({ ...row, chapters: sanitizedChapters, interventions: allInterventions });
+  return c.json({ ...rest, prompt, chapters: sanitizedChapters, interventions: allInterventions });
 });
 
 // Re-run a failed first-chapter generation for an existing thread. No credit charge —

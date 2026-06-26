@@ -2,6 +2,10 @@
 export const READING_COPY = {
   nowReading: '읽고 있는 장',
   end: '— 끝 —',
+  promptCover: {
+    label: '이렇게 시작했어요',
+    hint: '넘기면 1화 →',
+  },
   choice: {
     defaultQuestion: '어떻게 할 것인가?',
     orInput: '또는 직접 입력',
